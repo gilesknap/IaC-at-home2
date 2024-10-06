@@ -1,0 +1,21 @@
+- name: debug
+  debug:
+    msg: |
+      groups:
+      {{ groups }}"
+  when: ubuntu_rk1
+
+- name: create temp temp_folder
+  file:
+    path: "{{ temp_folder }}"
+    state: directory
+    recurse: yes
+    mode: 0755
+  when: ubuntu_rk1
+
+- name: Flash images
+  include_tasks: flash.yml
+  loop: "{{ groups.turing_pis }}"
+  when: ubuntu_rk1
+  loop_control:
+    loop_var: node

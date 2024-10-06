@@ -1,0 +1,4 @@
+# Description: This file contains the variables that are common to all the hosts in the inventory.
+
+# Flash ubuntu onto the RK1 nodes
+ubuntu_rk1: true
