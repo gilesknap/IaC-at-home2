@@ -1,9 +1,40 @@
+# if the node is already contactable we can skip the remaining steps
+- name: debug
+  debug:
+    msg: |
+      nodes in the current turingpi ca {{ inventory_hostname }}:
+      {{ groups[inventory_hostname] }}
 - name: check node is up and running
+  delegate_to: localhost
   wait_for:
-    host: ubuntu
+    host: "{{ node }}"
     port: 22
-    msg: "OS on {{ node }} not booted"
-    connect_timeout: 2
-    timeout: 100
-    delay: 5
-  register: new_node_status
+    connect_timeout: 1
+    timeout: 1
+  ignore_errors: true
+  register: node_status
+
+- name: Mount node's disk to create an ansible user and rename the host
+  when: node_status is failed
+  block:
+    - name: turn off all nodes
+      raw: tpi power off -n {{ hostvars[item].host_num }}
+      loop: "{{ groups[inventory_hostname] }}"
+
+    - name: mount node disk into BMC filesystem
+      raw: tpi advanced msd -n {{ hostvars[node].host_num }}
+
+    - name: check which block device got created and get its 2nd partition
+      raw: ls /dev/sd*2
+      register: block_device
+
+    - name: extract the block device partition from raw output
+      set_fact:
+        partition: "{{ block_device.stdout_lines[0] | regex_search('(/dev/sd[a-z]?2)','\\1') | first }}"
+
+    - name: debug - report the block device partition
+      debug:
+        var: partition
+
+    - name: mount the block device
+      raw: mkdir -p /mnt/node && mount {{ partition }} /mnt/node
