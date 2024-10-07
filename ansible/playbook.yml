@@ -11,4 +11,4 @@
   gather_facts: false
   roles:
     - role: known_hosts
-    - role: kubernetes
+    - role: k3s

@@ -1,24 +1,19 @@
 # if the node is already contactable we can skip the remaining steps
 
-- name: check node is up and running
-  delegate_to: localhost
-  wait_for:
-    host: "{{ node }}"
-    port: 22
-    connect_timeout: 1
+- name: wait for {{ inventory_hostname }}
+  wait_for_connection:
     timeout: 1
-  ignore_errors: true
   register: node_status
+  ignore_errors: true
 
 # this seems a little cheesy but I don't know a reliable way to connect to the node
-# we just created. This can reliably update the filesystem to the node to apply
+# we just created. This can reliably update the filesystem on the node to apply
 # the changes we need to make, including giving the node a new hostname
 - name: Mount node's disk to create an ansible user and rename the host
   when: node_status is failed
   block:
-    - name: turn off all nodes
-      raw: tpi power off -n {{ hostvars[item].host_num }}
-      loop: "{{ this_bmc_nodes }}"
+    - name: turn off node before flashing
+      raw: tpi power off -n {{ hostvars[node].host_num }}
 
     - name: mount node disk into BMC filesystem
       raw: tpi advanced msd -n {{ hostvars[node].host_num }}
@@ -40,24 +35,36 @@
 
     - name: modify node filesystem
       raw: |
+        cd /mnt/node/etc
+
         # set the hostname
-        echo {{ node }} > /mnt/node/etc/hostname
+        echo {{ node }} > hostname
+
         # remove the ubuntu user and/or previous ansible user
-        # sed -i '/ubuntu\|ansible/d' /mnt/node/etc/passwd
-        # sed -i '/ubuntu\|ansible/d' /mnt/node/etc/shadow
-        # sed -i '/ubuntu\|ansible/d' /mnt/node/etc/group
+        # sed -i '/ubuntu\|{{ ansible_user }}/d' passwd
+        # sed -i '/ubuntu\|{{ ansible_user }}/d' shadow
+        # sed -i '/ubuntu\|{{ ansible_user }}/d' group
+        sed -i 'ansible/d' passwd
+        sed -i 'ansible/d' shadow
+        sed -i 'ansible/d' group
+
         # create ansible user
-        echo 'ansible:x:1002:1003:Ansible User:/home/ansible:/bin/bash' >> /mnt/node/etc/passwd
-        echo 'ansible:x:1002:' >> /mnt/node/etc/shadow
-        echo 'ansible:x:1003:' >> /mnt/node/etc/group
-        mkdir -p /mnt/node/home/ansible/.ssh
+        echo '{{ auser.passwd }}' >> passwd
+        echo '{{ auser.shadow }}' >> shadow
+        echo '{{ auser.group }}' >> group
+        mkdir -p {{ auser.ssh }}
+
         # authorize via public key
-        echo {{ ssh_public_key }} > /mnt/node/home/ansible/.ssh/authorized_keys
-        chown -R 1002:1003 /mnt/node/home/ansible
-        # TODO REMOVE
-        mkdir -p /mnt/node/home/ubuntu/.ssh
-        echo {{ ssh_public_key }} > /mnt/node/home/ubuntu/.ssh/authorized_keys
-        chown -R 1000:1001 /mnt/node/home/ubuntu
+        echo {{ ssh_public_key }} > {{ auser.ssh }}/authorized_keys
+        chown -R {{ auser.uid }} /mnt/node/home/ansible
+
+        # allow ansible user to sudo without password
+        echo '{{ auser.sudo }}' > /mnt/node/etc/sudoers.d/ansible
+      register: node_modifications
+
+    - name: debug - report the modifications made to the node filesystem
+      debug:
+        var: node_modifications
 
     - name: unmount the block device
       raw: umount /mnt/node

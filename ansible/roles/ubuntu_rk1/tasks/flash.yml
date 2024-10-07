@@ -28,11 +28,24 @@
   set_fact:
     sha256: "{{ lookup('file', sha_file.dest) | regex_search('([^ ]*)','\\1') | first }}"
 
+- name: turn off node before flashing
+  raw: tpi power off -n {{ hostvars[node].host_num }}
+
 - name: flash-image
   delegate_to: localhost
+  delay: 5
   command:
     cmd: |-
       tpi flash -n {{ hostvars[node].host_num }} --host {{ inventory_hostname }}
       --user {{ tpi_user }} --password {{ tpi_password }}
       --image-path {{ os_file.dest }}
       --sha256 {{ sha256 }}
+  register: flash_results
+
+- name: show flash results
+  debug:
+    var: flash_results.stdout_lines
+
+- name: show flash error
+  debug:
+    var: flash_results.stderr
