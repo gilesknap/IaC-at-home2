@@ -20,11 +20,8 @@
 - name: Flash images
   include_tasks: flash.yml
   # guard against flashing the image unless explicity requested
-  when: reset or (node_status is failed and flash_image)
+  when: reset | bool
 
 - name: bootstrap node to enable further ansible provisioning
   include_tasks: bootstrap.yml
-  loop: "{{ this_bmc_nodes }}"
-  loop_control:
-    loop_var: node
-  when: reset or node_status is failed
+  when: reset | bool or node_status is failed

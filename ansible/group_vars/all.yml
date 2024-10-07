@@ -2,9 +2,9 @@
 
 # If reset is true, always flash ubuntu image onto all nodes
 # WARNING: this will overwrite the existing OS on the RK1 nodes
-reset: false
+reset: False
 # flash an image onto the nodes, only if they are no currently responding
-flash_image: true
+flash_image: True
 
 # To set up access to the BMC:
 # - ssh root@turingpi with password turing
