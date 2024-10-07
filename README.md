@@ -4,6 +4,8 @@
 
 A second attempt at making a kubernetes cluster at home that is described in code.
 
+The original attempt with Raspbery Pi 4s and MAAS is here https://github.com/gilesknap/IaC-at-home.
+
 I'll be getting some new hardware for this that is better suited for this task:
 
 - Turing Pi v2.5.2
@@ -22,4 +24,6 @@ I'll probably stick with k3s but drop MAAS and add in:
 
 ## Current status
 
-I have some preliminary hardware and a README.md file!
+Prototyping. Initial ansible now brings up a node with ubuntu. It should scale to multiple nodes or even multiple turing pis.
+
+With that proven it may be time to buy some more hardware.
