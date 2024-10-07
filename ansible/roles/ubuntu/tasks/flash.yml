@@ -14,7 +14,7 @@
     image: "{{ image_info.rp4 }}"
   when: node.type == 'rp4'
 
-- name: get OS image
+- name: get OS image for {{ node.type }}
   delegate_to: localhost
   get_url:
     url: "{{ image.url }}"
