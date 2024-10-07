@@ -1,5 +1,0 @@
-- name: install k3s
-  delegate_to: localhost # Run this task on the control node
-  command:
-    cmd: "todo"
-  when: kubernetes

@@ -1,4 +1,16 @@
 # Description: This file contains the variables that are common to all the hosts in the inventory.
 
-# Flash ubuntu onto the RK1 nodes
-ubuntu_rk1: true
+# If reset is true, flash ubuntu onto the RK1 nodes
+# WARNING: this will overwrite the existing OS on the RK1 nodes
+reset: false
+
+# To set up access to the BMC:
+# - ssh root@turingpi with password turing
+# - passws # change the password to something more secure
+# - mkdir .ssh
+# - echo 'xxxx' > .ssh/authorized_keys # where xxxx is your public ssh key
+#
+# Then invoke the ansible playbook with '-e reset=true tpi_password=xxxx'
+# for initial setup of the turing pis
+tpi_user: root
+tpi_password: turing
