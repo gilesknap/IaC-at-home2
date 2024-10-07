@@ -1,12 +1,22 @@
+- name: get the group that lists this turing pi's nodes
+  set_fact:
+    this_bmc_nodes: "{{groups[inventory_hostname+'_nodes'] | list}}"
+
 - name: debug
   debug:
     msg: |
       nodes in the current turingpi:
-      {{ groups[inventory_hostname] }}
+      {{ this_bmc_nodes }}
+
+# TODO how do we generalize this?
+- name: get our public key
+  delegate_to: localhost
+  set_fact:
+    ssh_public_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 
 - name: Flash images
   include_tasks: flash.yml
-  loop: "{{ groups[inventory_hostname] }}"
+  loop: "{{ this_bmc_nodes }}"
   loop_control:
     loop_var: node
   # guard against flashing the image unless explicity requested
@@ -14,6 +24,6 @@
 
 - name: Create an ansible user to enable further provisioning
   include_tasks: bootstrap.yml
-  loop: "{{ groups[inventory_hostname] }}"
+  loop: "{{ this_bmc_nodes }}"
   loop_control:
     loop_var: node
