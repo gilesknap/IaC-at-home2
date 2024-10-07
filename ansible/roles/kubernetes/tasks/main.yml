@@ -1,5 +1,7 @@
-- name: install k3s
-  delegate_to: localhost # Run this task on the control node
-  command:
-    cmd: "todo"
-  when: kubernetes
+# Nodes may just have been created by ubuntu_rk1 role, wait for them to be ready
+- name: wait for {{ node }}
+  wait_for_connection:
+    timeout: 150
+
+- debug:
+    msg: "{{ node }} is ready"

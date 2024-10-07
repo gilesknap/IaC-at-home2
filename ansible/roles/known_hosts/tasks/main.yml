@@ -1,0 +1,28 @@
+# Nodes may just have been created by ubuntu_rk1 role, wait for them to be ready
+
+- name: wait for {{ inventory_hostname }} to respond on ssh port
+  delegate_to: localhost
+  wait_for:
+    host: "{{ inventory_hostname }}"
+    port: 22
+    connect_timeout: 1
+    timeout: 150
+
+- name: Get new node's ssh public key
+  delegate_to: localhost
+  shell: "ssh-keyscan -t ssh-rsa {{ inventory_hostname }}"
+  register: new_node_ssh_key
+
+- name: Add/update the public key in '{{ ssh_known_hosts_file }}'
+  delegate_to: localhost
+  known_hosts:
+    name: "{{ inventory_hostname }}"
+    key: "{{ new_node_ssh_key.stdout }}"
+    path: "{{ ssh_known_hosts_file }}"
+
+- name: wait for {{ inventory_hostname }}
+  wait_for_connection:
+    timeout: 150
+
+- debug:
+    msg: "{{ inventory_hostname }} is ready"

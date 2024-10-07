@@ -47,15 +47,17 @@
         # sed -i '/ubuntu\|ansible/d' /mnt/node/etc/shadow
         # sed -i '/ubuntu\|ansible/d' /mnt/node/etc/group
         # create ansible user
-        echo 'ansible:x:1000:1001:Ansible User:/home/ansible:/bin/bash' >> /mnt/node/etc/passwd
-        echo 'ansible:x:1000:' >> /mnt/node/etc/shadow
-        echo 'ansible:x:1001:' >> /mnt/node/etc/group
+        echo 'ansible:x:1002:1003:Ansible User:/home/ansible:/bin/bash' >> /mnt/node/etc/passwd
+        echo 'ansible:x:1002:' >> /mnt/node/etc/shadow
+        echo 'ansible:x:1003:' >> /mnt/node/etc/group
         mkdir -p /mnt/node/home/ansible/.ssh
         # authorize via public key
         echo {{ ssh_public_key }} > /mnt/node/home/ansible/.ssh/authorized_keys
+        chown -R 1002:1003 /mnt/node/home/ansible
         # TODO REMOVE
         mkdir -p /mnt/node/home/ubuntu/.ssh
         echo {{ ssh_public_key }} > /mnt/node/home/ubuntu/.ssh/authorized_keys
+        chown -R 1000:1001 /mnt/node/home/ubuntu
 
     - name: unmount the block device
       raw: umount /mnt/node
