@@ -1,8 +1,10 @@
 # Description: This file contains the variables that are common to all the hosts in the inventory.
 
-# If reset is true, flash ubuntu onto the RK1 nodes
+# If reset is true, always flash ubuntu image onto all nodes
 # WARNING: this will overwrite the existing OS on the RK1 nodes
 reset: false
+# flash an image onto the nodes, only if they are no currently responding
+flash_image: true
 
 # To set up access to the BMC:
 # - ssh root@turingpi with password turing
