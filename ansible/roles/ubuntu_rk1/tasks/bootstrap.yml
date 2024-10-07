@@ -12,6 +12,7 @@
 - name: Mount node's disk to create an ansible user and rename the host
   when: node_status is failed
   block:
+    # this guarentees the state of the node and msd will automatically turn in on
     - name: turn off node before flashing
       raw: tpi power off -n {{ hostvars[node].host_num }}
 
