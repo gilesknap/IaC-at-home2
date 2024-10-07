@@ -1,21 +1,19 @@
 - name: debug
   debug:
     msg: |
-      groups:
-      {{ groups }}"
-  when: ubuntu_rk1
-
-- name: create temp temp_folder
-  file:
-    path: "{{ temp_folder }}"
-    state: directory
-    recurse: yes
-    mode: 0755
-  when: ubuntu_rk1
+      nodes in the current turingpi:
+      {{ groups[inventory_hostname] }}
 
 - name: Flash images
   include_tasks: flash.yml
-  loop: "{{ groups.turing_pis }}"
-  when: ubuntu_rk1
+  loop: "{{ groups[inventory_hostname] }}"
+  loop_control:
+    loop_var: node
+  # guard against flashing the image unless explicity requested
+  when: reset
+
+- name: Create an ansible user to enable further provisioning
+  include_tasks: bootstrap.yml
+  loop: "{{ groups[inventory_hostname] }}"
   loop_control:
     loop_var: node

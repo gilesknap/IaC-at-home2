@@ -1,0 +1,9 @@
+- name: check node is up and running
+  wait_for:
+    host: ubuntu
+    port: 22
+    msg: "OS on {{ node }} not booted"
+    connect_timeout: 2
+    timeout: 100
+    delay: 5
+  register: new_node_status

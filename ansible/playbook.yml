@@ -1,15 +1,12 @@
 ---
-- name: bare metal provisioning
-  hosts: localhost
+- name: bare metal provisioning of turing_pi nodes
+  hosts: turing_pis
   gather_facts: false
   roles:
     - role: ubuntu_rk1
-      tags: ubuntu_rk1
 
 - name: Set up kubernetes cluster
   hosts: node[01:02]
   gather_facts: true
   roles:
     - role: kubernetes
-      tags: kubernetes
-      when: kubernetes

@@ -1,8 +1,10 @@
 temp_folder: /tmp/iac2-rk1/
 
+image_version: 1.33
 image:
   # TODO - don't forget to try out Talos at some point!
-  url: https://firmware.turingpi.com/turing-rk1/ubuntu_22.04_rockchip_linux/v1.33/ubuntu-22.04.3-preinstalled-server-arm64-turing-rk1_v1.33.img.xz
-  sha: https://firmware.turingpi.com/turing-rk1/ubuntu_22.04_rockchip_linux/v1.33/ubuntu-22.04.3-preinstalled-server-arm64-turing-rk1_v1.33.img.xz.sha256
-  os_file: "{{ temp_folder }}os.img.xz"
-  sha_file: "{{ temp_folder }}os.sha"
+  version: 1.33
+  url: https://firmware.turingpi.com/turing-rk1/ubuntu_22.04_rockchip_linux/v{{image_version}}/ubuntu-22.04.3-preinstalled-server-arm64-turing-rk1_v1.33.img.xz
+  sha: https://firmware.turingpi.com/turing-rk1/ubuntu_22.04_rockchip_linux/v{{image_version}}/ubuntu-22.04.3-preinstalled-server-arm64-turing-rk1_v1.33.img.xz.sha256
+  os_file: "{{ temp_folder }}os.{{image_version}}.img.xz"
+  sha_file: "{{ temp_folder }}os.{{image_version}}.sha"
