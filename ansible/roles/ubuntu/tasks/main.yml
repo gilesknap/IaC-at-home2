@@ -14,16 +14,8 @@
   set_fact:
     ssh_public_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 
-- name: Flash images
-  include_tasks: flash.yml
+- name: process nodes
+  include_tasks: node.yml
   loop: "{{ this_bmc_nodes }}"
   loop_control:
-    loop_var: node
-  # guard against flashing the image unless explicity requested
-  when: reset
-
-- name: Create an ansible user to enable further provisioning
-  include_tasks: bootstrap.yml
-  loop: "{{ this_bmc_nodes }}"
-  loop_control:
-    loop_var: node
+    loop_var: node_name

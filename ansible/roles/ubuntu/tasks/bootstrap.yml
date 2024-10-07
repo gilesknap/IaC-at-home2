@@ -1,0 +1,64 @@
+# this seems a little cheesy but I don't know a reliable way to connect to the node
+# we just created. This can reliably update the filesystem on the node to apply
+# the changes we need to make, including giving the node a new hostname
+
+# this guarentees the state of the node and msd will automatically turn in on
+- name: turn off node before flashing
+  raw: tpi power off -n {{ node.host_num }}
+
+- name: mount node disk into BMC filesystem
+  raw: tpi advanced msd -n {{ node.host_num }}
+
+- name: check which block device got created and get its 2nd partition
+  raw: ls /dev/sd*2
+  register: block_device
+
+- name: extract the block device partition from raw output
+  set_fact:
+    partition: "{{ block_device.stdout_lines[0] | regex_search('(/dev/sd[a-z]?2)','\\1') | first }}"
+
+- name: debug - report the block device partition
+  debug:
+    var: partition
+
+- name: mount the block device
+  raw: mkdir -p /mnt/node && mount {{ partition }} /mnt/node
+
+- name: modify node filesystem
+  raw: |
+    cd /mnt/node/etc
+
+    # set the hostname
+    echo {{ node_name }} > hostname
+
+    # remove the ubuntu user and/or previous ansible user
+    # sed -i '/ubuntu\|{{ ansible_user }}/d' passwd
+    # sed -i '/ubuntu\|{{ ansible_user }}/d' shadow
+    # sed -i '/ubuntu\|{{ ansible_user }}/d' group
+    sed -i 'ansible/d' passwd
+    sed -i 'ansible/d' shadow
+    sed -i 'ansible/d' group
+
+    # create ansible user
+    echo '{{ auser.passwd }}' >> passwd
+    echo '{{ auser.shadow }}' >> shadow
+    echo '{{ auser.group }}' >> group
+    mkdir -p {{ auser.ssh }}
+
+    # authorize via public key
+    echo {{ ssh_public_key }} > {{ auser.ssh }}/authorized_keys
+    chown -R {{ auser.uid }} /mnt/node/home/ansible
+
+    # allow ansible user to sudo without password
+    echo '{{ auser.sudo }}' > /mnt/node/etc/sudoers.d/ansible
+  register: node_modifications
+
+- name: debug - report the modifications made to the node filesystem
+  debug:
+    var: node_modifications
+
+- name: unmount the block device
+  raw: umount /mnt/node
+
+- name: reboot the node
+  raw: tpi advanced normal -n {{ node.host_num }}

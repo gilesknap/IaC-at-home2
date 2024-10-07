@@ -2,44 +2,37 @@
 #
 # commands are delegated to localhost or use 'raw'
 # because BMC has no python or disk space
+# if the node is already contactable we can skip the remaining steps
 
-- name: create temp folder
-  delegate_to: localhost
-  file:
-    name: "{{ temp_folder }}"
-    state: directory
+- name: select the image to flash for rk1
+  set_fact:
+    image: "{{ image_info.rk1 }}"
+  when: node.type == 'rk1'
 
-- name: get OS image
+- name: select the image to flash for rpi4 compute module
+  set_fact:
+    image: "{{ image_info.rp4 }}"
+  when: node.type == 'rp4'
+
+- name: get OS image for {{ node.type }}
   delegate_to: localhost
   get_url:
     url: "{{ image.url }}"
     dest: "{{ image.os_file }}"
   register: os_file
 
-- name: get OS sha file
-  delegate_to: localhost
-  get_url:
-    url: "{{ image.sha }}"
-    dest: "{{ image.sha_file }}"
-  register: sha_file
-
-- name: set sha256
-  delegate_to: localhost
-  set_fact:
-    sha256: "{{ lookup('file', sha_file.dest) | regex_search('([^ ]*)','\\1') | first }}"
-
 # this guarentees the state of the node and flash will automatically turn in on
 - name: turn off node before flashing
-  raw: tpi power off -n {{ hostvars[node].host_num }}
+  raw: tpi power off -n {{ node.host_num }}
 
 - name: flash-image
   delegate_to: localhost
   command:
     cmd: |-
-      tpi flash -n {{ hostvars[node].host_num }} --host {{ inventory_hostname }}
+      tpi flash -n {{ node.host_num }} --host {{ inventory_hostname }}
       --user {{ tpi_user }} --password {{ tpi_password }}
       --image-path {{ os_file.dest }}
-      --sha256 {{ sha256 }}
+      --sha256 {{ image.sha }}
   register: flash_results
 
 - name: show flash results
