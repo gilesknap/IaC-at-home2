@@ -1,0 +1,28 @@
+temp_folder: /tmp/iac2-rk1/
+
+rk1_image_version: 1.33
+rp4_image_version: 22.04.1
+image_info:
+  # TODO - don't forget to try out Talos at some point!
+  rk1:
+    url: https://firmware.turingpi.com/turing-rk1/ubuntu_22.04_rockchip_linux/v{{rk1_image_version}}/ubuntu-22.04.3-preinstalled-server-arm64-turing-rk1_v1.33.img.xz
+    sha: fa345ea9184be5b097f72c5ca451da197991b69d2e6affcb0d3ebaf124708226
+    os_file: "{{ temp_folder }}os.{{rk1_image_version}}.img.xz"
+  rp4:
+    url: https://cdimage.ubuntu.com/releases/{{ rp4_image_version }}/release/ubuntu-{{ rp4_image_version }}-preinstalled-server-arm64+raspi.img.xz
+    sha: e59925e211080b20f02e4504bb2c8336b122d0738668491986ee29a95610e5b1
+    os_file: "{{ temp_folder }}os.raspi{{ rp4_image_version }}.img.xz"
+
+auser:
+  uid: 1002:1003
+  passwd: |-
+    ansible:x:1002:1003:ansible User:/home/ansible:/bin/bash
+  # TODO remove password hash once ssh key is working
+  shadow: |-
+    ansible:$1$xyz$jAlmRpcFe.aiPOIXET9GG/:::::::
+  group: |-
+    ansible:x:1003:
+  sudo: |-
+    ansible ALL=(ALL) NOPASSWD:ALL
+  ssh: |-
+    /mnt/node/home/ansible/.ssh/

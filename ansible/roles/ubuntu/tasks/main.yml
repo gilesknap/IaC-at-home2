@@ -18,7 +18,7 @@
   include_tasks: flash.yml
   loop: "{{ this_bmc_nodes }}"
   loop_control:
-    loop_var: node
+    loop_var: node_name
   # guard against flashing the image unless explicity requested
   when: reset
 

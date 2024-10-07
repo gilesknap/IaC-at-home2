@@ -6,6 +6,10 @@
   register: node_status
   ignore_errors: true
 
+- name: fetch node variables
+  set_fact:
+    node: "{{ hostvars[node_name] }}"
+
 # this seems a little cheesy but I don't know a reliable way to connect to the node
 # we just created. This can reliably update the filesystem on the node to apply
 # the changes we need to make, including giving the node a new hostname
@@ -14,10 +18,10 @@
   block:
     # this guarentees the state of the node and msd will automatically turn in on
     - name: turn off node before flashing
-      raw: tpi power off -n {{ hostvars[node].host_num }}
+      raw: tpi power off -n {{ node.host_num }}
 
     - name: mount node disk into BMC filesystem
-      raw: tpi advanced msd -n {{ hostvars[node].host_num }}
+      raw: tpi advanced msd -n {{ node.host_num }}
 
     - name: check which block device got created and get its 2nd partition
       raw: ls /dev/sd*2
@@ -39,7 +43,7 @@
         cd /mnt/node/etc
 
         # set the hostname
-        echo {{ node }} > hostname
+        echo {{ node_name }} > hostname
 
         # remove the ubuntu user and/or previous ansible user
         # sed -i '/ubuntu\|{{ ansible_user }}/d' passwd
@@ -71,4 +75,4 @@
       raw: umount /mnt/node
 
     - name: reboot the node
-      raw: tpi advanced normal -n {{ hostvars[node].host_num }}
+      raw: tpi advanced normal -n {{ node.host_num }}

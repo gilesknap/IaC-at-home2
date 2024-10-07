@@ -3,7 +3,7 @@
   hosts: turing_pis
   gather_facts: false
   roles:
-    - role: ubuntu_rk1
+    - role: ubuntu
 
 - name: Set up kubernetes cluster
   hosts: nodes
