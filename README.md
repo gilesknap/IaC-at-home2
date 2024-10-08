@@ -16,10 +16,11 @@ The Turing Pi 2.5 has a BMC that can manage the compute modules so this removes 
 
 ## Software
 
-I'll probably stick with k3s but drop MAAS and add in:
-- ansible: for provisioning from metal
-- longhorn: for primary storage with redundancy idependent of the NAS
+I'll initially stick with Ubuntu and k3s but drop MAAS and add in:
+- ansible: for provisioning from metal up
+- longhorn: for primary storage with redundancy independent of the NAS
 - ArgoCD: for deploying everything to the cluster?
+- perhaps switch to Talos
 - what else?
 
 ## Current status
