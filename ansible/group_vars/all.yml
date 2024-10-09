@@ -3,7 +3,7 @@
 # If reset is true, always flash ubuntu image onto all nodes
 # WARNING: this will overwrite the existing OS on the RK1 nodes
 reset: False
-# flash an image onto the nodes, only if they are no currently responding
+# flash an image onto the nodes if they are not currently responding
 flash_image: False
 
 # To set up access to the BMC:

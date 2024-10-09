@@ -29,4 +29,3 @@
 
 - name: gather facts on the new node
   setup:
-    cache_valid_time: 0

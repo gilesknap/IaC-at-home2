@@ -24,4 +24,4 @@
 
 - name: bootstrap node to enable further ansible provisioning
   include_tasks: bootstrap.yml
-  when: reset | bool or node_status is failed
+  when: reset | bool or (flash_image | bool and node_status is failed)
