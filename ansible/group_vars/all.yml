@@ -4,7 +4,7 @@
 # WARNING: this will overwrite the existing OS on the RK1 nodes
 reset: False
 # flash an image onto the nodes, only if they are no currently responding
-flash_image: True
+flash_image: False
 
 # To set up access to the BMC:
 # - ssh root@turingpi with password turing
@@ -16,3 +16,5 @@ flash_image: True
 # for initial setup of the turing pis
 tpi_user: root
 tpi_password: turing
+
+ssh_public_key: "{{ lookup('file', '~/.ssh/ansible_master.pub') }}"
