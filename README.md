@@ -22,6 +22,7 @@ I'll initially stick with Ubuntu and k3s but drop MAAS and add in:
 - ArgoCD: for deploying everything to the cluster?
 - perhaps switch to Talos
 - what else?
+  - given that I'll have a pretty serious NPU capability (24 Tops 8bit) it will be time to start playing with AI models I guess
 
 ## Current status
 
