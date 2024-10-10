@@ -1,6 +1,6 @@
 # Tasks run against a single node in a turingpi
 
-- name: fetch node variables
+- name: fetch node variables for {{ node_name }}
   set_fact:
     node: "{{ hostvars[node_name] }}"
 
@@ -11,17 +11,21 @@
     state: directory
 
 # determine if the node already exists and has an anisble account
-- name: wait for {{ node_name }}
-  wait_for_connection:
-    timeout: 1
+- name: wait for {{ node_name }} to respond on ssh port
+  delegate_to: localhost
+  wait_for:
+    host: "{{ node_name }}"
+    port: 22
+    connect_timeout: 1
+    timeout: 3
   register: node_status
   ignore_errors: true
 
 - name: Flash images
   include_tasks: flash.yml
   # guard against flashing the image unless explicity requested
-  when: reset | bool
+  when: reset | bool or (flash_image | bool and node_status is failed)
 
 - name: bootstrap node to enable further ansible provisioning
   include_tasks: bootstrap.yml
-  when: reset | bool or (flash_image | bool and node_status is failed)
+  when: reset | bool or node_status is failed

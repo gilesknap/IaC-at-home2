@@ -4,10 +4,10 @@
 
 # this guarentees the state of the node and msd will automatically turn in on
 - name: turn off node before flashing
-  raw: tpi power off -n {{ node.host_num }}
+  raw: tpi power off -n {{ node.slot_num }}
 
 - name: mount node disk into BMC filesystem
-  raw: tpi advanced msd -n {{ node.host_num }}
+  raw: tpi advanced msd -n {{ node.slot_num }}
 
 - name: check which block device got created and get its 2nd partition
   raw: ls /dev/sd*2
@@ -61,4 +61,4 @@
   raw: umount /mnt/node
 
 - name: reboot the node
-  raw: tpi advanced normal -n {{ node.host_num }}
+  raw: tpi advanced normal -n {{ node.slot_num }}

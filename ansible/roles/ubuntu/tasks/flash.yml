@@ -12,7 +12,7 @@
 - name: select the image to flash for rpi4 compute module
   set_fact:
     image: "{{ image_info.rp4 }}"
-  when: node.type == 'rp4'
+  when: node.type == 'pi4'
 
 - name: get OS image for {{ node.type }}
   delegate_to: localhost
@@ -23,13 +23,13 @@
 
 # this guarentees the state of the node and flash will automatically turn in on
 - name: turn off node before flashing
-  raw: tpi power off -n {{ node.host_num }}
+  raw: tpi power off -n {{ node.slot_num }}
 
 - name: flash-image
   delegate_to: localhost
   command:
     cmd: |-
-      tpi flash -n {{ node.host_num }} --host {{ inventory_hostname }}
+      tpi flash -n {{ node.slot_num }} --host {{ inventory_hostname }}
       --user {{ tpi_user }} --password {{ tpi_password }}
       --image-path {{ os_file.dest }}
       --sha256 {{ image.sha }}
