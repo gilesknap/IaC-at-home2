@@ -2,7 +2,6 @@
 #
 # commands are delegated to localhost or use 'raw'
 # because BMC has no python or disk space
-# if the node is already contactable we can skip the remaining steps
 
 - name: select the image to flash for rk1
   set_fact:
