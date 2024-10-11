@@ -60,5 +60,5 @@
 - name: unmount the block device
   raw: umount /mnt/node
 
-- name: reboot the node
+- name: reboot the node {{ node }} slot {{ node.slot_num }}
   raw: tpi advanced normal -n {{ node.slot_num }}

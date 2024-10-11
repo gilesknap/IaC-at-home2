@@ -11,7 +11,7 @@
 
 - name: select the image to flash for rpi4 compute module
   set_fact:
-    image: "{{ image_info.rp4 }}"
+    image: "{{ image_info.pi4 }}"
   when: node.type == 'pi4'
 
 - name: get OS image for {{ node.type }}

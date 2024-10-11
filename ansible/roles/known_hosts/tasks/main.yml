@@ -5,13 +5,14 @@
   wait_for:
     host: "{{ inventory_hostname }}"
     port: 22
-    connect_timeout: 1
+    connect_timeout: 2
     timeout: 150
 
 - name: Get new node's ssh public key
   delegate_to: localhost
   shell: "ssh-keyscan -t ssh-ed25519 {{ inventory_hostname }}"
   register: new_node_ssh_key
+  when: flash_results is defined
 
 - name: Add/update the public key in '{{ ssh_known_hosts_file }}'
   delegate_to: localhost
@@ -19,6 +20,7 @@
     name: "{{ inventory_hostname }}"
     key: "{{ new_node_ssh_key.stdout }}"
     path: "{{ ssh_known_hosts_file }}"
+  when: flash_results is defined
 
 - name: wait for {{ inventory_hostname }}
   wait_for_connection:
@@ -27,5 +29,5 @@
 - debug:
     msg: "{{ inventory_hostname }} is ready"
 
-- name: gather facts on the new node
+- name: gather facts on node {{ inventory_hostname }}
   setup:

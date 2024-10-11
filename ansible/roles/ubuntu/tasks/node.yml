@@ -24,7 +24,7 @@
 - name: Flash images
   include_tasks: flash.yml
   # guard against flashing the image unless explicity requested
-  when: reset | bool or (flash_image | bool and node_status is failed)
+  when: reset | bool or (flash_image | bool and node_status is failed) or node.reset | default(false) | bool
 
 - name: bootstrap node to enable further ansible provisioning
   include_tasks: bootstrap.yml
