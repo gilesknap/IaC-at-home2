@@ -1,7 +1,7 @@
 - name: extract the group that lists this turing pi's nodes
   set_fact:
     nodes: |-
-      {{ groups[hostvars[inventory_hostname].nodes] }}
+      {{ groups[hostvars[inventory_hostname].nodes_group] }}
 
 - name: list the nodes for '{{ inventory_hostname }}'
   debug:
