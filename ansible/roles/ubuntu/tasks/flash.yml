@@ -21,10 +21,10 @@
   register: os_file
 
 # this guarentees the state of the node and flash will automatically turn in on
-- name: turn off node before flashing
+- name: turn off {{ node_name }} before flashing
   raw: tpi power off -n {{ node.slot_num }}
 
-- name: flash-image
+- name: flash image to {{ node_name }} slot {{ node.slot_num }} type {{ node.type }}
   delegate_to: localhost
   command:
     cmd: |-

@@ -23,8 +23,9 @@
 # make minimal changes to the node filesystem so we can reboot and connect to it
 - name: modify node filesystem
   raw: |
-    # set the hostname
     set -xe
+
+    # set the hostname
     cd /mnt/node
     echo {{ node_name }} > etc/hostname
 
@@ -32,6 +33,9 @@
     keys=home/ubuntu/.ssh; mkdir -p $keys
     echo '{{ public_keys }}' > $keys/authorized_keys
     chown -R 1000:1000 home/ubuntu; chmod 700 $keys; chmod 600 $keys/authorized_keys
+
+    # remove ubuntu password
+    sed -i 's/^ubuntu\:[^:]*/ubuntu:*/' etc/shadow
   register: node_modifications
 
 - name: debug - report the modifications made to the node filesystem

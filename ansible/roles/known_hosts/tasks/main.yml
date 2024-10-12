@@ -1,6 +1,5 @@
 # Nodes may just have been created by ubuntu_rk1 role, wait for them to be ready
 # and update our known_hosts file with their ssh public key
-
 - name: Get new node {{ inventory_hostname }}'s ssh public key
   delegate_to: localhost
   command: "ssh-keyscan -t ssh-ed25519 {{ inventory_hostname }}"
@@ -8,16 +7,18 @@
   retries: 30
   delay: 5
 
-- name: Add/update the public key in '{{ ssh_known_hosts_file }}'
+- name: Add/update the host public key in '{{ ssh_known_hosts_file }}'
   delegate_to: localhost
   known_hosts:
     name: "{{ inventory_hostname }}"
     key: "{{ new_node_ssh_key.stdout }}"
     path: "{{ ssh_known_hosts_file }}"
 
-- name: wait for {{ inventory_hostname }}
-  wait_for_connection:
-    timeout: 5
+- name: Disallow SSH password authentication
+  ansible.builtin.user:
+    name: ubuntu
+    password_lock: true
+  become: true
 
 - debug:
     msg: "{{ inventory_hostname }} is ready"
