@@ -1,21 +1,14 @@
-- name: get the group that lists this turing pi's nodes
+- name: extract the group that lists this turing pi's nodes
   set_fact:
-    this_bmc_nodes: "{{groups[inventory_hostname+'_nodes'] | list}}"
+    nodes: |-
+      {{ groups[hostvars[inventory_hostname].nodes] }}
 
-- name: debug
+- name: list the nodes for '{{ inventory_hostname }}'
   debug:
-    msg: |
-      nodes in the current turingpi:
-      {{ this_bmc_nodes }}
+    var: nodes
 
-# TODO how do we generalize this?
-- name: get our public key
-  delegate_to: localhost
-  set_fact:
-    ssh_public_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-
-- name: process nodes
+- name: process the nodes for '{{ inventory_hostname }}'
   include_tasks: node.yml
-  loop: "{{ this_bmc_nodes }}"
+  loop: "{{ nodes }}"
   loop_control:
     loop_var: node_name

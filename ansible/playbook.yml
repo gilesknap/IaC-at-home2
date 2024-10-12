@@ -6,7 +6,7 @@
     - role: ubuntu
 
 - name: Set up kubernetes cluster
-  hosts: nodes
+  hosts: tp?_nodes
   # only gather facts after the nodes have been set up by the ubuntu_rk1 role
   gather_facts: false
   roles:

@@ -1,17 +1,12 @@
 # Nodes may just have been created by ubuntu_rk1 role, wait for them to be ready
+# and update our known_hosts file with their ssh public key
 
-- name: wait for {{ inventory_hostname }} to respond on ssh port
+- name: Get new node {{ inventory_hostname }}'s ssh public key
   delegate_to: localhost
-  wait_for:
-    host: "{{ inventory_hostname }}"
-    port: 22
-    connect_timeout: 1
-    timeout: 150
-
-- name: Get new node's ssh public key
-  delegate_to: localhost
-  shell: "ssh-keyscan -t ssh-ed25519 {{ inventory_hostname }}"
+  command: "ssh-keyscan -t ssh-ed25519 {{ inventory_hostname }}"
   register: new_node_ssh_key
+  retries: 30
+  delay: 5
 
 - name: Add/update the public key in '{{ ssh_known_hosts_file }}'
   delegate_to: localhost
@@ -26,3 +21,6 @@
 
 - debug:
     msg: "{{ inventory_hostname }} is ready"
+
+- name: gather facts on node {{ inventory_hostname }}
+  setup:
