@@ -14,14 +14,12 @@ image_info:
 
 # information to patch the ubuntu image with the ansible user
 auser:
-  uid: 1002:1003
+  uid: 1005:1005
   passwd: |-
-    ansible:x:1002:1003:ansible User:/home/ansible:/bin/bash
+
   shadow: |-
-    ansible::::::::
-  group: |-
-    ansible:x:1003:
+
   sudo: |-
-    ansible ALL=(ALL) NOPASSWD:ALL
+
   ssh: |-
     /mnt/node/home/ansible/.ssh/

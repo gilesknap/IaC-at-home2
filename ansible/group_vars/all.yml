@@ -1,20 +1,11 @@
 # Description: This file contains the variables that are common to all the hosts in the inventory.
 
 # If reset is true, always flash ubuntu image onto all nodes
-# WARNING: this will overwrite the existing OS on the RK1 nodes
 reset: False
 # flash an image onto the nodes if they are not currently responding
 flash_image: False
 
-# To set up access to the BMC:
-# - ssh root@turingpi with password turing
-# - passws # change the password to something more secure
-# - mkdir .ssh
-# - echo 'xxxx' > .ssh/authorized_keys # where xxxx is your public ssh key
-#
-# Then invoke the ansible playbook with '-e reset=true tpi_password=xxxx'
-# for initial setup of the turing pis
 tpi_user: root
-tpi_password: turing
-
-ssh_public_key: "{{ lookup('file', '~/.ssh/ansible_master.pub') }}"
+tpi_default_password: turing
+# TODO replace this with vaulted pwd
+tpi_password: "hello1234"

@@ -6,7 +6,7 @@
 - name: turn off node before flashing
   raw: tpi power off -n {{ node.slot_num }}
 
-- name: mount node disk into BMC filesystem
+- name: switch the mode {{ node_name}} slot {{ node.slot_num }} to disk mode
   raw: tpi advanced msd -n {{ node.slot_num }}
 
 - name: check which block device got created and get its 2nd partition
@@ -17,37 +17,17 @@
   set_fact:
     partition: "{{ block_device.stdout_lines[0] | regex_search('(/dev/sd[a-z]?2)','\\1') | first }}"
 
-- name: debug - report the block device partition
-  debug:
-    var: partition
-
-- name: mount the block device
+- name: mount the block device {{ partition }} into the BMC filesystem
   raw: mkdir -p /mnt/node && mount {{ partition }} /mnt/node
 
+# make minimal changes to the node filesystem so we can reboot and connect to it
 - name: modify node filesystem
   raw: |
-    cd /mnt/node/etc
-
     # set the hostname
-    echo {{ node_name }} > hostname
+    echo {{ node_name }} > /mnt/node/etc/hostname
 
-    # remove the ubuntu user and/or previous ansible user
-    sed -i '/ubuntu\|{{ ansible_user }}/d' passwd
-    sed -i '/ubuntu\|{{ ansible_user }}/d' shadow
-    sed -i '/ubuntu\|{{ ansible_user }}/d' group
-
-    # create ansible user
-    echo '{{ auser.passwd }}' >> passwd
-    echo '{{ auser.shadow }}' >> shadow
-    echo '{{ auser.group }}' >> group
-    mkdir -p {{ auser.ssh }}
-
-    # authorize via public key
-    echo {{ ssh_public_key }} > {{ auser.ssh }}/authorized_keys
-    chown -R {{ auser.uid }} /mnt/node/home/ansible
-
-    # allow ansible user to sudo without password
-    echo '{{ auser.sudo }}' > /mnt/node/etc/sudoers.d/ansible
+    # set the ubuntu account password
+    echo {{ tpi_password }} | passwd ubuntu -r /mnt/node
   register: node_modifications
 
 - name: debug - report the modifications made to the node filesystem

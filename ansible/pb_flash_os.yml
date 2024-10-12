@@ -1,0 +1,22 @@
+---
+- name: get local facts
+  hosts: localhost
+  gather_facts: true
+  tasks:
+    - name: debug
+      debug:
+        var: ansible_facts
+
+- name: bare metal provisioning of turing_pi nodes
+  hosts: turing_pis
+  gather_facts: false
+  roles:
+    - role: ubuntu
+
+- name: Prepare the nodes for further provisioning
+  hosts: tp?_nodes # all nodes in all turing pi groups
+  # only gather facts after the nodes have been set up by the ubuntu_rk1 role
+  gather_facts: false
+  roles:
+    - role: known_hosts
+    - role: k3s
