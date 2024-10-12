@@ -1,7 +1,7 @@
 # Flash an image onto one of the turingpi nodes
 #
 # commands are delegated to localhost or use 'raw'
-# because BMC has no python or disk space
+# because the BMC has no python or disk space
 
 - name: select the image to flash for rk1
   set_fact:
@@ -36,8 +36,4 @@
 
 - name: show flash results
   debug:
-    var: flash_results.stdout_lines
-
-- name: show flash error
-  debug:
-    var: flash_results.stderr
+    var: flash_results

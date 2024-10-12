@@ -8,4 +8,11 @@ flash_image: False
 tpi_user: root
 tpi_default_password: turing
 # TODO replace this with vaulted pwd
-tpi_password: "hello1234"
+tpi_password: turing
+# TODO generalize to multiple pub files
+public_keys: "{{ lookup('file', 'pub_keys/giles_ansible.pub') }}"
+
+# pass '-e debug=true' to ansible-playbook to enable debug output
+do_debug: "{{ debug | default(false) | bool }}"
+
+local_tmp: "/tmp/iac2"

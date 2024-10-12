@@ -24,18 +24,22 @@
 - name: modify node filesystem
   raw: |
     # set the hostname
-    echo {{ node_name }} > /mnt/node/etc/hostname
+    set -xe
+    cd /mnt/node
+    echo {{ node_name }} > etc/hostname
 
-    # set the ubuntu account password
-    echo {{ tpi_password }} | passwd ubuntu -r /mnt/node
+    # add ssh keys access for ubuntu user
+    keys=home/ubuntu/.ssh; mkdir -p $keys
+    echo '{{ public_keys }}' > $keys/authorized_keys
+    chown -R 1000:1000 home/ubuntu; chmod 700 $keys; chmod 600 $keys/authorized_keys
   register: node_modifications
 
 - name: debug - report the modifications made to the node filesystem
   debug:
-    var: node_modifications
+    var: node_modifications.stdout_lines
 
 - name: unmount the block device
   raw: umount /mnt/node
 
-- name: reboot the node {{ node }} slot {{ node.slot_num }}
+- name: reboot {{ node_name }} in slot {{ node.slot_num }}
   raw: tpi advanced normal -n {{ node.slot_num }}

@@ -2,10 +2,8 @@
 - name: get local facts
   hosts: localhost
   gather_facts: true
-  tasks:
-    - name: debug
-      debug:
-        var: ansible_facts
+  roles:
+    - role: setup
 
 - name: bare metal provisioning of turing_pi nodes
   hosts: turing_pis
