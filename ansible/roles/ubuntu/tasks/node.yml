@@ -4,13 +4,7 @@
   set_fact:
     node: "{{ hostvars[node_name] }}"
 
-- name: create temp folder
-  delegate_to: localhost
-  file:
-    name: "{{ temp_folder }}"
-    state: directory
-
-# determine if the node already exists and has an anisble account
+# determine if the node already exists
 - name: wait for {{ node_name }} to respond on ssh port
   delegate_to: localhost
   wait_for:
@@ -24,7 +18,7 @@
 - name: Flash images
   include_tasks: flash.yml
   # guard against flashing the image unless explicity requested
-  when: reset | bool or (flash_image | bool and node_status is failed) or node.reset | default(false) | bool
+  when: node.reset | default(false) | bool
 
 - name: bootstrap node to enable further ansible provisioning
   include_tasks: bootstrap.yml
