@@ -76,6 +76,7 @@
       delegate_to: localhost
       shell: |-
         ansible-vault encrypt_string --name '{{ inventory_hostname }}' '{{ lookup('file', host_keys_folder+'/'+inventory_hostname) }}' --vault-password-file={{ vault_password_file }} >> {{ host_key_vars }}
+        rm -f {{ host_keys_folder }}/{{ inventory_hostname }}
 
     - name: read public key into a variable
       set_fact:

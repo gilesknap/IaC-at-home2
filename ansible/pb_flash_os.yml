@@ -9,7 +9,7 @@
   hosts: turing_pis
   gather_facts: false
   vars_files:
-    -
+    - "{{ host_keys_vars }}"
 
   roles:
     - role: ubuntu
