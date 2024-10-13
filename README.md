@@ -1,6 +1,11 @@
 # IaC-at-home2
 
-## Intro
+## How to use
+
+See the [setup](docs/setup.md) for more details.
+
+
+## Description
 
 A second attempt at making a kubernetes cluster at home that is described in code.
 

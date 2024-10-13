@@ -1,10 +1,11 @@
 # Description: This file contains the variables that are common to all the hosts in the inventory.
 
+# The user to create on each node for access by ansible
+ansible_account: "ansible"
+# The user used to connect to the tpi BMCs
 tpi_user: root
+# A path to some storage on the tpi BMCs used for downloading os images
 tpi_images_path: /mnt/sdcard/images
-
-# TODO generalize to multiple pub files
-public_keys: "{{ lookup('file', 'pub_keys/giles_ansible.pub') }}"
 
 # pass '-e debug=true' to ansible-playbook to enable debug output
 do_debug: "{{ debug | default(false) | bool }}"
@@ -14,4 +15,5 @@ do_reset: "{{ reset | default(false) | bool }}"
 do_flash: "{{ flash | default(false) | bool }}"
 
 local_tmp: "/tmp/iac2"
-ansible_account: "ansible"
+secrets_dir: "vars/secrets"
+vault_password_file: ~/.ansible_vault_password
