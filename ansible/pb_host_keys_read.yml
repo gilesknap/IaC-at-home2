@@ -5,8 +5,7 @@
   gather_facts: false
 
   vars_files:
-    - secrets/test.yml
-    - secrets/ssh_keys.yml
+    - secrets/host_keys/keys.yml
 
   tasks:
     - name: read out the private key

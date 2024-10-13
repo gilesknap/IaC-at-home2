@@ -56,8 +56,6 @@
 # generate ssh keys for the nodes
 - hosts: tp?_nodes
   gather_facts: false
-  vars:
-    host_key_vars: "{{ host_keys_folder }}/host_keys"
 
   tasks:
     - name: Print a message
@@ -65,29 +63,60 @@
       debug:
         msg: "generate ssh keys for {{ inventory_hostname }}"
 
+    - name: setup file names
+      set_fact:
+        prikey: "{{ host_keys_folder }}/{{ inventory_hostname }}"
+        pubkey: "{{ host_keys_folder }}/{{ inventory_hostname }}.pub"
+
     - name: Generate a host keypair
       delegate_to: localhost
       community.crypto.openssh_keypair:
         type: ed25519
-        path: "{{ host_keys_folder }}/{{ inventory_hostname }}"
+        path: "{{ prikey }}"
         mode: 0600
 
-    - name: encrypt the private key into a vault variable and append to host_keys
+    - name: encrypt the private key into a vault variable
       delegate_to: localhost
       shell: |-
-        ansible-vault encrypt_string --name '{{ inventory_hostname }}' '{{ lookup('file', host_keys_folder+'/'+inventory_hostname) }}' --vault-password-file={{ vault_password_file }} >> {{ host_key_vars }}
-        rm -f {{ host_keys_folder }}/{{ inventory_hostname }}
+        ansible-vault encrypt_string --name '{{ inventory_hostname }}' '{{ lookup("file", prikey) }}' --vault-password-file={{ vault_password_file }}
+      register: vault_output
+
+    - name: add encrypted private key into the host_keys file
+      delegate_to: localhost
+      blockinfile:
+        state: present
+        insertafter: EOF
+        create: true
+        dest: "{{ host_keys_vars }}"
+        content: "{{ vault_output.stdout }}"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK {{ inventory_hostname }}"
 
     - name: read public key into a variable
       set_fact:
-        public_key: "{{ lookup ('file', host_keys_folder+'/'+inventory_hostname+'.pub') }}"
+        public_key: "{{ inventory_hostname }} {{ lookup ('file', pubkey) }}"
 
     - debug:
         var: public_key
 
-    # TODO this is not working - needs to add the hostname hash in the key somehow?
     - name: add public key into the known_hosts file
       delegate_to: localhost
       known_hosts:
         name: "{{ inventory_hostname }}"
         key: "{{ public_key }}"
+
+    - name: add public key to host_keys file
+      delegate_to: localhost
+      blockinfile:
+        state: present
+        insertafter: EOF
+        create: true
+        dest: "{{ host_keys_vars }}"
+        content: "{{ inventory_hostname }}_pub:\n    {{ public_key }}"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK {{ pubkey }}"
+
+    - name: remove key files
+      delegate_to: localhost
+      file:
+        name: "{{ item }}"
+        state: absent
+      with_fileglob: "{{ prikey }}*"
