@@ -1,23 +1,28 @@
 # A playbook to generate the host_keys folder and set initial passwords
 #
 # This is to be run on new forks of this repo for new infrastructure:
-# Run once to set up credentials, then commit the changes to your fork.
+# Run once to set up host keys, then commit the changes to your fork.
 # - fork this repo
 # - edit hosts.yml to describe your infrastructure
 # - delete the existing vars/secrets/host_keys folder
-# - remove all existing files in pub_keys
 # - create a vault password file ~/.ansible_vault_password mode 600
-# - copy your public ssh key(s) into pub_keys
 # - run this playbook to generate host keys for your nodes
-#   - ansible-playbook pb_init_host_keys.yml --vault-password-file ~/.ansible_vault_password
+#   - ansible-playbook pb_init_host_keys.yml
 # - verify that the host keys are readable
 #   - ansible-playbook pb_init_host_keys_read.yml --vault-password-file ~/.ansible_vault_password
+#
+# TODO - using a vault password file because this uses ansibe-vault shell command
+#      - find a way to avoid this and use --ask-vault-pass instead (but how
+#        to pass the password to the shell command?)
 
-# initial checks
+# initial checks ###############################################################
 - hosts: localhost
   gather_facts: false
 
   tasks:
+    - debug:
+        var: vars
+
     - name: Check host_keys folder
       stat:
         path: "{{ host_keys_folder }}"
@@ -45,7 +50,7 @@
         path: "{{ host_keys_folder }}"
         state: directory
 
-# Validate that the turing pis have the master key authorized
+# Validate that the turing pis have the master key authorized ##################
 - hosts: turing_pis
   gather_facts: false
 
@@ -53,7 +58,7 @@
     - name: Check turing pi BMC has ssh keys
       raw: echo test
 
-# generate ssh keys for the nodes
+# generate ssh keys for the nodes ##############################################
 - hosts: tp?_nodes
   gather_facts: false
 
