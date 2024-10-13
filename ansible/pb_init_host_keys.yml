@@ -98,7 +98,7 @@
         create: true
         dest: "{{ host_keys_vars }}"
         content: "{{ vault_output.stdout }}"
-        marker: "# {mark} ANSIBLE MANAGED BLOCK {{ inventory_hostname }}"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK {{ prikey }}"
 
     - name: read public key into a variable
       set_fact:
