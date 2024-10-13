@@ -87,7 +87,7 @@
     - name: encrypt the private key into a vault variable
       delegate_to: localhost
       shell: |-
-        ansible-vault encrypt_string --name '{{ inventory_hostname }}' '{{ lookup("file", prikey) }}' --vault-password-file={{ vault_password_file }}
+        ansible-vault encrypt_string --name '{{ inventory_hostname }}_pri' '{{ lookup("file", prikey) }}' --vault-password-file={{ vault_password_file }}
       register: vault_output
 
     - name: add encrypted private key into the host_keys file
