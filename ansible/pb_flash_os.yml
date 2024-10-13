@@ -8,6 +8,9 @@
 - name: bare metal provisioning of turing_pi nodes
   hosts: turing_pis
   gather_facts: false
+  vars_files:
+    -
+
   roles:
     - role: ubuntu
 

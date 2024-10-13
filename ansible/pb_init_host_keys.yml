@@ -1,0 +1,92 @@
+# A playbook to generate the host_keys folder and set initial passwords
+#
+# This is to be run on new forks of this repo for new infrastructure:
+# Run once to set up credentials, then commit the changes to your fork.
+# - fork this repo
+# - edit hosts.yml to describe your infrastructure
+# - delete the existing vars/secrets/host_keys folder
+# - remove all existing files in pub_keys
+# - create a vault password file ~/.ansible_vault_password mode 600
+# - copy your public ssh key(s) into pub_keys
+# - run this playbook to generate host keys for your nodes
+#   - ansible-playbook pb_init_host_keys.yml --vault-password-file ~/.ansible_vault_password
+# - verify that the host keys are readable
+#   - ansible-playbook pb_init_host_keys_read.yml --vault-password-file ~/.ansible_vault_password
+
+# initial checks
+- hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Check host_keys folder
+      stat:
+        path: "{{ host_keys_folder }}"
+      ignore_errors: true
+      register: host_keys_folder_stat
+
+    - name: Check the master public key
+      stat:
+        path: "pub_keys/ansible_rsa.pub"
+      register: master_key
+      ignore_errors: true
+
+    - name: Error if host_keys_folder already exists
+      assert:
+        that: not host_keys_folder_stat.stat.exists
+        msg: "{{ host_keys_folder }} folder already exists, please remove it before running this playbook"
+
+    - name: Error if no master key
+      assert:
+        that: master_key.stat.exists
+        msg: "pub_keys/ansible_rsa.pub does not exist, please copy your master public key into pub_keys before running this playbook"
+
+    - name: create secrets folder
+      file:
+        path: "{{ host_keys_folder }}"
+        state: directory
+
+# Validate that the turing pis have the master key authorized
+- hosts: turing_pis
+  gather_facts: false
+
+  tasks:
+    - name: Check turing pi BMC has ssh keys
+      raw: echo test
+
+# generate ssh keys for the nodes
+- hosts: tp?_nodes
+  gather_facts: false
+  vars:
+    host_key_vars: "{{ host_keys_folder }}/host_keys"
+
+  tasks:
+    - name: Print a message
+      delegate_to: localhost
+      debug:
+        msg: "generate ssh keys for {{ inventory_hostname }}"
+
+    - name: Generate a host keypair
+      delegate_to: localhost
+      community.crypto.openssh_keypair:
+        type: ed25519
+        path: "{{ host_keys_folder }}/{{ inventory_hostname }}"
+        mode: 0600
+
+    - name: encrypt the private key into a vault variable and append to host_keys
+      delegate_to: localhost
+      shell: |-
+        ansible-vault encrypt_string --name '{{ inventory_hostname }}' '{{ lookup('file', host_keys_folder+'/'+inventory_hostname) }}' --vault-password-file={{ vault_password_file }} >> {{ host_key_vars }}
+
+    - name: read public key into a variable
+      set_fact:
+        public_key: "{{ lookup ('file', host_keys_folder+'/'+inventory_hostname+'.pub') }}"
+
+    - debug:
+        var: public_key
+
+    # TODO this is not working - needs to add the hostname hash in the key somehow?
+    - name: add public key into the known_hosts file
+      delegate_to: localhost
+      known_hosts:
+        name: "{{ inventory_hostname }}"
+        key: "{{ public_key }}"

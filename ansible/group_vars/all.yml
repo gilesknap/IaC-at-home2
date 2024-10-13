@@ -6,6 +6,8 @@ ansible_account: "ansible"
 tpi_user: root
 # A path to some storage on the tpi BMCs used for downloading os images
 tpi_images_path: /mnt/sdcard/images
+# default vault password file
+vault_password_file: "~/.ansible_vault_password"
 
 # pass '-e debug=true' to ansible-playbook to enable debug output
 do_debug: "{{ debug | default(false) | bool }}"
@@ -15,5 +17,5 @@ do_reset: "{{ reset | default(false) | bool }}"
 do_flash: "{{ flash | default(false) | bool }}"
 
 local_tmp: "/tmp/iac2"
-secrets_dir: "vars/secrets"
-vault_password_file: ~/.ansible_vault_password
+host_keys_vars: "vars/secrets/host_keys/keys.yml"
+host_keys_folder: "{{ host_keys_vars | dirname }}"
