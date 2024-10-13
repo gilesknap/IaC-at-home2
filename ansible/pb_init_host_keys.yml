@@ -11,18 +11,16 @@
 # - verify that the host keys are readable
 #   - ansible-playbook pb_init_host_keys_read.yml --vault-password-file ~/.ansible_vault_password
 #
-# TODO - using a vault password file because this uses ansibe-vault shell command
+# TODO - using a vault password file because this uses ansible-vault shell command
 #      - find a way to avoid this and use --ask-vault-pass instead (but how
 #        to pass the password to the shell command?)
 
 # initial checks ###############################################################
 - hosts: localhost
   gather_facts: false
+  serial: 1
 
   tasks:
-    - debug:
-        var: vars
-
     - name: Check host_keys folder
       stat:
         path: "{{ host_keys_folder }}"
@@ -67,6 +65,12 @@
       delegate_to: localhost
       debug:
         msg: "generate ssh keys for {{ inventory_hostname }}"
+
+    - name: delete old host keys file
+      delegate_to: localhost
+      known_hosts:
+        name: "{{ inventory_hostname }}"
+        state: absent
 
     - name: setup file names
       set_fact:
