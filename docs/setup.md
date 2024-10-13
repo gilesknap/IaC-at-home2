@@ -6,20 +6,35 @@ We will first create a master keypair that will be used to access all of the nod
 
 Here we call it ansible_master, if you choose a different name then update the variable public_key in the hosts file.
 ```bash
-ssh-keygen -t rsa -b 4096 -C "ansible master key" -f ~/.ssh/ansible_master
+ssh-keygen -t rsa -b 4096 -C "ansible master key" -f $HOME/.ssh/ansible_rsa
+# copy the public key to the pub_keys folder in this repo
+cp $HOME/.ssh/ansible_rsa.pub pub/ansible_rsa.pub
 ```
 
-You should create a passphrase for this keypair.
+You should create a strong passphrase for this keypair.
 
 ## Authorize your keypair for each Turing Pi
 
-Do the following for each of your turing pi boards. The name will be turingpi or turingpi.local for the first board and turingpi-2, turingpi-3 etc for the others (maybe?).
+Do the following for each of your turing pi boards. The name should be turingpi or turingpi.local for the first board and turingpi-2, turingpi-3 etc for the others.
 
 ```bash
-# copy over the public key to the turing pi
-scp ~/.ssh/ansible_master.pub root@turingpi:.ssh/authorized_keys
+# copy over the ansible public key to the turing pi (using password authentication)
+scp pub_keys/ansible_rsa.pub root@turingpi:.ssh/authorized_keys
 # connect - you will be asked for your passphrase from above
 ssh root@turingpi
-passwd # change the password to something secure
+# change the password to something secure
+passwd
+# or even better disable password login in /etc/ssh/sshd_config
+# (but then don't loose your ssh key!)
+sed -E -i 's|^#?(PasswordAuthentication)\s.*|\1 no|' /etc/ssh/sshd_config
+# return to your host
 exit
 ```
+
+## Install prerequisites
+
+ansible: https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html
+
+## Create some host keys for your nodes
+
+TODO

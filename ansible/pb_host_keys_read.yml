@@ -1,0 +1,14 @@
+---
+# TEST ONLY
+# validate that we can read private host keys
+- hosts: tp?_nodes
+  gather_facts: false
+
+  vars_files:
+    - secrets/test.yml
+    - secrets/ssh_keys.yml
+
+  tasks:
+    - name: read out the private key
+      debug:
+        var: "{{ inventory_hostname }}"

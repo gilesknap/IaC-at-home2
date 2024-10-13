@@ -1,12 +1,21 @@
 ---
+- name: get local facts
+  hosts: localhost
+  gather_facts: true
+  roles:
+    - role: setup
+
 - name: bare metal provisioning of turing_pi nodes
   hosts: turing_pis
   gather_facts: false
+  vars_files:
+    - "{{ host_keys_vars }}"
+
   roles:
     - role: ubuntu
 
-- name: Set up kubernetes cluster
-  hosts: tp?_nodes
+- name: Prepare the nodes for further provisioning
+  hosts: tp?_nodes # all nodes in all turing pi groups
   # only gather facts after the nodes have been set up by the ubuntu_rk1 role
   gather_facts: false
   roles:

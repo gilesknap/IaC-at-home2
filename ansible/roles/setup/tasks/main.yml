@@ -1,0 +1,9 @@
+- name: debug
+  debug:
+    var: ansible_facts
+  when: do_debug
+
+- name: create temporary directory
+  file:
+    path: "{{ local_tmp }}"
+    state: directory
