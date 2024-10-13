@@ -3,10 +3,10 @@
 # the changes we need to make, including giving the node a new hostname
 
 # this guarentees the state of the node and msd will automatically turn in on
-- name: turn off node before flashing
+- name: turn off {{ node_name }} before mounting into BMC filesystem
   raw: tpi power off -n {{ node.slot_num }}
 
-- name: switch the mode {{ node_name}} slot {{ node.slot_num }} to disk mode
+- name: switch {{ node_name}} slot {{ node.slot_num }} to disk mode
   raw: tpi advanced msd -n {{ node.slot_num }}
 
 - name: check which block device got created and get its 2nd partition
@@ -20,22 +20,17 @@
 - name: mount the block device {{ partition }} into the BMC filesystem
   raw: mkdir -p /mnt/node && mount {{ partition }} /mnt/node
 
-# make minimal changes to the node filesystem so we can reboot and connect to it
-- name: modify node filesystem
-  raw: |
-    set -xe
+- name: jinja render the cloud.cfg file
+  delegate_to: localhost
+  template:
+    src: cloud.cfg
+    dest: /tmp/cloud.cfg
 
-    # set the hostname
-    cd /mnt/node
-    echo {{ node_name }} > etc/hostname
-
-    # add ssh keys access for ubuntu user
-    keys=home/ubuntu/.ssh; mkdir -p $keys
-    echo '{{ public_keys }}' > $keys/authorized_keys
-    chown -R 1000:1000 home/ubuntu; chmod 700 $keys; chmod 600 $keys/authorized_keys
-
-    # remove ubuntu password
-    sed -i 's/^ubuntu\:[^:]*/ubuntu:*/' etc/shadow
+- name: scp image to BMC
+  delegate_to: localhost
+  command: |-
+    scp /tmp/cloud.cfg
+    {{ tpi_user }}@{{ inventory_hostname }}:/mnt/node/etc/cloud/cloud.cfg
   register: node_modifications
 
 - name: debug - report the modifications made to the node filesystem

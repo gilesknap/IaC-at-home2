@@ -3,6 +3,7 @@
 - name: fetch node variables for {{ node_name }}
   set_fact:
     node: "{{ hostvars[node_name] }}"
+    do_reset_node: "{{ node.reset | default(false) | bool or do_reset }}"
 
 # determine if the node already exists
 - name: wait for {{ node_name }} to respond on ssh port
@@ -10,16 +11,15 @@
   wait_for:
     host: "{{ node_name }}"
     port: 22
-    connect_timeout: 1
-    timeout: 3
+    timeout: 2
   register: node_status
   ignore_errors: true
 
 - name: Flash images
   include_tasks: flash.yml
   # guard against flashing the image unless explicity requested
-  when: reset | default(false) | bool or node.reset | default(false) | bool
+  when: do_reset_node or (do_flash and node_status is failed)
 
 - name: bootstrap node to enable further ansible provisioning
   include_tasks: bootstrap.yml
-  when: reset | bool or node_status is failed
+  when: do_reset_node or node_status is failed

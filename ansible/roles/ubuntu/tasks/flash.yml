@@ -13,25 +13,33 @@
     image: "{{ image_info.pi4 }}"
   when: node.type == 'pi4'
 
+- name: check for existing image file
+  raw: mkdir -p {{ tpi_images_path }} || test -f {{ image.osf_remote }}
+  register: os_file_stat
+  ignore_errors: true
+
 - name: get OS image for {{ node.type }}
   delegate_to: localhost
   get_url:
     url: "{{ image.url }}"
     dest: "{{ image.os_file }}"
   register: os_file
+  when: os_file_stat.rc != 0
+
+- name: scp image to BMC
+  delegate_to: localhost
+  command: |-
+    scp {{ image.os_file }}
+    {{ tpi_user }}@{{ inventory_hostname }}:{{ image.osf_remote }}
+  when: os_file_stat.rc != 0
 
 # this guarentees the state of the node and flash will automatically turn in on
 - name: turn off {{ node_name }} before flashing
   raw: tpi power off -n {{ node.slot_num }}
 
 - name: flash image to {{ node_name }} slot {{ node.slot_num }} type {{ node.type }}
-  delegate_to: localhost
-  command:
-    cmd: |-
-      tpi flash -n {{ node.slot_num }} --host {{ inventory_hostname }}
-      --user {{ tpi_user }} --password {{ tpi_password }}
-      --image-path {{ os_file.dest }}
-      --sha256 {{ image.sha }}
+  raw: |-
+    tpi flash -n {{ node.slot_num }} --image-path {{ image.osf_remote }} --sha256 {{ image.sha }} > /tmp/flash.log
   register: flash_results
 
 - name: show flash results

@@ -14,12 +14,6 @@
     key: "{{ new_node_ssh_key.stdout }}"
     path: "{{ ssh_known_hosts_file }}"
 
-- name: Disallow SSH password authentication
-  ansible.builtin.user:
-    name: ubuntu
-    password_lock: true
-  become: true
-
 - debug:
     msg: "{{ inventory_hostname }} is ready"
 

@@ -1,18 +1,17 @@
 # Description: This file contains the variables that are common to all the hosts in the inventory.
 
-# If reset is true, always flash ubuntu image onto all nodes
-reset: False
-# flash an image onto the nodes if they are not currently responding
-flash_image: False
-
 tpi_user: root
-tpi_default_password: turing
-# TODO replace this with vaulted pwd
-tpi_password: turing
+tpi_images_path: /mnt/sdcard/images
+
 # TODO generalize to multiple pub files
 public_keys: "{{ lookup('file', 'pub_keys/giles_ansible.pub') }}"
 
 # pass '-e debug=true' to ansible-playbook to enable debug output
 do_debug: "{{ debug | default(false) | bool }}"
+# pass 'e reset=true' to reflash all nodes'
+do_reset: "{{ reset | default(false) | bool }}"
+# pass '-e flash=true' to flash nodes that are not responding to ssh
+do_flash: "{{ flash | default(false) | bool }}"
 
 local_tmp: "/tmp/iac2"
+ansible_account: "ansible"
