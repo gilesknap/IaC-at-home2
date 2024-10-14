@@ -67,7 +67,7 @@
       debug:
         msg: "generate ssh keys for {{ inventory_hostname }}"
 
-    - name: delete old host keys file
+    - name: delete old host key entries from known_hosts
       delegate_to: localhost
       known_hosts:
         name: "{{ inventory_hostname }}"
