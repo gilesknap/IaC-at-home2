@@ -77,55 +77,10 @@
         prikey: "{{ host_keys_folder }}/{{ inventory_hostname }}"
         pubkey: "{{ host_keys_folder }}/{{ inventory_hostname }}.pub"
 
-    - name: Generate a host keypair
-      delegate_to: localhost
-      community.crypto.openssh_keypair:
-        type: ed25519
-        path: "{{ prikey }}"
-        mode: 0600
-
-    - name: encrypt the private key into a vault variable
-      delegate_to: localhost
-      shell: |-
-        ansible-vault encrypt_string --name '{{ inventory_hostname }}_pri' '{{ lookup("file", prikey) }}' --vault-password-file={{ vault_password_file }}
-      register: vault_output
-
-    - name: add encrypted private key into the host_keys file
-      delegate_to: localhost
-      blockinfile:
-        state: present
-        insertafter: EOF
-        create: true
-        dest: "{{ host_keys_vars }}"
-        content: "{{ vault_output.stdout }}"
-        marker: "# {mark} ANSIBLE MANAGED BLOCK {{ prikey }}"
-
-    - name: read public key into a variable
-      set_fact:
-        public_key: "{{ inventory_hostname }} {{ lookup ('file', pubkey) }}"
-
-    - debug:
-        var: public_key
-
-    - name: add public key into the known_hosts file
-      delegate_to: localhost
-      known_hosts:
-        name: "{{ inventory_hostname }}"
-        key: "{{ public_key }}"
-
-    - name: add public key to host_keys file
-      delegate_to: localhost
-      blockinfile:
-        state: present
-        insertafter: EOF
-        create: true
-        dest: "{{ host_keys_vars }}"
-        content: "{{ inventory_hostname }}_pub:\n    {{ public_key }}"
-        marker: "# {mark} ANSIBLE MANAGED BLOCK {{ pubkey }}"
-
-    - name: remove key files
-      delegate_to: localhost
-      file:
-        name: "{{ item }}"
-        state: absent
-      with_fileglob: "{{ prikey }}*"
+    - name: Generate host keypairs for each key type
+      include_tasks: include/generate_host_keypair.yml
+      with_items:
+        - ed25519
+        - ecdsa
+      loop_control:
+        loop_var: key_type

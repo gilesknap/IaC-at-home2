@@ -25,6 +25,7 @@
   template:
     src: cloud.cfg
     dest: /tmp/cloud.cfg
+    mode: 0600
 
 - name: scp image to BMC
   delegate_to: localhost
@@ -32,6 +33,12 @@
     scp /tmp/cloud.cfg
     {{ tpi_user }}@{{ inventory_hostname }}:/mnt/node/etc/cloud/cloud.cfg
   register: node_modifications
+
+- name: remove the cloud.cfg file
+  delegate_to: localhost
+  file:
+    path: /tmp/cloud.cfg
+    state: absent
 
 - name: debug - report the modifications made to the node filesystem
   debug:

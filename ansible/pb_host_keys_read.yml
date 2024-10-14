@@ -10,7 +10,7 @@
   tasks:
     - name: read out the private key
       debug:
-        var: "{{ inventory_hostname }}"
+        var: "{{ inventory_hostname }}_pri"
     - name: read out the public key
       debug:
         var: "{{ inventory_hostname }}_pub"
