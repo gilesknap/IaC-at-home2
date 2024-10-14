@@ -8,9 +8,16 @@
     - secrets/host_keys/keys.yml
 
   tasks:
-    - name: read out the private key
+    - name: read out the private key ed25519
       debug:
-        var: "{{ inventory_hostname }}_pri"
-    - name: read out the public key
+        var: "{{ inventory_hostname }}_ed25519_pri"
+    - name: read out the public key ed25519
       debug:
-        var: "{{ inventory_hostname }}_pub"
+        var: "{{ inventory_hostname }}_ed25519_pub"
+
+    - name: read out the private key ecdsa
+      debug:
+        var: "{{ inventory_hostname }}_ecdsa_pri"
+    - name: read out the public key ecdsa
+      debug:
+        var: "{{ inventory_hostname }}_ecdsa_pub"

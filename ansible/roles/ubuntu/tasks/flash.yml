@@ -39,7 +39,7 @@
 
 - name: flash image to {{ node_name }} slot {{ node.slot_num }} type {{ node.type }}
   raw: |-
-    tpi flash -n {{ node.slot_num }} --image-path {{ image.osf_remote }} --sha256 {{ image.sha }}
+    tpi flash -n {{ node.slot_num }} --image-path {{ image.osf_remote }} --sha256 {{ image.sha }} > /tmp/flash.log
   register: flash_results
 
 - name: show flash results

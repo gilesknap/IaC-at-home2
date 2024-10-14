@@ -3,8 +3,10 @@
 # the changes we need to make, including giving the node a new hostname
 
 # this guarentees the state of the node and msd will automatically turn in on
-- name: turn off {{ node_name }} before mounting into BMC filesystem
-  raw: tpi power off -n {{ node.slot_num }}
+# maybe don't do this? We don't want cloud init to be half done when we switch
+# to msd mode
+# - name: turn off {{ node_name }} before mounting into BMC filesystem
+#   raw: tpi power off -n {{ node.slot_num }}
 
 - name: switch {{ node_name}} slot {{ node.slot_num }} to disk mode
   raw: tpi advanced msd -n {{ node.slot_num }}
