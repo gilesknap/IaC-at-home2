@@ -17,5 +17,3 @@ do_reset: "{{ reset | default(false) | bool }}"
 do_flash: "{{ flash | default(false) | bool }}"
 
 local_tmp: "/tmp/iac2"
-host_keys_vars: "vars/secrets/host_keys/keys.yml"
-host_keys_folder: "{{ host_keys_vars | dirname }}"

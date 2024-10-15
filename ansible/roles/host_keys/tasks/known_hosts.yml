@@ -1,0 +1,6 @@
+# not sure why this is needed but without it updates can be missed
+- name: delete old host key entries from known_hosts
+  delegate_to: localhost
+  known_hosts:
+    name: "{{ inventory_hostname }}"
+    state: absent

@@ -1,0 +1,7 @@
+# processes host keys
+
+- name: Generate host keypairs for each key type
+  include_tasks: loop.yml
+  with_items: "{{ key_types }}"
+  loop_control:
+    loop_var: key_type

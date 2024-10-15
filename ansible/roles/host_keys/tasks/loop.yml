@@ -1,0 +1,11 @@
+- name: Generate host keypairs for each key type
+  include_tasks: generate_host_keypair.yml
+  when: host_keys_generate
+
+- name: add host public keys to known_hosts
+  include_tasks: known_hosts.yml
+  when: host_keys_add
+
+- name: show host keys
+  include_tasks: show_keys.yml
+  when: host_keys_show or do_debug

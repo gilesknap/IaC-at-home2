@@ -1,0 +1,9 @@
+key_types:
+  - ed25519
+  - ecdsa
+
+prikey: "{{ host_keys_folder }}/{{ inventory_hostname }}"
+pubkey: "{{ host_keys_folder }}/{{ inventory_hostname }}.pub"
+
+host_keys_vars: "vars/secrets/host_keys/keys.yml"
+host_keys_folder: "{{ host_keys_vars | dirname }}"

@@ -1,0 +1,17 @@
+# These tasks will re-generate the host_keys variables. Therefore the user
+# is required to remove the host_keys folder before running this playbook.
+- name: Check host_keys folder
+  stat:
+    path: "{{ host_keys_folder }}"
+  ignore_errors: true
+  register: host_keys_folder_stat
+
+- name: Error if host_keys_folder already exists
+  assert:
+    that: not host_keys_folder_stat.stat.exists
+    msg: "{{ host_keys_folder }} folder already exists, please remove it before running this playbook"
+
+- name: create secrets folder
+  file:
+    path: "{{ host_keys_folder }}"
+    state: directory

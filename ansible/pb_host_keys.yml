@@ -1,0 +1,24 @@
+# A playbook to generate the host_keys folder and set initial passwords
+#
+# This is to be run on new forks of this repo for new infrastructure:
+# Run once to set up host keys, then commit the changes to your fork.
+# - fork this repo
+# - edit hosts.yml to describe your infrastructure
+# - delete the existing vars/secrets/host_keys folder
+# - create a vault password file ~/.ansible_vault_password mode 600
+# - run this playbook to generate host keys for your nodes
+#   - ansible-playbook pb_init_host_keys.yml
+# - verify that the host keys are readable
+#   - ansible-playbook pb_init_host_keys_read.yml --vault-password-file ~/.ansible_vault_password
+#
+# TODO - using a vault password file because this uses ansible-vault shell command
+#      - find a way to avoid this and use --ask-vault-pass instead (but how
+#        to pass the password to the shell command?)
+
+# generate ssh keys for the nodes ##############################################
+- hosts: tp?_nodes
+  gather_facts: false
+  # avoids parallel writes to the keys.yml file
+  serial: 1
+  roles:
+    - role: host_keys
