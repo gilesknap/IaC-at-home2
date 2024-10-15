@@ -4,6 +4,7 @@
   set_fact:
     node: "{{ hostvars[node_name] }}"
     do_reset_node: "{{ hostvars[node_name].reset | default(false) | bool or do_reset }}"
+  tags: [render_cloud_cfg]
 
 - debug:
     msg: "do reset_node is {{ do_reset_node }}"
@@ -17,6 +18,7 @@
     timeout: 2
   register: node_status
   ignore_errors: true
+  tags: [render_cloud_cfg]
 
 - name: Flash images
   include_tasks: flash.yml
@@ -26,3 +28,4 @@
 - name: bootstrap node to enable further ansible provisioning
   include_tasks: bootstrap.yml
   when: do_reset_node or node_status is failed
+  tags: [render_cloud_cfg]

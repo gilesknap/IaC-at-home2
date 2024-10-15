@@ -2,6 +2,7 @@
   set_fact:
     nodes: |-
       {{ groups[hostvars[inventory_hostname].nodes_group] }}
+  tags: [render_cloud_cfg]
 
 - name: list the nodes for '{{ inventory_hostname }}'
   debug:
@@ -12,3 +13,4 @@
   loop: "{{ nodes }}"
   loop_control:
     loop_var: node_name
+  tags: [render_cloud_cfg]

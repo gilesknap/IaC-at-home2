@@ -24,6 +24,7 @@
 
 - set_fact:
     rendered_file: /tmp/cloud_{{ node_name }}.cfg
+  tags: [render_cloud_cfg]
 
 - name: jinja render the {{ templated_file }} file
   delegate_to: localhost
@@ -31,6 +32,7 @@
     src: cloud.cfg
     dest: "{{ rendered_file }}"
     mode: 0600
+  tags: [render_cloud_cfg]
 
 - name: scp image to BMC
   delegate_to: localhost
