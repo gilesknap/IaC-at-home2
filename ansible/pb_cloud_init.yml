@@ -1,0 +1,10 @@
+# check if cloud init config has changed and refresh the nodes if it has
+
+- name: run cloud init again if the cloud init config has changed
+  hosts: tp?_nodes
+  gather_facts: false
+  vars_files:
+    - "{{ host_keys_vars }}"
+
+  roles:
+    - role: cloud_init

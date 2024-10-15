@@ -1,2 +1,3 @@
 - import_playbook: pb_flash_os.yml
+- import_playbook: pb_cloud_init.yml
 - import_playbook: pb_setup_k8s.yml

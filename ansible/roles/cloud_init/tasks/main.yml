@@ -1,0 +1,24 @@
+- name: set facts for cloud.cfg init template
+  set_fact:
+    rendered_file: /tmp/cloud-{{ inventory_hostname }}.cfg
+    node_name: "{{ inventory_hostname }}"
+
+- name: jinja render the {{ rendered_file }} file
+  delegate_to: localhost
+  template:
+    src: cloud.cfg
+    dest: "{{ rendered_file }}"
+    mode: 0600
+
+- set_fact:
+    cloud_cfg_contents: "{{ lookup('file', rendered_file) }}"
+
+- name: remove {{ rendered_file }}
+  delegate_to: localhost
+  file:
+    path: "{{ rendered_file }}"
+    state: absent
+
+- name: compare cloud.cfg contents
+  debug:
+    msg: "{{ cloud_cfg_contents }}"
