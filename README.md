@@ -54,3 +54,8 @@ For now I'm going to carry on with developing the ansible playbooks to get a (2 
 
 Then maybe see if the CM5s can use NVME drives when they come out and if so, maybe go with those.
 
+## Further Update
+
+Perhaps I spoke too soon. Discord as lead me to this
+- https://github.com/Joshua-Riek/ubuntu-rockchip/releases/tag/v2.4.0
+- so maybe RK1 is worth some more effort
