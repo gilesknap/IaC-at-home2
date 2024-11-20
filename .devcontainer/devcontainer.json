@@ -1,19 +1,15 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/python
 {
-	"name": "Python 3",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/python:1-3.12-bullseye",
-	"features": {
-		"ghcr.io/hspaans/devcontainer-features/ansible-lint:1": {},
-		"ghcr.io/devcontainers-extra/features/ansible:2": {}
+	"name": "Python 3.12 Ansible Execution Environment",
+	"build": {
+		"dockerfile": "Dockerfile"
 	},
-	// WARNING: the following two settings are for rootless containers only
-	// remove these if you are using rootful docker (default) or
-	// rootful podman (default is rootless)
+	// remove this for rootful docker
 	"remoteUser": "root",
+	// remove this for rootful docker
 	"updateRemoteUserUID": false,
-	// makes sure the vault password file we want to mount is available
+	// make sure a vault password is available for mounting
 	"initializeCommand": "touch ${localEnv:HOME}/.ansible_vault_password",
 	// mount in the vault password file
 	"mounts": [
