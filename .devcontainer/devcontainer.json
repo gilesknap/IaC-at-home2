@@ -5,24 +5,15 @@
 	"build": {
 		"dockerfile": "Dockerfile"
 	},
-	// remove this for rootful docker
-	"remoteUser": "root",
-	// remove this for rootful docker
-	"updateRemoteUserUID": false,
+	"runArgs": [],
+	// // remove this for rootful docker
+	// "remoteUser": "root",
+	// // remove this for rootful docker
+	// "updateRemoteUserUID": false,
 	// make sure a vault password is available for mounting
 	"initializeCommand": "touch ${localEnv:HOME}/.ansible_vault_password",
 	// mount in the vault password file
 	"mounts": [
 		"source=${localEnv:HOME}/.ansible_vault_password,target=/etc/ansible/.vault_password.txt,type=bind,consistency=cached"
 	]
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "pip3 install --user -r requirements.txt",
-	// Configure tool-specific properties.
-	// "customizations": {},
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
 }
