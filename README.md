@@ -59,3 +59,11 @@ Then maybe see if the CM5s can use NVME drives when they come out and if so, may
 Perhaps I spoke too soon. Discord as lead me to this
 - https://github.com/Joshua-Riek/ubuntu-rockchip/releases/tag/v2.4.0
 - so maybe RK1 is worth some more effort
+
+## How to launch
+
+e.g. to re=flash node 01
+
+- launch the devcontainer
+- cd ansible
+- ansible-playbook -i hosts.yml pb_flash.yml -e "reset=true" -l node01

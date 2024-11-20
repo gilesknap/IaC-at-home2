@@ -1,0 +1,17 @@
+# Readline configuration for bash shell.
+
+# unbind ctrl P and ctrl Q
+"\C-p": nop
+# "\C-q": nop
+
+# Incremental history searching with up and down arrows (C-P and C-N for old
+# style navigation).
+"\e[A": history-search-backward
+"\e[B": history-search-forward
+
+# Control left and right for word movement
+"\e[5C": forward-word
+"\e[5D": backward-word
+# On RHEL6 we get these bindings instead:
+"\e[1;5C": forward-word
+"\e[1;5D": backward-word

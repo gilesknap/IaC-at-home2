@@ -8,8 +8,17 @@
 		"ghcr.io/hspaans/devcontainer-features/ansible-lint:1": {},
 		"ghcr.io/devcontainers-extra/features/ansible:2": {}
 	},
+	// WARNING: the following two settings are for rootless containers only
+	// remove these if you are using rootful docker (default) or
+	// rootful podman (default is rootless)
 	"remoteUser": "root",
-	"updateRemoteUserUID": false
+	"updateRemoteUserUID": false,
+	// makes sure the vault password file we want to mount is available
+	"initializeCommand": "touch ${localEnv:HOME}/.ansible_vault_password",
+	// mount in the vault password file
+	"mounts": [
+		"source=${localEnv:HOME}/.ansible_vault_password,target=/etc/ansible/.vault_password.txt,type=bind,consistency=cached"
+	]
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

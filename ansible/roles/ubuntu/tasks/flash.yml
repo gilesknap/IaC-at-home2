@@ -14,7 +14,7 @@
   when: node.type == 'pi4'
 
 - name: check for existing image file
-  raw: mkdir -p {{ tpi_images_path }} || test -f {{ image.osf_remote }}
+  raw: mkdir -p {{ tpi_images_path }} && test -f {{ image.osf_remote }}
   register: os_file_stat
   ignore_errors: true
 
