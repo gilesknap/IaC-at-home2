@@ -66,4 +66,4 @@ e.g. to re=flash node 01
 
 - launch the devcontainer
 - cd ansible
-- ansible-playbook -i hosts.yml pb_flash.yml -e "reset=true" -l node01
+- ansible-playbook -i hosts.yml pb_flash_os.yml -e "reset=true" -l node01 --vault-password-file=/etc/ansible/.vault_password.txt
