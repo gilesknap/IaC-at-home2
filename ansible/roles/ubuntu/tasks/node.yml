@@ -3,9 +3,10 @@
 - name: fetch node variables for {{ node_name }}
   set_fact:
     node: "{{ hostvars[node_name] }}"
+    # can also get reset for individual nodes from the host file
     do_reset_node: "{{ node.reset | default(false) | bool or do_reset }}"
 
-# determine if the node already exists
+# determine if the node already can accept ssh
 - name: wait for {{ node_name }} to respond on ssh port
   delegate_to: localhost
   wait_for:
@@ -17,9 +18,10 @@
 
 - name: Flash images
   include_tasks: flash.yml
-  # guard against flashing the image unless explicity requested
-  when: do_reset_node or (do_flash and node_status is failed)
+  # guard against re-flashing the image unless explicity requested
+  when: do_reset_node
 
 - name: bootstrap node to enable further ansible provisioning
   include_tasks: bootstrap.yml
+  # if the node is already contactable then no need to do initial boot cloud init
   when: do_reset_node or node_status is failed

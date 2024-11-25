@@ -14,6 +14,7 @@
 	"initializeCommand": "touch ${localEnv:HOME}/.ansible_vault_password",
 	// mount in useful files
 	"mounts": [
+		// Note - password file is not currently used
 		"source=${localEnv:HOME}/.ansible_vault_password,target=/etc/ansible/.vault_password.txt,type=bind,ro"
 	],
 	"customizations": {
