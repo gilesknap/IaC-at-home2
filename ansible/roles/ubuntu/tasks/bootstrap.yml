@@ -37,6 +37,9 @@
   debug:
     var: node_modifications.stdout_lines
 
+- name: delete the cloud init cache to force first boot configuration
+  raw: rm -rf /mnt/node/var/lib/cloud
+
 - name: unmount the block device
   raw: umount /mnt/node
 

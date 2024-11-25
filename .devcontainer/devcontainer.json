@@ -5,15 +5,27 @@
 	"build": {
 		"dockerfile": "Dockerfile"
 	},
-	"runArgs": [],
-	// // remove this for rootful docker
-	// "remoteUser": "root",
-	// // remove this for rootful docker
-	// "updateRemoteUserUID": false,
-	// make sure a vault password is available for mounting
+	// enable ping to test connectivity
+	"runArgs": [
+		"--cap-add=NET_ADMIN",
+		"--cap-add=NET_RAW"
+	],
+	// make sure files are available for mounting
 	"initializeCommand": "touch ${localEnv:HOME}/.ansible_vault_password",
-	// mount in the vault password file
+	// mount in useful files
 	"mounts": [
-		"source=${localEnv:HOME}/.ansible_vault_password,target=/etc/ansible/.vault_password.txt,type=bind,consistency=cached"
-	]
+		"source=${localEnv:HOME}/.ansible_vault_password,target=/etc/ansible/.vault_password.txt,type=bind,ro"
+	],
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"streetsidesoftware.code-spell-checker-cspell-bundled-dictionaries",
+				"redhat.ansible"
+			]
+		}
+	},
+	// For rootless we must be root account
+	"remoteUser": "root",
+	// For rootless leave the filesystem owned by root
+	"updateRemoteUserUID": false
 }
