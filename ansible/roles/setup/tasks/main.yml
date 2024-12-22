@@ -1,9 +1,10 @@
-- name: debug
-  debug:
+- name: Debug
+  ansible.builtin.debug:
     var: ansible_facts
   when: do_debug
 
-- name: create temporary directory
-  file:
+- name: Create Temporary Directory
+  ansible.builtin.file:
     path: "{{ local_tmp }}"
     state: directory
+    mode: '0755'

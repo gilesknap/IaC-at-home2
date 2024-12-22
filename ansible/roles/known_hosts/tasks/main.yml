@@ -1,21 +1,24 @@
-# Nodes may just have been created by ubuntu_rk1 role, wait for them to be ready
+# Nodes may just have been created by the ubuntu role, wait for them to be ready
 # and update our known_hosts file with their ssh public key
-- name: Get new node {{ inventory_hostname }}'s ssh public key
+- name: Get ssh public key of new node {{ inventory_hostname }}
   delegate_to: localhost
-  command: "ssh-keyscan -t ssh-ed25519 {{ inventory_hostname }}"
+  ansible.builtin.command:
+    cmd: "ssh-keyscan -t ssh-ed25519 {{ inventory_hostname }}"
+    creates: "/tmp/{{ inventory_hostname }}_ssh_key"
   register: new_node_ssh_key
   retries: 30
   delay: 5
 
-- name: Add/update the host public key in '{{ ssh_known_hosts_file }}'
+- name: Add/update the host public key in {{ known_hosts_file }}
   delegate_to: localhost
-  known_hosts:
+  ansible.builtin.known_hosts:
     name: "{{ inventory_hostname }}"
     key: "{{ new_node_ssh_key.stdout }}"
-    path: "{{ ssh_known_hosts_file }}"
+    path: "{{ known_hosts_file }}"
 
-- debug:
+- name: Debug message for node readiness
+  ansible.builtin.debug:
     msg: "{{ inventory_hostname }} is ready"
 
-- name: gather facts on node {{ inventory_hostname }}
-  setup:
+- name: Gather facts on node {{ inventory_hostname }}
+  ansible.builtin.setup:

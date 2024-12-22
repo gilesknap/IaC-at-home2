@@ -3,22 +3,22 @@
 # commands are delegated to localhost or use 'raw'
 # because the BMC has no python or disk space
 
-- name: select the image to flash for rk1
-  set_fact:
+- name: Select The Image To Flash For Rk1
+  ansible.builtin.set_fact:
     image: "{{ image_info.rk1 }}"
   when: node.type == 'rk1'
 
-- name: select the image to flash for rpi4 compute module
-  set_fact:
+- name: Select The Image To Flash For Rpi4 Compute Module
+  ansible.builtin.set_fact:
     image: "{{ image_info.pi4 }}"
   when: node.type == 'pi4'
 
-- name: check for existing image file
+- name: Check for existing image file
   raw: mkdir -p {{ tpi_images_path }} && test -f {{ image.osf_remote }}
   register: os_file_stat
   ignore_errors: true
 
-- name: get OS image for {{ node.type }}
+- name: Get OS image for {{ node.type }}
   delegate_to: localhost
   get_url:
     url: "{{ image.url }}"

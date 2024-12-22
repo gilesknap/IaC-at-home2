@@ -1,1 +1,1 @@
-ssh_known_hosts_file: "{{ lookup('env','HOME') + '/.ssh/known_hosts' }}"
+known_hosts_file: "{{ lookup('env', 'HOME') + '/.ssh/known_hosts' }}"

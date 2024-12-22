@@ -1,11 +1,11 @@
 ---
-- name: get local facts
+- name: Get local facts
   hosts: localhost
   gather_facts: true
   roles:
     - role: setup
 
-- name: bare metal provisioning of turing_pi nodes
+- name: Bare metal provisioning of turing_pi nodes
   hosts: turing_pis
   gather_facts: false
   vars_files:

@@ -21,7 +21,8 @@
 		"vscode": {
 			"extensions": [
 				"streetsidesoftware.code-spell-checker-cspell-bundled-dictionaries",
-				"redhat.ansible"
+				"redhat.ansible",
+				"mhutchie.git-graph"
 			]
 		}
 	},
