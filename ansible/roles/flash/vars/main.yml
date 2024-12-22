@@ -1,0 +1,16 @@
+# details of the OS images to flast onto the nodes
+flash_rp4_image_version: "24.04.1"
+flash_image_info:
+  # Details of the OS images to flash onto the nodes
+  rk1:
+    url: https://github.com/Joshua-Riek/ubuntu-rockchip/releases/download/v2.4.0/ubuntu-24.04-preinstalled-server-arm64-turing-rk1.img.xz
+    sha: 88584d5797bac01efd3bb1063935ce9f00947e4d4aa0c671d0a39ec8db6ca8f7
+    os_file: "{{ flash_local_tmp }}/rk1.os.ubuntu-24.04.img.xz"
+    osf_remote: "{{ tpi_images_path }}/rk1.os.ubuntu-24.04.img.xz"
+  pi4:
+    url: https://cdimage.ubuntu.com/releases/{{ flash_rp4_image_version }}/release/ubuntu-{{ flash_rp4_image_version }}-preinstalled-server-arm64+raspi.img.xz
+    sha: e59925e211080b20f02e4504bb2c8336b122d0738668491986ee29a95610e5b1
+    os_file: "{{ flash_local_tmp }}/os.raspi{{ flash_rp4_image_version }}.img.xz"
+    osf_remote: "{{ tpi_images_path }}/os.raspi{{ flash_rp4_image_version }}.img.xz"
+flash_flash_local_tmp: /tmp/iac2
+flash_force: false

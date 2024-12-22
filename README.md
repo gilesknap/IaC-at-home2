@@ -51,7 +51,7 @@ Having a little re-think re hardware.
   - The CM4 cannot use a NVME drive (or maybe over sata on some of the TP2.5 slots?)
 
 For now I'm going to carry on with developing the ansible playbooks to get a (2 node) K8S cluster up and running.
-S
+
 Then maybe see if the CM5s can use NVME drives when they come out and if so, maybe go with those.
 
 ## Further Update
@@ -66,3 +66,4 @@ e.g. to re-configure all nodes (re-flashing those that don't currently respond t
 
 - launch the devcontainer
 - ansible-playbook -i ansible/hosts.yml ansible/pb_flash_os.yml
+

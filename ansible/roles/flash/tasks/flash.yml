@@ -5,22 +5,22 @@
 
 - name: Select The Image To Flash For Rk1
   ansible.builtin.set_fact:
-    image: "{{ image_info.rk1 }}"
+    image: "{{ flash_image_info.rk1 }}"
   when: node.type == 'rk1'
 
 - name: Select The Image To Flash For Rpi4 Compute Module
   ansible.builtin.set_fact:
-    image: "{{ image_info.pi4 }}"
+    image: "{{ flash_image_info.pi4 }}"
   when: node.type == 'pi4'
 
 - name: Check for existing image file
-  raw: mkdir -p {{ tpi_images_path }} && test -f {{ image.osf_remote }}
+  ansible.builtin.raw: mkdir -p {{ tpi_images_path }} && test -f {{ image.osf_remote }}
   register: os_file_stat
   ignore_errors: true
 
 - name: Get OS image for {{ node.type }}
   delegate_to: localhost
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ image.url }}"
     dest: "{{ image.os_file }}"
   register: os_file

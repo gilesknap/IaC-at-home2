@@ -1,5 +1,7 @@
 {
     "cSpell.words": [
-        "playbook"
+        "hostvars",
+        "playbook",
+        "turingpi"
     ]
 }

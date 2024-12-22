@@ -10,9 +10,8 @@
   gather_facts: false
   vars_files:
     - "{{ host_keys_vars }}"
-
   roles:
-    - role: ubuntu
+    - role: flash
 
 - name: Prepare the nodes for further provisioning
   hosts: tp?_nodes # all nodes in all turing pi groups

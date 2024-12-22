@@ -5,6 +5,6 @@
 
 - name: Create Temporary Directory
   ansible.builtin.file:
-    path: "{{ local_tmp }}"
+    path: "{{ flash_local_tmp }}"
     state: directory
     mode: '0755'

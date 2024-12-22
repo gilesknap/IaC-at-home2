@@ -14,6 +14,6 @@ do_debug: "{{ debug | default(false) | bool }}"
 # pass 'e reset=true' to force reflash of all nodes'
 do_reset: "{{ reset | default(false) | bool }}"
 
-local_tmp: "/tmp/iac2"
+flash_local_tmp: "/tmp/iac2"
 host_keys_vars: "vars/secrets/host_keys/keys.yml"
 host_keys_folder: "{{ host_keys_vars | dirname }}"
