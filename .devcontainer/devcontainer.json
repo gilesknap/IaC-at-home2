@@ -8,7 +8,8 @@
 	// enable ping to test connectivity
 	"runArgs": [
 		"--cap-add=NET_ADMIN",
-		"--cap-add=NET_RAW"
+		"--cap-add=NET_RAW",
+		"--security-opt=label=disable"
 	],
 	// make sure files are available for mounting
 	"initializeCommand": "touch ${localEnv:HOME}/.ansible_vault_password",
@@ -29,5 +30,9 @@
 	// For rootless we must be root account
 	"remoteUser": "root",
 	// For rootless leave the filesystem owned by root
-	"updateRemoteUserUID": false
+	"updateRemoteUserUID": false,
+	// One time global setup commands inside the container
+	"postCreateCommand": "bash .devcontainer/postCreateCommand ${devcontainerId}",
+	// Mount the parent of the project folder so we can access peer projects
+	"workspaceMount": "source=${localWorkspaceFolder}/..,target=/workspaces,type=bind"
 }
