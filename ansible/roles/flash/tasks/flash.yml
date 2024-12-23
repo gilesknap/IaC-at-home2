@@ -2,6 +2,7 @@
 #
 # commands are delegated to localhost or use 'raw'
 # because the BMC has no python or disk space to install python
+# such commands cannot have ansible do idempotent checks, so suppress no-changed-when
 
 - name: Select The Image To Flash For Rk1
   ansible.builtin.set_fact:
@@ -13,7 +14,7 @@
     image: "{{ flash_image_info.pi4 }}"
   when: node.type == 'pi4'
 
-- name: Check for existing image file
+- name: Check for existing image file # noqa no-changed-when
   ansible.builtin.raw: mkdir -p {{ tpi_images_path }} && test -f {{ image.osf_remote }}
   register: os_file_stat
   ignore_errors: true
@@ -30,10 +31,11 @@
   ansible.builtin.get_url:
     url: "{{ image.url }}"
     dest: "{{ image.os_file }}"
+    mode: "0644"
   register: os_file
   when: os_file_stat.rc != 0
 
-- name: Scp image to BMC
+- name: Scp image to BMC # noqa no-changed-when
   delegate_to: localhost
   ansible.builtin.command: |-
     scp {{ image.os_file }}
@@ -41,10 +43,10 @@
   when: os_file_stat.rc != 0
 
 # this guarantees the state of the node and flash will automatically turn in on
-- name: Turn off {{ node_name }} before flashing
+- name: Turn off {{ node_name }} # noqa no-changed-when
   ansible.builtin.raw: tpi power off -n {{ node.slot_num }}
 
-- name: Flash image to {{ node_name }} slot {{ node.slot_num }} type {{ node.type }}
+- name: Flash image to {{ node_name }} # noqa no-changed-when
   ansible.builtin.raw: |-
     tpi flash -n {{ node.slot_num }} --image-path {{ image.osf_remote }} --sha256 {{ image.sha }} > /tmp/flash.log 2>&1
   register: flash_results

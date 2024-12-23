@@ -8,10 +8,10 @@
   args:
     creates: /tmp/flash.log
 
-- name: Switch Node Slot To Disk Mode
+- name: Switch Node Slot To Disk Mode # noqa no-changed-when
   ansible.builtin.raw: tpi advanced msd -n {{ node.slot_num }}
 
-- name: Check Block Device And Get Partition
+- name: Check Block Device And Get Partition # noqa no-changed-when
   ansible.builtin.raw: ls /dev/sd*2
   register: block_device
 
@@ -19,7 +19,7 @@
   ansible.builtin.set_fact:
     partition: "{{ block_device.stdout_lines[0] | regex_search('(/dev/sd[a-z]?2)', '\\1') | first }}"
 
-- name: Mount Block Device Into BMC Filesystem
+- name: Mount Block Device Into BMC Filesystem # noqa no-changed-when
   ansible.builtin.raw: mkdir -p /mnt/node && mount {{ partition }} /mnt/node
 
 - name: Render Cloud.cfg File
@@ -29,7 +29,7 @@
     dest: /tmp/cloud.cfg
     mode: "0644"
 
-- name: SCP Image To BMC
+- name: SCP Image To BMC # noqa no-changed-when
   delegate_to: localhost
   ansible.builtin.command: |-
     scp /tmp/cloud.cfg
@@ -40,11 +40,11 @@
   ansible.builtin.debug:
     var: node_modifications.stdout_lines
 
-- name: Delete Cloud Init Cache To Force First Boot Configuration
+- name: Delete Cloud Init Cache To Force First Boot Configuration # noqa no-changed-when
   ansible.builtin.raw: rm -rf /mnt/node/var/lib/cloud
 
-- name: Unmount Block Device
+- name: Unmount Block Device # noqa no-changed-when
   ansible.builtin.raw: umount /mnt/node
 
-- name: Reboot Node In Slot
+- name: Reboot Node In Slot # noqa no-changed-when
   ansible.builtin.raw: tpi advanced normal -n {{ node.slot_num }}
