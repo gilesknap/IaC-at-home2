@@ -1,3 +1,4 @@
+# Install K8S Dashboard
 
 - name: Install K8S Dashboard using helm
   kubernetes.core.helm:
@@ -7,4 +8,12 @@
     create_namespace: true
     namespace: kubernetes-dashboard
     state: present
-  tags: dashboard
+
+- name: Create a service account for the dashboard
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: ServiceAccount
+      metadata:
+        name: dashboard-admin
+        namespace: kubernetes-dashboard
