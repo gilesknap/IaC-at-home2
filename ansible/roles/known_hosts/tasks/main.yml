@@ -1,13 +1,22 @@
 # Nodes will just have been created by the flash role, wait for them to be ready
 # and update our known_hosts file with their ssh public keys
+
+# wait until the node is ready to accept ssh connections
+- name: Wait for {{ inventory_hostname }}
+  delegate_to: localhost
+  ansible.builtin.wait_for:
+    host: "{{ inventory_hostname }}"
+    port: 22
+  register: node_status
+  retries: 20
+  delay: 6
+
 - name: Get ssh public key of new node {{ inventory_hostname }}
   delegate_to: localhost
   ansible.builtin.command:
     cmd: "ssh-keyscan {{ inventory_hostname }}"
     creates: "/tmp/{{ inventory_hostname }}_ssh_key"
   register: new_node_ssh_keys
-  retries: 30
-  delay: 5
 
 - name: Add/update the host public key in {{ known_hosts_file }}
   delegate_to: localhost
