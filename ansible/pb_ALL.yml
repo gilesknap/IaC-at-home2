@@ -1,4 +1,8 @@
 - name: Flash Ubuntu on to all nodes
   import_playbook: pb_flash_os.yml
-- name: Setup Kubernetes Cluster
+
+- name: Setup K3s servers
   import_playbook: pb_k8s.yml
+
+- name: Setup the cluster
+  import_playbook: pb_cluster.yml

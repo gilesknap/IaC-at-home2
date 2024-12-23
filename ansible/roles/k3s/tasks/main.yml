@@ -30,3 +30,4 @@
 - name: Execute worker node tasks
   ansible.builtin.include_tasks: worker.yml
   when: not is_control_plane
+
