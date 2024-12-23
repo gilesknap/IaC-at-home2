@@ -30,6 +30,3 @@
 - name: Debug message for node readiness
   ansible.builtin.debug:
     msg: "{{ inventory_hostname }} is ready"
-
-- name: Gather facts on node {{ inventory_hostname }}
-  ansible.builtin.setup:

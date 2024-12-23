@@ -1,11 +1,14 @@
 - name: Install Kubernetes on all nodes
   hosts: tp?_nodes # all nodes in all turing pi groups
-  gather_facts: true
   roles:
     - role: k3s
 
+- name: Install client tools in execution environment
+  hosts: localhost
+  roles:
+    - role: tools
+
 - name: Remaining cluster setup via client tools in the execution environment
   hosts: localhost
-  gather_facts: true
   roles:
     - role: cluster

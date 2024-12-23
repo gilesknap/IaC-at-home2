@@ -1,7 +1,4 @@
 # install services in the cluster
 
-- name: Install local tools
-  ansible.builtin.include_tasks: tools.yml
-
 - name: Install K8S Dashboard
   ansible.builtin.include_tasks: dashboard.yml
