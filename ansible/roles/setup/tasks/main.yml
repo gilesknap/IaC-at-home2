@@ -1,9 +1,6 @@
-- name: debug
-  debug:
+# setup anything needed in the execution environment
+
+- name: Debug
+  ansible.builtin.debug:
     var: ansible_facts
   when: do_debug
-
-- name: create temporary directory
-  file:
-    path: "{{ local_tmp }}"
-    state: directory

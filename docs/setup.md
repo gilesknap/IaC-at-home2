@@ -31,10 +31,12 @@ sed -E -i 's|^#?(PasswordAuthentication)\s.*|\1 no|' /etc/ssh/sshd_config
 exit
 ```
 
-## Install prerequisites
+## Edit the hosts.yml file
 
-ansible: https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html
+This should reflect your turingpi DNS names, the names you would like to call
+the nodes in each of these turingpis and the type of board each of your nodes
+has.
 
-## Create some host keys for your nodes
+## Try a deploy
 
-TODO
+ansible-playbook -i ansible/hosts.yml ansible/pb_flash_os.yml

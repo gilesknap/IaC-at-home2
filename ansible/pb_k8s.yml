@@ -1,6 +1,5 @@
 - name: Install Kubernetes on all nodes
   hosts: tp?_nodes # all nodes in all turing pi groups
-  # only gather facts after the nodes have been set up by the ubuntu_rk1 role
-  gather_facts: false
+  gather_facts: true
   roles:
     - role: k3s

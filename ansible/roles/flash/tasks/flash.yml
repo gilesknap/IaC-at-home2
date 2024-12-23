@@ -1,0 +1,56 @@
+# Flash an image onto one of the turingpi nodes
+#
+# commands are delegated to localhost or use 'raw'
+# because the BMC has no python or disk space to install python
+# such commands cannot have ansible do idempotent checks, so suppress no-changed-when
+
+- name: Select The Image To Flash For Rk1
+  ansible.builtin.set_fact:
+    image: "{{ flash_image_info.rk1 }}"
+  when: node.type == 'rk1'
+
+- name: Select The Image To Flash For Rpi4 Compute Module
+  ansible.builtin.set_fact:
+    image: "{{ flash_image_info.pi4 }}"
+  when: node.type == 'pi4'
+
+- name: Check for existing image file # noqa no-changed-when
+  ansible.builtin.raw: mkdir -p {{ tpi_images_path }} && test -f {{ image.osf_remote }}
+  register: os_file_stat
+  ignore_errors: true
+
+- name: Create Temporary Download Directory {{ flash_local_tmp }}
+  delegate_to: localhost
+  ansible.builtin.file:
+    path: "{{ flash_local_tmp }}"
+    state: directory
+    mode: "0755"
+
+- name: Get OS image for {{ node.type }}
+  delegate_to: localhost
+  ansible.builtin.get_url:
+    url: "{{ image.url }}"
+    dest: "{{ image.os_file }}"
+    mode: "0644"
+  register: os_file
+  when: os_file_stat.rc != 0
+
+- name: Scp image to BMC # noqa no-changed-when
+  delegate_to: localhost
+  ansible.builtin.command: |-
+    scp {{ image.os_file }}
+    {{ tpi_user }}@{{ inventory_hostname }}:{{ image.osf_remote }}
+  when: os_file_stat.rc != 0
+
+# this guarantees the state of the node and tpi flash will automatically turn in on
+- name: Turn off {{ node_name }} # noqa no-changed-when
+  ansible.builtin.raw: tpi power off -n {{ node.slot_num }}
+
+- name: Flash image to {{ node_name }} # noqa no-changed-when
+  ansible.builtin.raw: |-
+    tpi flash -n {{ node.slot_num }} --image-path {{ image.osf_remote }} --sha256 {{ image.sha }} > /tmp/flash.log 2>&1
+  register: flash_results
+
+- name: Show flash results
+  ansible.builtin.debug:
+    var: flash_results

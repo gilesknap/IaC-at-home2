@@ -11,11 +11,3 @@ vault_password_file: "~/.ansible_vault_password"
 
 # pass '-e debug=true' to ansible-playbook to enable debug output
 do_debug: "{{ debug | default(false) | bool }}"
-# pass 'e reset=true' to reflash all nodes'
-do_reset: "{{ reset | default(false) | bool }}"
-# pass '-e flash=true' to flash nodes that are not responding to ssh
-do_flash: "{{ flash | default(false) | bool }}"
-
-local_tmp: "/tmp/iac2"
-host_keys_vars: "vars/secrets/host_keys/keys.yml"
-host_keys_folder: "{{ host_keys_vars | dirname }}"

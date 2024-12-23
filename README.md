@@ -62,7 +62,19 @@ Perhaps I spoke too soon. Discord as lead me to this
 
 ## How to launch
 
-e.g. to re-flash all nodes
+e.g. to re-configure all nodes (re-flashing those that don't currently respond to ssh)
 
 - launch the devcontainer
-- ansible-playbook -i ansible/hosts.yml ansible/pb_flash_os.yml -e "reset=true" --vault-password-file=/etc/ansible/.vault_password.txt
+- cd ansible
+- ansible-playbook pb_flash_all.yml
+
+## How to's
+
+### re-flash a single node
+
+limit hosts to the controlling turing pi and the nodes(s) to be re-flashed. Pass in the flash_force variable to force a re-flash.
+
+```bash
+cd ansible
+ansible-playbook -i ansible/hosts.yml ansible/pb_flash_os.yml --limit turingpi,node01 -e flash_force=true
+```

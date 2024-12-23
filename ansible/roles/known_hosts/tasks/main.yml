@@ -1,21 +1,34 @@
-# Nodes may just have been created by ubuntu_rk1 role, wait for them to be ready
-# and update our known_hosts file with their ssh public key
-- name: Get new node {{ inventory_hostname }}'s ssh public key
-  delegate_to: localhost
-  command: "ssh-keyscan -t ssh-ed25519 {{ inventory_hostname }}"
-  register: new_node_ssh_key
-  retries: 30
-  delay: 5
+# Nodes will just have been created by the flash role, wait for them to be ready
+# and update our known_hosts file with their ssh public keys
 
-- name: Add/update the host public key in '{{ ssh_known_hosts_file }}'
+# wait until the node is ready to accept ssh connections
+- name: Wait for {{ inventory_hostname }}
   delegate_to: localhost
-  known_hosts:
+  ansible.builtin.wait_for:
+    host: "{{ inventory_hostname }}"
+    port: 22
+  register: node_status
+  retries: 20
+  delay: 6
+
+- name: Get ssh public key of new node {{ inventory_hostname }}
+  delegate_to: localhost
+  ansible.builtin.command:
+    cmd: "ssh-keyscan {{ inventory_hostname }}"
+    creates: "/tmp/{{ inventory_hostname }}_ssh_key"
+  register: new_node_ssh_keys
+
+- name: Add/update the host public key in {{ known_hosts_file }}
+  delegate_to: localhost
+  ansible.builtin.known_hosts:
     name: "{{ inventory_hostname }}"
-    key: "{{ new_node_ssh_key.stdout }}"
-    path: "{{ ssh_known_hosts_file }}"
+    key: "{{ item }}"
+    path: "{{ known_hosts_file }}"
+  loop: "{{ new_node_ssh_keys.stdout_lines }}"
 
-- debug:
+- name: Debug message for node readiness
+  ansible.builtin.debug:
     msg: "{{ inventory_hostname }} is ready"
 
-- name: gather facts on node {{ inventory_hostname }}
-  setup:
+- name: Gather facts on node {{ inventory_hostname }}
+  ansible.builtin.setup:
