@@ -1,1 +1,64 @@
-# TODO - install K3s on each node
+# install K3s on each node
+
+# determine if this node is the control plane
+- name: Check if control plane
+  ansible.builtin.set_fact:
+    is_control_plane: "{{ k3s_master == inventory_hostname }}"
+
+- name: Output control plane status
+  ansible.builtin.debug:
+    var: is_control_plane
+
+- name: Update all packages
+  ansible.builtin.apt:
+    name: "*"
+    state: latest
+  become: true
+
+- name: Remove k3s control plane if force is true
+  ansible.builtin.shell:
+    cmd: k3s-uninstall.sh
+    removes: /usr/local/bin/k3s-uninstall.sh
+  when: k3s_force
+
+- name: Install k3s control plane
+  ansible.builtin.shell:
+    cmd: "curl -sfL https://get.k3s.io | sh -"
+    creates: /var/lib/rancher/k3s/server/node-token
+  when: is_control_plane
+  become: true
+
+- name: Wait for /var/lib/rancher/k3s/server/node-token
+  ansible.builtin.wait_for:
+    path: /var/lib/rancher/k3s/server/node-token
+    state: present
+  delegate_to: "{{ k3s_master }}"
+  become: true
+  when: not is_control_plane
+
+- name: Test if node is already in the cluster
+  ansible.builtin.shell:
+    cmd: kubectl get nodes
+  delegate_to: "{{ k3s_master }}"
+  become: true
+  register: k3s_nodes
+
+- name: Remove k3s worker if force is true
+  ansible.builtin.shell:
+    cmd: k3s-agent-uninstall.sh
+    removes: /usr/local/bin/k3s-agent-uninstall.sh
+  # uninstall if the node has been deleted from the cluster or force is true
+  when: k3s_force or not inventory_hostname in k3s_nodes.stdout
+
+- name: Get the node token
+  ansible.builtin.command:
+    cmd: cat /var/lib/rancher/k3s/server/node-token
+  delegate_to: "{{ k3s_master }}"
+  become: true
+  register: node_token
+  when: not is_control_plane
+
+- name: Install k3s worker node
+  ansible.builtin.shell:
+    cmd: curl -sfL https://get.k3s.io | K3S_URL=https://{{ k3s_master_ip }}:6443 K3S_TOKEN={{ node_token.stdout }} sh -
+  when: not is_control_plane and not inventory_hostname in k3s_nodes.stdout
