@@ -42,7 +42,7 @@
     {{ tpi_user }}@{{ inventory_hostname }}:{{ image.osf_remote }}
   when: os_file_stat.rc != 0
 
-# this guarantees the state of the node and flash will automatically turn in on
+# this guarantees the state of the node and tpi flash will automatically turn in on
 - name: Turn off {{ node_name }} # noqa no-changed-when
   ansible.builtin.raw: tpi power off -n {{ node.slot_num }}
 
