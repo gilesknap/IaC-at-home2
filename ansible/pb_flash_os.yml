@@ -8,8 +8,6 @@
 - name: Bare metal provisioning of turing_pi nodes
   hosts: turing_pis
   gather_facts: false
-  vars_files:
-    - "{{ host_keys_vars }}"
   roles:
     - role: flash
 

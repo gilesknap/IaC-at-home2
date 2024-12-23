@@ -1,4 +1,4 @@
 - name: Import flash OS playbook
   import_playbook: pb_flash_os.yml
 - name: Setup Kubernetes Cluster
-  import_playbook: pb_setup_k8s.yml
+  import_playbook: pb_k8s.yml

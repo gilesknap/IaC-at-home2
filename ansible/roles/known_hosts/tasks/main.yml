@@ -1,11 +1,11 @@
-# Nodes may just have been created by the ubuntu role, wait for them to be ready
-# and update our known_hosts file with their ssh public key
+# Nodes will just have been created by the flash role, wait for them to be ready
+# and update our known_hosts file with their ssh public keys
 - name: Get ssh public key of new node {{ inventory_hostname }}
   delegate_to: localhost
   ansible.builtin.command:
-    cmd: "ssh-keyscan -t ssh-ed25519 {{ inventory_hostname }}"
+    cmd: "ssh-keyscan {{ inventory_hostname }}"
     creates: "/tmp/{{ inventory_hostname }}_ssh_key"
-  register: new_node_ssh_key
+  register: new_node_ssh_keys
   retries: 30
   delay: 5
 
@@ -13,8 +13,9 @@
   delegate_to: localhost
   ansible.builtin.known_hosts:
     name: "{{ inventory_hostname }}"
-    key: "{{ new_node_ssh_key.stdout }}"
+    key: "{{ item }}"
     path: "{{ known_hosts_file }}"
+  loop: "{{ new_node_ssh_keys.stdout_lines }}"
 
 - name: Debug message for node readiness
   ansible.builtin.debug:
