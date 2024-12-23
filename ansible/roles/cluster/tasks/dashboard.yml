@@ -1,11 +1,10 @@
-- name: Check for K8S Dashboard
-  ansible.builtin.shell:
-    cmd: helm list | grep kubernetes-dashboard
-  register: helm_check
-  changed_when: false
 
 - name: Install K8S Dashboard using helm
-  ansible.builtin.command:
-    cmd: helm install kubernetes-dashboard stable/kubernetes-dashboard
-  when: helm_check.rc != 0
-  changed_when: helm_check.rc != 0
+  kubernetes.core.helm:
+    chart_repo_url: https://kubernetes.github.io/dashboard/
+    chart_ref: kubernetes-dashboard
+    release_name: kubernetes-dashboard
+    create_namespace: true
+    namespace: kubernetes-dashboard
+    state: present
+  tags: dashboard

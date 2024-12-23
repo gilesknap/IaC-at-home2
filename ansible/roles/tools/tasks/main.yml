@@ -33,3 +33,8 @@
     dest: /usr/local/bin/helm
     mode: "0755"
   become: true
+
+- name: Install helm plugins
+  ansible.builtin.command:
+    cmd: helm plugin install https://github.com/databus23/helm-diff
+    creates: ${HOME}/.local/share/helm/plugins/helm-diff
