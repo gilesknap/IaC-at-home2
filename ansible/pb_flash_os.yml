@@ -17,4 +17,3 @@
   gather_facts: false
   roles:
     - role: known_hosts
-    - role: k3s

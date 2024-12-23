@@ -12,18 +12,26 @@
 - name: Update all packages
   ansible.builtin.apt:
     name: "*"
-    state: latest
+    state: present
+    update_cache: true
+    only_upgrade: true
   become: true
 
 - name: Remove k3s control plane if force is true
-  ansible.builtin.shell:
+  ansible.builtin.command:
     cmd: k3s-uninstall.sh
     removes: /usr/local/bin/k3s-uninstall.sh
   when: k3s_force
 
+- name: Get k3s script
+  ansible.builtin.get_url:
+    url: https://get.k3s.io
+    dest: /tmp/k3s.sh
+    mode: "0755"
+
 - name: Install k3s control plane
-  ansible.builtin.shell:
-    cmd: "curl -sfL https://get.k3s.io | sh -"
+  ansible.builtin.command:
+    cmd: bash -c /tmp/k3s.sh
     creates: /var/lib/rancher/k3s/server/node-token
   when: is_control_plane
   become: true
@@ -37,21 +45,21 @@
   when: not is_control_plane
 
 - name: Test if node is already in the cluster
-  ansible.builtin.shell:
+  ansible.builtin.command: # noqa no-changed-when
     cmd: kubectl get nodes
   delegate_to: "{{ k3s_master }}"
   become: true
   register: k3s_nodes
 
 - name: Remove k3s worker if force is true
-  ansible.builtin.shell:
+  ansible.builtin.command:
     cmd: k3s-agent-uninstall.sh
     removes: /usr/local/bin/k3s-agent-uninstall.sh
   # uninstall if the node has been deleted from the cluster or force is true
   when: k3s_force or not inventory_hostname in k3s_nodes.stdout
 
 - name: Get the node token
-  ansible.builtin.command:
+  ansible.builtin.command: # noqa no-changed-when
     cmd: cat /var/lib/rancher/k3s/server/node-token
   delegate_to: "{{ k3s_master }}"
   become: true
@@ -59,6 +67,9 @@
   when: not is_control_plane
 
 - name: Install k3s worker node
-  ansible.builtin.shell:
-    cmd: curl -sfL https://get.k3s.io | K3S_URL=https://{{ k3s_master_ip }}:6443 K3S_TOKEN={{ node_token.stdout }} sh -
+  ansible.builtin.shell: # noqa no-changed-when command-instead-of-shell
+    environment:
+      K3S_URL: "https://{{ k3s_master_ip }}:6443"
+      K3S_TOKEN: "{{ node_token.stdout }}"
+    cmd: /tmp/k3s.sh
   when: not is_control_plane and not inventory_hostname in k3s_nodes.stdout
