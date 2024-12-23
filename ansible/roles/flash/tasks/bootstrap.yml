@@ -2,9 +2,11 @@
 # we just created. This can reliably update the filesystem on the node to apply
 # the changes we need to make, including giving the node a new hostname
 
-# this guarentees the state of the node and msd will automatically turn in on
+# this guarantees the state of the node and msd will automatically turn in on
 - name: Turn Off Node
   ansible.builtin.raw: tpi power off -n {{ node.slot_num }}
+  args:
+    creates: /tmp/flash.log
 
 - name: Switch Node Slot To Disk Mode
   ansible.builtin.raw: tpi advanced msd -n {{ node.slot_num }}

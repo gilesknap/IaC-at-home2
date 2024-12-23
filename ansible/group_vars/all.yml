@@ -11,6 +11,3 @@ vault_password_file: "~/.ansible_vault_password"
 
 # pass '-e debug=true' to ansible-playbook to enable debug output
 do_debug: "{{ debug | default(false) | bool }}"
-
-# a local temporary directory for flash images
-flash_local_tmp: /tmp/iac2

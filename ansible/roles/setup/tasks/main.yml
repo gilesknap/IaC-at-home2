@@ -1,11 +1,5 @@
 # setup anything needed in the execution environment
 
-- name: Create Temporary Directory
-  ansible.builtin.file:
-    path: "{{ flash_local_tmp }}"
-    state: directory
-    mode: '0755'
-
 - name: Debug
   ansible.builtin.debug:
     var: ansible_facts

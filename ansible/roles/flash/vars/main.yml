@@ -14,4 +14,8 @@ flash_image_info:
     os_file: "{{ flash_local_tmp }}/os.raspi{{ flash_rp4_vers }}.img.xz"
     osf_remote: "{{ tpi_images_path }}/os.raspi{{ flash_rp4_vers }}.img.xz"
 
+# force re-flash of nodes even if they are already contactable
 flash_force: false
+
+# a local temporary directory for flash images
+flash_local_tmp: /tmp/iac2

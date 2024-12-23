@@ -1,7 +1,7 @@
 # Flash an image onto one of the turingpi nodes
 #
 # commands are delegated to localhost or use 'raw'
-# because the BMC has no python or disk space
+# because the BMC has no python or disk space to install python
 
 - name: Select The Image To Flash For Rk1
   ansible.builtin.set_fact:
@@ -18,6 +18,13 @@
   register: os_file_stat
   ignore_errors: true
 
+- name: Create Temporary Download Directory {{ flash_local_tmp }}
+  delegate_to: localhost
+  ansible.builtin.file:
+    path: "{{ flash_local_tmp }}"
+    state: directory
+    mode: "0755"
+
 - name: Get OS image for {{ node.type }}
   delegate_to: localhost
   ansible.builtin.get_url:
@@ -26,22 +33,22 @@
   register: os_file
   when: os_file_stat.rc != 0
 
-- name: scp image to BMC
+- name: Scp image to BMC
   delegate_to: localhost
-  command: |-
+  ansible.builtin.command: |-
     scp {{ image.os_file }}
     {{ tpi_user }}@{{ inventory_hostname }}:{{ image.osf_remote }}
   when: os_file_stat.rc != 0
 
-# this guarentees the state of the node and flash will automatically turn in on
-- name: turn off {{ node_name }} before flashing
-  raw: tpi power off -n {{ node.slot_num }}
+# this guarantees the state of the node and flash will automatically turn in on
+- name: Turn off {{ node_name }} before flashing
+  ansible.builtin.raw: tpi power off -n {{ node.slot_num }}
 
-- name: flash image to {{ node_name }} slot {{ node.slot_num }} type {{ node.type }}
-  raw: |-
+- name: Flash image to {{ node_name }} slot {{ node.slot_num }} type {{ node.type }}
+  ansible.builtin.raw: |-
     tpi flash -n {{ node.slot_num }} --image-path {{ image.osf_remote }} --sha256 {{ image.sha }} > /tmp/flash.log 2>&1
   register: flash_results
 
-- name: show flash results
-  debug:
+- name: Show flash results
+  ansible.builtin.debug:
     var: flash_results
