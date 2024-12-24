@@ -1,11 +1,16 @@
 {
     "cSpell.words": [
+        "conv",
         "createhome",
+        "extlinux",
+        "fstype",
         "hostvars",
         "kubeconfig",
         "lineinfile",
+        "noerror",
         "playbook",
-        "turingpi"
+        "turingpi",
+        "uuidgen"
     ],
     "ansible.python.interpreterPath": "/usr/local/bin/python"
 }

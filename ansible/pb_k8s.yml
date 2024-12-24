@@ -1,10 +1,3 @@
-- name: Prepare the nodes for further provisioning
-  hosts: all_nodes
-  # only gather facts after the nodes are added to known_hosts
-  gather_facts: false
-  roles:
-    - role: known_hosts
-
 - name: Install Kubernetes on all nodes
   hosts: all_nodes # all nodes in all turing pi groups
   roles:

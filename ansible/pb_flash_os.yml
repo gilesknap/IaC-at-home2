@@ -11,3 +11,14 @@
   roles:
     - role: flash
 
+- name: Prepare the nodes for further provisioning
+  hosts: all_nodes
+  # only gather facts after the nodes are added to known_hosts
+  gather_facts: false
+  roles:
+    - role: known_hosts
+
+- name: Move root partition to another device
+  hosts: all_nodes
+  roles:
+    - role: move_fs
