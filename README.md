@@ -1,10 +1,5 @@
 # IaC-at-home2
 
-## How to use
-
-See the [setup](docs/setup.md) for more details.
-
-
 ## Description
 
 A second attempt at making a kubernetes cluster at home that is described in code.
@@ -31,41 +26,26 @@ I'll initially stick with Ubuntu and k3s but drop MAAS and add in:
 
 ## Current status
 
-Prototyping. Initial ansible now brings up a node with ubuntu. It should scale to multiple nodes or even multiple turing pis.
+The current playbook will:
+- use a devcontainer to create the ansible execution environment
+  - no prerequisites needed on the host except podman
+  - currently podman or rootless docker is required but this can be fixed
+- flash Ubuntu 2024.04 to the compute modules - both rk1 and cm4
+- install k3s with one control plane and multiple workers
+- install the k8s dashboard
+- install client tools kubectl, helm in the devcontainer
+- create a script to access the k8s dashboard from the devcontainer
 
-With that proven it may be time to buy some more hardware.
+## Quick start
 
-## Update 2021-09-26
+See the [setup](docs/setup.md) to create some keypairs and access the turingpi(s).
 
-Having a little re-think re hardware.
-- I bought 2 RK1 boards and a Raspberry Pi CM4
-- I have both types of board auto commissioning ubuntu with ansible nicely
-- BUT
-  - One of the RK1 boards seems to be inoperable
-  - I've had very very slow response re that from Turing Pi
-  - RK1 is stuck on Ubuntu 22.04
-  - the maintainer of the RK1 ubuntu image has taken an indefinite break
-- All this adds up to the usual conclusion that Raspberry Pi is the best supported SBC and nobody ever got fired for choosing it.
-- BUT
-  - the RK1 has some pretty cool features
-  - The CM4 cannot use a NVME drive (or maybe over sata on some of the TP2.5 slots?)
-
-For now I'm going to carry on with developing the ansible playbooks to get a (2 node) K8S cluster up and running.
-
-Then maybe see if the CM5s can use NVME drives when they come out and if so, maybe go with those.
-
-## Further Update
-
-Perhaps I spoke too soon. Discord as lead me to this
-- https://github.com/Joshua-Riek/ubuntu-rockchip/releases/tag/v2.4.0
-- so maybe RK1 is worth some more effort
-
-## How to launch
-
-e.g. to re-configure all nodes (re-flashing those that don't currently respond to ssh)
-
-- launch the devcontainer
+- install podman 4.3 or higher, git and vscode
+  - configure vscode to use podman for devcontainers
+- clone this repo
+- open the repo in vscode and reopen in devcontainer
 - cd ansible
+- edit the hosts.yml file to match the turingpi's and nodes you have
 - ansible-playbook pb_flash_all.yml
 
 ## How to's
@@ -75,6 +55,5 @@ e.g. to re-configure all nodes (re-flashing those that don't currently respond t
 limit hosts to the controlling turing pi and the nodes(s) to be re-flashed. Pass in the flash_force variable to force a re-flash.
 
 ```bash
-cd ansible
-ansible-playbook -i ansible/hosts.yml ansible/pb_flash_os.yml --limit turingpi,node01 -e flash_force=true
+ansible-playbook pb_flash_os.yml --limit turingpi,node01 -e flash_force=true
 ```
