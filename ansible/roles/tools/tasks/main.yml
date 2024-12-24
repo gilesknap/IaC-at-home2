@@ -11,6 +11,12 @@
     mode: "0755"
     validate_certs: true
 
+- name: Zsh Command line completion for kubectl
+  ansible.builtin.shell:
+    cmd: kubectl completion zsh > /usr/share/zsh/vendor-completions/_kubectl
+    creates: /usr/share/zsh/vendor-completions/_kubectl
+  become: true
+
 - name: Get helm version 3.16.4 amd binary
   ansible.builtin.get_url:
     url: https://get.helm.sh/helm-v3.16.4-linux-amd64.tar.gz
@@ -38,3 +44,9 @@
   ansible.builtin.command:
     cmd: helm plugin install https://github.com/databus23/helm-diff
     creates: ${HOME}/.local/share/helm/plugins/helm-diff
+
+- name: Zsh Command line completion for helm
+  ansible.builtin.shell:
+    cmd: helm completion zsh > /usr/share/zsh/vendor-completions/_helm
+    creates: /usr/share/zsh/vendor-completions/_helm
+  become: true
