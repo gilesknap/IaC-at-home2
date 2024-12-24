@@ -7,6 +7,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     net-tools \
     dnsutils \
     vim \
+    sshpass \
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 # Install ansible python packages

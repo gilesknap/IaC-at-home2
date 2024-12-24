@@ -11,9 +11,3 @@
   roles:
     - role: flash
 
-- name: Prepare the nodes for further provisioning
-  hosts: all_nodes # all nodes in all turing pi groups
-  # only gather facts after the nodes have been set up by the ubuntu_rk1 role
-  gather_facts: false
-  roles:
-    - role: known_hosts

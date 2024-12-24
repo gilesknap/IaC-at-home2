@@ -1,0 +1,36 @@
+# Add existing nodes to ansible control.
+# This is for additional nodes not in a turing pi.
+# It is assuming that there is no BMC for the node.
+# This means that the node will need to have had an OS installed on it manually.
+# Preferred OS is Ubuntu 24.04 LTS but most recent Debian will be OK.
+#
+# To add a node to the ansible control, do this:
+#
+# - edit hosts.yml and add new nodes to the root of extra_nodes group
+# - cd ansible
+# - ansible-playbook pb_add_nodes.yml
+#
+# you will be prompted for user and password - this must be an account that
+# can ssh to the extra nodes and has sudo privileges
+#
+# Now you can do:
+# - ansible-playbook pb_k8s.yml
+# the new nodes should get added to your k8s cluster
+
+- name: Add non turingpi nodes to ansible control
+  hosts: extra_nodes
+  roles:
+    - role: add_nodes
+
+  vars_prompt:
+
+    - name: ansible_user
+      prompt: Username for an ssh account to all extra nodes?
+      private: false
+
+    - name: ansible_password
+      prompt: Password for the user?
+      private: true
+
+  vars:
+    ansible_sudo_pass: "{{ ansible_password }}"
