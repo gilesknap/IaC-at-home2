@@ -1,4 +1,7 @@
 # install services in the cluster
 
+- name: Install Grafana
+  ansible.builtin.include_tasks: grafana.yml
+
 - name: Install K8S Dashboard
   ansible.builtin.include_tasks: dashboard.yml
