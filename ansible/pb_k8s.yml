@@ -1,5 +1,5 @@
 - name: Install Kubernetes on all nodes
-  hosts: tp?_nodes # all nodes in all turing pi groups
+  hosts: all_nodes # all nodes in all turing pi groups
   roles:
     - role: k3s
 
@@ -7,8 +7,3 @@
   hosts: localhost
   roles:
     - role: tools
-
-- name: Remaining cluster setup via client tools in the execution environment
-  hosts: localhost
-  roles:
-    - role: cluster

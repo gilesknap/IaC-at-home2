@@ -14,11 +14,20 @@
     mode: "0755"
     creates: /tmp/linux-amd64/helm
 
-- name: Move helm binary to /usr/local/bin
+- name: Move helm binary to the path
   ansible.builtin.copy:
     src: /tmp/linux-amd64/helm
     dest: "{{ bin_dir }}/helm"
     mode: "0755"
+  become: true
+
+# this step is lost on rebuild of the container, so is the only step
+# that causes a change after container rebuild
+- name: Make kubectl available to all
+  ansible.builtin.file:
+    src: "{{ bin_dir }}/helm"
+    path: /usr/local/bin/helm
+    state: link
   become: true
 
 - name: Install helm plugins
@@ -31,3 +40,4 @@
     cmd: helm completion zsh > /usr/share/zsh/vendor-completions/_helm
     creates: /usr/share/zsh/vendor-completions/_helm
   become: true
+

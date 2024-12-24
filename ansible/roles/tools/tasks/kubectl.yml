@@ -11,6 +11,15 @@
     mode: "0755"
     validate_certs: true
 
+# this step is lost on rebuild of the container, so is the only step
+# that causes a change after container rebuild
+- name: Make kubectl available to all
+  ansible.builtin.file:
+    src: "{{ bin_dir }}/kubectl"
+    path: /usr/local/bin/kubectl
+    state: link
+  become: true
+
 - name: Zsh Command line completion for kubectl
   ansible.builtin.shell:
     cmd: kubectl completion zsh > /usr/share/zsh/vendor-completions/_kubectl

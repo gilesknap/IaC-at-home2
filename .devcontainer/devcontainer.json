@@ -42,7 +42,7 @@
 	],
 	"remoteEnv": {
 		"ANSIBLE_VAULT_PASSWORD_FILE": "/etc/ansible/.vault_password.txt",
-		"ZSHRC": "/bashrc/zshrc",
+		"ZSHRC": "/bash-config/zshrc",
 		"BIN_DIR": "/root/bin"
 	},
 	// For rootless leave the filesystem owned by root

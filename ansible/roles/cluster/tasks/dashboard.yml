@@ -39,8 +39,13 @@
     dest: "{{ bin_dir }}/dashboard.sh"
     content: |
       #!/bin/bash
+
+      # Start a port-forward to the dashboard and background it
       nohup kubectl -n kubernetes-dashboard port-forward svc/kubernetes-dashboard-kong-proxy 8443:443 &> /tmp/k8s-dash-proxy.out &
+
+      # Get the token for the dashboard
       kubectl -n kubernetes-dashboard create token dashboard-admin
+
       echo
       echo Dashboard will be available using above token at:
       echo   https://localhost:8443
