@@ -1,0 +1,33 @@
+- name: Get helm version 3.16.4 amd binary
+  ansible.builtin.get_url:
+    url: https://get.helm.sh/helm-v3.16.4-linux-amd64.tar.gz
+    dest: /tmp/helm-v3.6.3-linux-amd64.tar.gz
+    mode: "0644"
+    checksum: "sha256:fc307327959aa38ed8f9f7e66d45492bb022a66c3e5da6063958254b9767d179"
+    validate_certs: true
+
+- name: Extract helm binary
+  ansible.builtin.unarchive:
+    src: /tmp/helm-v3.6.3-linux-amd64.tar.gz
+    dest: /tmp
+    remote_src: true
+    mode: "0755"
+    creates: /tmp/linux-amd64/helm
+
+- name: Move helm binary to /usr/local/bin
+  ansible.builtin.copy:
+    src: /tmp/linux-amd64/helm
+    dest: "{{ bin_dir }}/helm"
+    mode: "0755"
+  become: true
+
+- name: Install helm plugins
+  ansible.builtin.command:
+    cmd: helm plugin install https://github.com/databus23/helm-diff
+    creates: ${HOME}/.local/share/helm/plugins/helm-diff
+
+- name: Zsh Command line completion for helm
+  ansible.builtin.shell:
+    cmd: helm completion zsh > /usr/share/zsh/vendor-completions/_helm
+    creates: /usr/share/zsh/vendor-completions/_helm
+  become: true

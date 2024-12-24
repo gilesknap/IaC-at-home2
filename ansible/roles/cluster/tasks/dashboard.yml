@@ -17,3 +17,31 @@
       metadata:
         name: dashboard-admin
         namespace: kubernetes-dashboard
+
+- name: Create a cluster role binding for the dashboard
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: dashboard-admin
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: cluster-admin
+      subjects:
+        - kind: ServiceAccount
+          name: dashboard-admin
+          namespace: kubernetes-dashboard
+
+- name: Create dashboard connection script
+  ansible.builtin.copy:
+    dest: "{{ bin_dir }}/dashboard.sh"
+    content: |
+      #!/bin/bash
+      nohup kubectl -n kubernetes-dashboard port-forward svc/kubernetes-dashboard-kong-proxy 8443:443 &> /tmp/k8s-dash-proxy.out &
+      kubectl -n kubernetes-dashboard create token dashboard-admin
+      echo
+      echo Dashboard will be available using above token at:
+      echo   https://localhost:8443
+    mode: '0755'

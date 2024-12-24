@@ -1,0 +1,25 @@
+- name: Get kubectl stable release version
+  ansible.builtin.get_url:
+    url: https://dl.k8s.io/release/stable.txt
+    dest: /tmp/kubectl_version
+    mode: "0644"
+
+- name: Get kubectl
+  ansible.builtin.get_url:
+    url: https://dl.k8s.io/release/{{ lookup('file', '/tmp/kubectl_version') }}/bin/linux/amd64/kubectl
+    dest: "{{ bin_dir }}/kubectl"
+    mode: "0755"
+    validate_certs: true
+
+- name: Zsh Command line completion for kubectl
+  ansible.builtin.shell:
+    cmd: kubectl completion zsh > /usr/share/zsh/vendor-completions/_kubectl
+    creates: /usr/share/zsh/vendor-completions/_kubectl
+  become: true
+
+- name: Create k alias for kubectl
+  ansible.builtin.lineinfile:
+    path: "{{ zshrc }}"
+    line: "alias k=kubectl"
+    mode: "0644"
+    create: true
