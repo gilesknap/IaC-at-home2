@@ -1,6 +1,18 @@
 - name: Determine the current root device for the node
   ansible.builtin.set_fact:
-    curr_root_dev: "{{ ansible_mounts | json_query('[?mount == `/`].device') }}"
+    curr_root_dev: "{{ ansible_mounts | json_query('[?mount == `/`].device') | first }}"
+
+- name: Show mounts
+  ansible.builtin.debug:
+    var: ansible_mounts
+
+- name: Show current root device for the node
+  ansible.builtin.debug:
+    var: curr_root_dev
+
+- name: Show desired root device for the node
+  ansible.builtin.debug:
+    var: root_dev
 
 - name: Move the root partition for the node to {{ root_dev }}
   when: root_dev != curr_root_dev
@@ -49,11 +61,10 @@
         regexp: 'UUID=[a-f0-9-]+'
         replace: 'UUID={{ new_uuid.stdout }}'
 
-    - name: Update the extlinux.conf file with the new UUID
-      ansible.builtin.replace:
-        path: /boot/extlinux/extlinux.conf
-        regexp: 'UUID=[a-f0-9-]+'
-        replace: 'UUID={{ new_uuid.stdout }}'
+    - name: Update uboot with the new UUID
+      ansible.builtin.shell: # noqa command-instead-of-shell
+        cmd: U_BOOT_ROOT=root=UUID={{ new_uuid.stdout }} u-boot-update
+      changed_when: true
 
     - name: Reboot the node to the new root partition
       ansible.builtin.reboot:

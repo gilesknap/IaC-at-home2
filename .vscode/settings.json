@@ -10,6 +10,7 @@
         "noerror",
         "playbook",
         "turingpi",
+        "uboot",
         "uuidgen"
     ],
     "ansible.python.interpreterPath": "/usr/local/bin/python"
