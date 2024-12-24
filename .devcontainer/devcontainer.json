@@ -22,7 +22,8 @@
 			"extensions": [
 				"streetsidesoftware.code-spell-checker-cspell-bundled-dictionaries",
 				"redhat.ansible",
-				"mhutchie.git-graph"
+				"mhutchie.git-graph",
+				"ms-kubernetes-tools.vscode-kubernetes-tools"
 			]
 		}
 	},
@@ -30,13 +31,20 @@
 	// TODO - this will also affect the mounts
 	// For rootless we must be root account
 	"remoteUser": "root",
-	// mount in useful files and configuration folders
+	// mount in useful files and configuration folders - those updated by ansible
+	// are stored in volumes so they persist between container runs
 	"mounts": [
 		// Note - password file is not currently used
 		"source=${localEnv:HOME}/.ansible_vault_password,target=/etc/ansible/.vault_password.txt,type=bind,ro",
+		"source=iac2-bin,target=/root/bin,type=volume",
 		"source=iac2-ssh,target=/root/.ssh,type=volume",
 		"source=iac2-kube,target=/root/.kube,type=volume"
 	],
+	"remoteEnv": {
+		"ANSIBLE_VAULT_PASSWORD_FILE": "/etc/ansible/.vault_password.txt",
+		"ZSHRC": "/bash-config/zshrc",
+		"BIN_DIR": "/root/bin"
+	},
 	// For rootless leave the filesystem owned by root
 	"updateRemoteUserUID": false,
 	// One time global setup commands inside the container

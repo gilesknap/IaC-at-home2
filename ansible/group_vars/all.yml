@@ -11,3 +11,7 @@ vault_password_file: "~/.ansible_vault_password"
 
 # pass '-e debug=true' to ansible-playbook to enable debug output
 do_debug: "{{ debug | default(false) | bool }}"
+
+# location of binaries we install in the execution environment
+bin_dir: "{{ lookup('ansible.builtin.env', 'BIN_DIR', default='${HOME}/bin') }}"
+zshrc: "{{ lookup('ansible.builtin.env', 'ZSHRC', default='${HOME}/.zshrc') }}"

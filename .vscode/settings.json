@@ -2,7 +2,9 @@
     "cSpell.words": [
         "hostvars",
         "kubeconfig",
+        "lineinfile",
         "playbook",
         "turingpi"
-    ]
+    ],
+    "ansible.python.interpreterPath": "/usr/local/bin/python"
 }

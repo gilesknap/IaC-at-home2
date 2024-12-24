@@ -1,40 +1,20 @@
-- name: Get kubectl stable release
-  ansible.builtin.get_url:
-    url: https://dl.k8s.io/release/stable.txt
-    dest: /tmp/kubectl_version
+# install tools into the execution environment
+
+- name: Ensure the bin folder exists
+  ansible.builtin.file:
+    state: directory
+    dest: "{{ bin_dir }}"
+    mode: "0755"
+
+- name: Add bin folder to path
+  ansible.builtin.lineinfile:
+    path: "{{ zshrc }}"
+    line: 'export PATH="{{ bin_dir }}:$PATH"'
     mode: "0644"
+    create: true
 
-- name: Get kubectl
-  ansible.builtin.get_url:
-    url: https://dl.k8s.io/release/{{ lookup('file', '/tmp/kubectl_version') }}/bin/linux/amd64/kubectl
-    dest: /usr/local/bin/kubectl
-    mode: "0755"
-    validate_certs: true
+- name: Execute helm tasks
+  ansible.builtin.include_tasks: helm.yml
 
-- name: Get helm version 3.16.4 amd binary
-  ansible.builtin.get_url:
-    url: https://get.helm.sh/helm-v3.16.4-linux-amd64.tar.gz
-    dest: /tmp/helm-v3.6.3-linux-amd64.tar.gz
-    mode: "0644"
-    checksum: "sha256:fc307327959aa38ed8f9f7e66d45492bb022a66c3e5da6063958254b9767d179"
-    validate_certs: true
-
-- name: Extract helm binary
-  ansible.builtin.unarchive:
-    src: /tmp/helm-v3.6.3-linux-amd64.tar.gz
-    dest: /tmp
-    remote_src: true
-    mode: "0755"
-    creates: /tmp/linux-amd64/helm
-
-- name: Move helm binary to /usr/local/bin
-  ansible.builtin.copy:
-    src: /tmp/linux-amd64/helm
-    dest: /usr/local/bin/helm
-    mode: "0755"
-  become: true
-
-- name: Install helm plugins
-  ansible.builtin.command:
-    cmd: helm plugin install https://github.com/databus23/helm-diff
-    creates: ${HOME}/.local/share/helm/plugins/helm-diff
+- name: Execute kubectl tasks
+  ansible.builtin.include_tasks: kubectl.yml
