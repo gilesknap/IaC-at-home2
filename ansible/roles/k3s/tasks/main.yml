@@ -1,1 +1,35 @@
-# TODO - install K3s on each node
+# install K3s on each node
+
+# determine if this node is the control plane
+- name: Check if control plane
+  ansible.builtin.set_fact:
+    is_control_plane: "{{ k3s_master == inventory_hostname }}"
+
+- name: Output control plane status
+  ansible.builtin.debug:
+    var: is_control_plane
+
+- name: Update all packages
+  ansible.builtin.apt:
+    name: "*"
+    state: latest
+    update_cache: true
+    only_upgrade: true
+  become: true
+
+- name: Get k3s script
+  ansible.builtin.get_url:
+    url: https://get.k3s.io
+    dest: /tmp/k3s.sh
+    mode: "0755"
+
+- name: Execute control plane tasks
+  ansible.builtin.include_tasks: control.yml
+  when: is_control_plane
+
+- name: Execute worker node tasks
+  ansible.builtin.include_tasks: worker.yml
+  when: not is_control_plane
+
+- name: Execute kube config tasks
+  ansible.builtin.include_tasks: kubeconfig.yml

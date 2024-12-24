@@ -1,6 +1,7 @@
 {
     "cSpell.words": [
         "hostvars",
+        "kubeconfig",
         "playbook",
         "turingpi"
     ]

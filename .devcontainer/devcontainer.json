@@ -17,11 +17,6 @@
 		// add in eternal history and other bash features
 		"ghcr.io/diamondlightsource/devcontainer-features/bash-config:1.0.2": {}
 	},
-	// mount in useful files
-	"mounts": [
-		// Note - password file is not currently used
-		"source=${localEnv:HOME}/.ansible_vault_password,target=/etc/ansible/.vault_password.txt,type=bind,ro"
-	],
 	"customizations": {
 		"vscode": {
 			"extensions": [
@@ -31,8 +26,17 @@
 			]
 		}
 	},
+	// TODO - at present this only works for rootless - investigate how to do rootful
+	// TODO - this will also affect the mounts
 	// For rootless we must be root account
 	"remoteUser": "root",
+	// mount in useful files and configuration folders
+	"mounts": [
+		// Note - password file is not currently used
+		"source=${localEnv:HOME}/.ansible_vault_password,target=/etc/ansible/.vault_password.txt,type=bind,ro",
+		"source=iac2-ssh,target=/root/.ssh,type=volume",
+		"source=iac2-kube,target=/root/.kube,type=volume"
+	],
 	// For rootless leave the filesystem owned by root
 	"updateRemoteUserUID": false,
 	// One time global setup commands inside the container

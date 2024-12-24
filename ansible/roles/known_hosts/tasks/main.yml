@@ -17,6 +17,7 @@
     cmd: "ssh-keyscan {{ inventory_hostname }}"
     creates: "/tmp/{{ inventory_hostname }}_ssh_key"
   register: new_node_ssh_keys
+  changed_when: false
 
 - name: Add/update the host public key in {{ known_hosts_file }}
   delegate_to: localhost
@@ -29,6 +30,3 @@
 - name: Debug message for node readiness
   ansible.builtin.debug:
     msg: "{{ inventory_hostname }} is ready"
-
-- name: Gather facts on node {{ inventory_hostname }}
-  ansible.builtin.setup:

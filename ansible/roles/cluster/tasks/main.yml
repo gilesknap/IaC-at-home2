@@ -1,0 +1,4 @@
+# install services in the cluster
+
+- name: Install K8S Dashboard
+  ansible.builtin.include_tasks: dashboard.yml

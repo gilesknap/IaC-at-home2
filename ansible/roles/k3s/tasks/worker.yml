@@ -1,0 +1,39 @@
+# Install a k3s worker node
+
+- name: Wait for /var/lib/rancher/k3s/server/node-token
+  ansible.builtin.wait_for:
+    path: /var/lib/rancher/k3s/server/node-token
+    state: present
+  delegate_to: "{{ k3s_master }}"
+  become: true
+
+- name: Test if node is already in the cluster
+  ansible.builtin.command:
+    cmd: kubectl get nodes
+  delegate_to: "{{ k3s_master }}"
+  become: true
+  register: k3s_nodes
+  changed_when: false
+
+- name: Remove k3s worker if force is true
+  ansible.builtin.command:
+    cmd: k3s-agent-uninstall.sh
+    removes: /usr/local/bin/k3s-agent-uninstall.sh
+  # uninstall if the node has been deleted from the cluster or force is true
+  when: k3s_force or not inventory_hostname in k3s_nodes.stdout
+
+- name: Get the node token
+  ansible.builtin.command:
+    cmd: cat /var/lib/rancher/k3s/server/node-token
+  delegate_to: "{{ k3s_master }}"
+  become: true
+  register: node_token
+  changed_when: false
+
+- name: Install k3s worker node
+  ansible.builtin.shell: # noqa no-changed-when command-instead-of-shell
+    environment:
+      K3S_URL: "https://{{ k3s_master_ip }}:6443"
+      K3S_TOKEN: "{{ node_token.stdout }}"
+    cmd: /tmp/k3s.sh
+  when: not inventory_hostname in k3s_nodes.stdout

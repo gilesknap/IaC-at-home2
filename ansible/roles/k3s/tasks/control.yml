@@ -1,0 +1,14 @@
+# Install the control plane for k3s
+
+- name: Remove k3s control plane if force is true
+  ansible.builtin.command:
+    cmd: k3s-uninstall.sh
+    removes: /usr/local/bin/k3s-uninstall.sh
+  when: k3s_force
+
+- name: Install k3s control plane
+  ansible.builtin.command:
+    cmd: bash -c /tmp/k3s.sh
+    creates: /var/lib/rancher/k3s/server/node-token
+  when: is_control_plane
+  become: true
