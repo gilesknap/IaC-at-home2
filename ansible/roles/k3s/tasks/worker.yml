@@ -30,10 +30,9 @@
   register: node_token
   changed_when: false
 
-- name: Install k3s worker node
-  ansible.builtin.shell: # noqa no-changed-when command-instead-of-shell
-    environment:
-      K3S_URL: "https://{{ k3s_master_ip }}:6443"
-      K3S_TOKEN: "{{ node_token.stdout }}"
-    cmd: /tmp/k3s.sh
+- name: Install k3s worker node # noqa command-instead-of-shell
+  ansible.builtin.shell:
+    cmd: K3S_URL="https://{{ k3s_master_ip }}:6443" K3S_TOKEN="{{ node_token.stdout }}" /tmp/k3s.sh
+  become: true
+  changed_when: true
   when: not inventory_hostname in k3s_nodes.stdout
