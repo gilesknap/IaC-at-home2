@@ -14,10 +14,11 @@
     image: "{{ flash_image_info.pi4 }}"
   when: node.type == 'pi4'
 
-- name: Check for existing image file # noqa no-changed-when
+- name: Check for existing image file
   ansible.builtin.raw: mkdir -p {{ tpi_images_path }} && test -f {{ image.osf_remote }}
   register: os_file_stat
   ignore_errors: true
+  changed_when: false
 
 - name: Create Temporary Download Directory {{ flash_local_tmp }}
   delegate_to: localhost

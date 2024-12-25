@@ -15,6 +15,7 @@ RUN pip install \
     ansible \
     argcomplete \
     ansible-lint \
+    jmespath \
     kubernetes
 
 # opinionated settings

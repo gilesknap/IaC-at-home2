@@ -40,4 +40,3 @@
     cmd: helm completion zsh > /usr/share/zsh/vendor-completions/_helm
     creates: /usr/share/zsh/vendor-completions/_helm
   become: true
-
