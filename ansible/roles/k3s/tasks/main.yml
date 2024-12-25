@@ -9,6 +9,11 @@
   ansible.builtin.debug:
     var: is_control_plane
 
+- name: Ensure clean package manger
+  ansible.builtin.command: sudo dpkg --configure -a
+  become: true
+  changed_when: false # sort of
+
 - name: Update all packages
   ansible.builtin.apt:
     name: "*"
