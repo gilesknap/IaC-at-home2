@@ -1,5 +1,14 @@
 # Install a k3s worker node
 
+# without the facts from the control plane we don't know it's IP address
+- name: Check for control ].control_plane
+  ansible.builtin.assert:
+    that:
+      - k3s_master in play_hosts
+    msg:
+      The control plane '{{ k3s_master }}' must be in play_hosts
+      when running the k3s role.
+
 - name: Wait for /var/lib/rancher/k3s/server/node-token
   ansible.builtin.wait_for:
     path: /var/lib/rancher/k3s/server/node-token
@@ -7,7 +16,7 @@
   delegate_to: "{{ k3s_master }}"
   become: true
 
-- name: Test if node is already in the cluster
+- name: List nodes in the cluster
   ansible.builtin.command:
     cmd: kubectl get nodes
   delegate_to: "{{ k3s_master }}"
@@ -15,12 +24,25 @@
   register: k3s_nodes
   changed_when: false
 
-- name: Remove k3s worker if force is true
+- name: Check if this node is already in the cluster
+  ansible.builtin.set_fact:
+    in_cluster: |
+      {{ k3s_nodes.stdout is search(inventory_hostname + " *Ready") }}
+
+- name: Remove k3s worker if force is true or the node is not in the cluster
   ansible.builtin.command:
     cmd: k3s-agent-uninstall.sh
     removes: /usr/local/bin/k3s-agent-uninstall.sh
   # uninstall if the node has been deleted from the cluster or force is true
-  when: k3s_force or not inventory_hostname in k3s_nodes.stdout
+  when: k3s_force or not in_cluster
+
+- name: Remove the node from the cluster if it is not ready
+  ansible.builtin.command:
+    cmd: kubectl delete node {{ inventory_hostname }}
+  delegate_to: "{{ k3s_master }}"
+  become: true
+  when: k3s_nodes.stdout is search(inventory_hostname + " *NotReady")
+  changed_when: true
 
 - name: Get the node token
   ansible.builtin.command:
@@ -35,4 +57,4 @@
     cmd: K3S_URL="https://{{ k3s_master_ip }}:6443" K3S_TOKEN="{{ node_token.stdout }}" /tmp/k3s.sh
   become: true
   changed_when: true
-  when: not inventory_hostname in k3s_nodes.stdout
+  when: not in_cluster
