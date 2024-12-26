@@ -14,8 +14,8 @@
 	// make sure files are available for mounting
 	"initializeCommand": "touch ${localEnv:HOME}/.ansible_vault_password",
 	"features": {
-		// add in eternal history and other bash features
-		"ghcr.io/diamondlightsource/devcontainer-features/bash-config:1.0.2": {}
+		// add in eternal history and other bash features (rootless only)
+		//"ghcr.io/diamondlightsource/devcontainer-features/bash-config:1.0.2": {}
 	},
 	"customizations": {
 		"vscode": {
@@ -27,10 +27,8 @@
 			]
 		}
 	},
-	// TODO - at present this only works for rootless - investigate how to do rootful
-	// TODO - this will also affect the mounts
-	// For rootless we must be root account
-	"remoteUser": "root",
+	// IMPORTANT: For rootless make this root - for rootful leave it blank
+	// "remoteUser": "root",
 	// mount in useful files and configuration folders - those updated by ansible
 	// are stored in volumes so they persist between container runs
 	"mounts": [
@@ -45,8 +43,8 @@
 		"ZSHRC": "/bash-config/zshrc",
 		"BIN_DIR": "/root/bin"
 	},
-	// For rootless leave the filesystem owned by root
-	"updateRemoteUserUID": false,
+	// For rootless uncomment to keep user root inside the container
+	// "updateRemoteUserUID": false,
 	// One time global setup commands inside the container
 	"postCreateCommand": "bash .devcontainer/postCreateCommand ${devcontainerId}",
 	// Mount the parent of the project folder so we can access peer projects
