@@ -7,8 +7,7 @@
 	},
 	// enable ping to test connectivity
 	"runArgs": [
-		"--cap-add=NET_ADMIN",
-		"--cap-add=NET_RAW",
+		"--network=host",
 		"--security-opt=label=disable"
 	],
 	// make sure files are available for mounting

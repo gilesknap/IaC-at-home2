@@ -57,3 +57,12 @@
 - name: Reboot Node In Slot
   ansible.builtin.raw: tpi advanced normal -n {{ node.slot_num }}
   changed_when: true
+
+# wait until the node is ready to accept ssh connections
+- name: Wait for {{ node_name }}
+  delegate_to: localhost
+  ansible.builtin.wait_for:
+    host: "{{ node_name }}"
+    port: 22
+  retries: 20
+  delay: 6
