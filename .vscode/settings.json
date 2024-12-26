@@ -13,5 +13,10 @@
         "uboot",
         "uuidgen"
     ],
-    "ansible.python.interpreterPath": "/usr/local/bin/python"
+    "ansible.python.interpreterPath": "/usr/local/bin/python",
+    "workbench.editor.mouseBackForwardToNavigate": true,
+    // Issues with port forwarding - disable until I can diagnose
+    "remote.autoForwardPorts": false,
+    "remote.restoreForwardedPorts": false,
+    "remote.forwardOnOpen": false
 }
