@@ -22,8 +22,6 @@
 
 - name: Add non turingpi nodes to ansible control
   hosts: extra_nodes
-  roles:
-    - role: add_nodes
 
   vars_prompt:
 
@@ -36,6 +34,7 @@
       private: true
 
   vars:
+    ansible_ssh_user: "{{ ansible_user }}"
     ansible_sudo_pass: "{{ ansible_password }}"
 
   tasks:
