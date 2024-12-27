@@ -4,8 +4,6 @@
   ansible.builtin.debug:
     msg: |
       Processing node {{ node_name }}
-      ansible_limit: {{ ansible_limit | default('all') }}
-      query: {{ node_name in query('inventory_hostnames', ansible_limit | default('all')) }}
 
 - name: Process TP node
   # this when clause honours limits e.g.

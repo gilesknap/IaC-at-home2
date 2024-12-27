@@ -2,6 +2,7 @@
 
 # The user to create on each node for access by ansible
 ansible_account: "ansible"
+ansible_user: "{{ ansible_account }}" # overridden in host.yml where needed
 # The user used to connect to the tpi BMCs
 tpi_user: root
 # A path to some storage on the tpi BMCs used for downloading os images
@@ -14,19 +15,15 @@ vault_password_file: "~/.ansible_vault_password"
 bin_dir: "{{ lookup('ansible.builtin.env', 'BIN_DIR', default='${HOME}/bin') }}"
 zshrc: "{{ lookup('ansible.builtin.env', 'ZSHRC', default='${HOME}/.zshrc') }}"
 
-# EDIT ME: choose the control plane and domain name for the cluster.
 # Domain name can be an external domain which routes to your control plane node
 # or an internal name that only resolves within your network.
-# TODO: consider simplifying hosts.yml and moving all config vars there
-#  the docs don't recommend this but I figure our config is trivial and all in
-#  one place would be nice.
 k3s_control_plane: node01
 k3s_cluster_domain: node01.lan
 # tracks the node name of the control plane
 k3s_control_plane_ip: "{{ hostvars[k3s_control_plane]['ansible_default_ipv4']['address'] }}"
 
-# List of features to install into the cluster
-# EDIT ME: comment out any you don't want to install
+# List of features to install into the cluster, comment out to remove.
+# Each entry must match the name of a tasks yaml file in the cluster role.
 install_list:
   - dashboard
   - grafana
