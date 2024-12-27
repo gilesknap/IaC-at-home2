@@ -18,6 +18,7 @@
           pathType: Prefix
           hosts:
             - "{{ k3s_cluster_domain }}"
+            - localhost
           path: /dashboard
 
 - name: Create a service account for the dashboard
