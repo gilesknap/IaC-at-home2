@@ -1,0 +1,70 @@
+# example echo app for testing deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echo-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: echo
+  template:
+    metadata:
+      labels:
+        app: echo
+    spec:
+      containers:
+        - name: echo
+          image: ealen/echo-server
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echo-service
+  namespace: default
+spec:
+  ports:
+    - port: 80
+  selector:
+    app: echo
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: echo-ingress
+  namespace: default
+  # annotations:
+  #   kubernetes.io/tls-acme: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    # Replace the domain below with your domain accordingly.
+    - hosts:
+        - gilesk.ddns.net
+        - node01.lan
+      # secretName: tls-echo-net
+  rules:
+    # Replace the domain below with your domain accordingly.
+    - host: gilesk.ddns.net
+      http:
+        paths:
+          - pathType: Prefix
+            path: /echo
+            backend:
+              service:
+                name: echo-service
+                port:
+                  number: 80
+    - host: node01.lan
+      http:
+        paths:
+          - pathType: Prefix
+            path: /echo
+            backend:
+              service:
+                name: echo-service
+                port:
+                  number: 80

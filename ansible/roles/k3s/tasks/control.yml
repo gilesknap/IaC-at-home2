@@ -1,6 +1,6 @@
 # Install the control plane for k3s
 
-- name: Remove k3s control plane if force is true
+- name: Remove k3s control plane if k3s_force=true
   ansible.builtin.command:
     cmd: k3s-uninstall.sh
     removes: /usr/local/bin/k3s-uninstall.sh

@@ -28,7 +28,7 @@
     in_cluster: |
       {{ k3s_nodes.stdout is search(inventory_hostname + " *Ready") }}
 
-- name: Remove k3s worker if force is true or the node is not in the cluster
+- name: Remove k3s worker if k3s_force=true or the node is not in the cluster
   ansible.builtin.command:
     cmd: k3s-agent-uninstall.sh
     removes: /usr/local/bin/k3s-agent-uninstall.sh

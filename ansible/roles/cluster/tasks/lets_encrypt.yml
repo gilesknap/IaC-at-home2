@@ -26,3 +26,22 @@
       ingressShim:
         defaultIssuerName: "letsencrypt-prod"
         defaultIssuerKind: "ClusterIssuer"
+
+- name: Create a ClusterIssuer for Let's Encrypt
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: cert-manager.io/v1
+      kind: ClusterIssuer
+      metadata:
+        name: letsencrypt-prod
+      spec:
+        acme:
+          email: "{{ lets_encrypt_email }}"
+          server: https://acme-v02.api.letsencrypt.org/directory
+          privateKeySecretRef:
+            name: letsencrypt-prod
+          solvers:
+            - http01:
+                ingress:
+                  class: nginx

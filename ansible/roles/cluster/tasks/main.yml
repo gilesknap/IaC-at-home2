@@ -7,23 +7,7 @@
   delegate_to: "{{ k3s_control_plane }}"
   delegate_facts: true
 
-- name: Install nginx-ingress on the cluster
-  kubernetes.core.helm:
-    chart_repo_url: https://kubernetes.github.io/ingress-nginx
-    chart_ref: ingress-nginx
-    release_name: nginx-ingress
-    create_namespace: true
-    namespace: nginx-ingress
-    state: present
-    values:
-      controller:
-        service:
-          type: LoadBalancer
-          loadBalancerIP: "{{ k3s_control_plane_ip }}"
-
-- name: Execute the cert-manager installation task
-  ansible.builtin.include_tasks: lets_encrypt.yml
-
+# Install optional services from install_list
 - name: Cluster Install of {{ item }}
   ansible.builtin.include_tasks: "{{ item }}.yml"
   loop: "{{  install_list }}"
