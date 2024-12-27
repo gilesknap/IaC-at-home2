@@ -4,22 +4,21 @@
 - name: Check for control ].control_plane
   ansible.builtin.assert:
     that:
-      - k3s_master in play_hosts
-    msg:
-      The control plane '{{ k3s_master }}' must be in play_hosts
+      - k3s_control_plane in play_hosts
+    msg: The control plane '{{ k3s_control_plane }}' must be in play_hosts
       when running the k3s role.
 
 - name: Wait for /var/lib/rancher/k3s/server/node-token
   ansible.builtin.wait_for:
     path: /var/lib/rancher/k3s/server/node-token
     state: present
-  delegate_to: "{{ k3s_master }}"
+  delegate_to: "{{ k3s_control_plane }}"
   become: true
 
 - name: List nodes in the cluster
   ansible.builtin.command:
     cmd: kubectl get nodes
-  delegate_to: "{{ k3s_master }}"
+  delegate_to: "{{ k3s_control_plane }}"
   become: true
   register: k3s_nodes
   changed_when: false
@@ -39,7 +38,7 @@
 - name: Remove the node from the cluster if it is not ready
   ansible.builtin.command:
     cmd: kubectl delete node {{ inventory_hostname }}
-  delegate_to: "{{ k3s_master }}"
+  delegate_to: "{{ k3s_control_plane }}"
   become: true
   when: k3s_nodes.stdout is search(inventory_hostname + " *NotReady")
   changed_when: true
@@ -47,14 +46,14 @@
 - name: Get the node token
   ansible.builtin.command:
     cmd: cat /var/lib/rancher/k3s/server/node-token
-  delegate_to: "{{ k3s_master }}"
+  delegate_to: "{{ k3s_control_plane }}"
   become: true
   register: node_token
   changed_when: false
 
 - name: Install k3s worker node # noqa command-instead-of-shell
   ansible.builtin.shell:
-    cmd: K3S_URL="https://{{ k3s_master_ip }}:6443" K3S_TOKEN="{{ node_token.stdout }}" /tmp/k3s.sh
+    cmd: K3S_URL="https://{{ k3s_control_plane_ip }}:6443" K3S_TOKEN="{{ node_token.stdout }}" /tmp/k3s.sh
   become: true
   changed_when: true
   when: not in_cluster

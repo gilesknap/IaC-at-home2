@@ -8,7 +8,15 @@
 
 - name: Install k3s control plane
   ansible.builtin.command:
-    cmd: bash -c /tmp/k3s.sh
+    cmd: |-
+      /tmp/k3s.sh server
+      --disable=traefik
+      --flannel-backend=host-gw
+      --tls-san={{ k3s_control_plane_ip }}
+      --bind-address={{ k3s_control_plane_ip }}
+      --advertise-address={{ k3s_control_plane_ip }}
+      --node-ip={{ k3s_control_plane_ip }}
+      --cluster-init
     creates: /var/lib/rancher/k3s/server/node-token
   when: is_control_plane
   become: true

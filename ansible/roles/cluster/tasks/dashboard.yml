@@ -8,6 +8,17 @@
     create_namespace: true
     namespace: kubernetes-dashboard
     state: present
+    # https://github.dev/kubernetes/dashboard/blob/master/charts/kubernetes-dashboard/values.yaml
+    values:
+      app:
+        ingress:
+          enabled: true
+          ingressClassName: nginx
+          useDefaultIngressClass: true
+          pathType: Prefix
+          hosts:
+            - "{{ k3s_cluster_domain }}"
+          path: /dashboard
 
 - name: Create a service account for the dashboard
   kubernetes.core.k8s:
@@ -49,4 +60,4 @@
       echo
       echo Dashboard will be available using above token at:
       echo   https://localhost:8443
-    mode: '0755'
+    mode: "0755"

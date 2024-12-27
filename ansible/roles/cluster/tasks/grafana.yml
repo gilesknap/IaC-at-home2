@@ -6,7 +6,33 @@
     create_namespace: true
     namespace: monitoring
     state: present
+    # https://github.dev/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
     values:
+      grafana:
+        grafana.ini:
+          server:
+            domain: "{{ k3s_cluster_domain }}"
+            root_url: https://{{ k3s_cluster_domain }}/grafana/
+            serve_from_sub_path: true
+        ingress:
+          enabled: true
+          ingressClassName: nginx
+          hosts:
+            - "{{ k3s_cluster_domain }}"
+          path: /grafana
+        #adminPassword: "prom-operator"
+        # # To make Grafana persistent (Using Statefulset)
+        # TODO - need a decent storage class to use this
+        # persistence:
+        #   enabled: true
+        #   type: sts
+        #   storageClassName: "storageClassName"
+        #   accessModes:
+        #     - ReadWriteOnce
+        #   size: 20Gi
+        #   finalizers:
+        #     - kubernetes.io/pvc-protection
+
       persistence:
         enabled: true
         size: 10Gi
@@ -24,4 +50,4 @@
       echo
       echo Grafana will be available at:
       echo   http://localhost:3000
-    mode: '0755'
+    mode: "0755"

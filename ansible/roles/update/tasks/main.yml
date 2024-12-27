@@ -1,0 +1,12 @@
+- name: Ensure clean package manger
+  ansible.builtin.command: sudo dpkg --configure -a
+  become: true
+  changed_when: false # sort of
+
+- name: Update all packages
+  ansible.builtin.apt:
+    name: "*"
+    state: latest
+    update_cache: true
+    only_upgrade: true
+  become: true

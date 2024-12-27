@@ -11,7 +11,9 @@
   roles:
     - role: known_hosts
 
-- name: Move root partition to another device
+- name: Move root partition and update packages
   hosts: all_nodes
   roles:
     - role: move_fs
+    - role: update
+

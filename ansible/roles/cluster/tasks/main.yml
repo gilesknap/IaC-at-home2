@@ -1,7 +1,21 @@
 # install services in the cluster
 
+# Gather facts for the cluster master node
+- name: Gather facts for control plane server
+  ansible.builtin.setup:
+    filter: "ansible_default_ipv4"
+  delegate_to: "{{ k3s_control_plane }}"
+  delegate_facts: true
+
+- name: Install Nginx Ingress
+  ansible.builtin.include_tasks: nginx-ingress.yml
+
 - name: Install Grafana
   ansible.builtin.include_tasks: grafana.yml
+  when: |
+    'grafana' in install_list
 
 - name: Install K8S Dashboard
   ansible.builtin.include_tasks: dashboard.yml
+  when: |
+    'dashboard' in install_list

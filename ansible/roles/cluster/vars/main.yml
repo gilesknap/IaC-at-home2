@@ -1,4 +1,0 @@
-# track the node name of the control plane
-cluster_node: "{{ hostvars[inventory_hostname].groups.all_nodes[0] }}"
-cluster_master: "{{ hostvars[cluster_node].control_plane }}"
-cluster_master_ip: "{{ hostvars[cluster_master]['ansible_default_ipv4']['address'] }}"
