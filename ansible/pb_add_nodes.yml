@@ -1,12 +1,15 @@
 # Add existing nodes to ansible control.
-# This is for additional nodes not in a turing pi.
-# It is assuming that there is no BMC for the node.
-# This means that the node will need to have had an OS installed on it manually.
-# Preferred OS is Ubuntu 24.04 LTS but most recent Debian will be OK.
 #
-# To add a node to the ansible control, do this:
+# This playbook to be run manually, standalone after adding nodes to the
+# extra_nodes group in hosts.yml
 #
-# - edit hosts.yml and add new nodes to the root of extra_nodes group
+# This is for additional nodes not in a turing pi, meaning that the node will
+# need to have had an OS installed on it manually.
+# The preferred OS is Ubuntu 24.04 LTS but any recent Debian will be OK.
+#
+# To add a node, giving ansible control, do this:
+#
+# - edit hosts.yml and add new nodes to the extra_nodes group
 # - cd ansible
 # - ansible-playbook pb_add_nodes.yml
 #
@@ -14,8 +17,8 @@
 # can ssh to the extra nodes and has sudo privileges
 #
 # Now you can do:
-# - ansible-playbook pb_k8s.yml
-# the new nodes should get added to your k8s cluster
+# - ansible-playbook pb_k3s.yml
+# the new nodes should get added to your k3s cluster
 
 - name: Add non turingpi nodes to ansible control
   hosts: extra_nodes
@@ -34,3 +37,37 @@
 
   vars:
     ansible_sudo_pass: "{{ ansible_password }}"
+
+  tasks:
+    - name: Create ansible user (with no password login)
+      ansible.builtin.user:
+        name: "ansible"
+        shell: /bin/bash
+        createhome: true
+        state: present
+      become: true
+
+    - name: Create ssh directory for ansible user
+      ansible.builtin.file:
+        dest: "/home/ansible/.ssh"
+        state: directory
+        owner: "ansible"
+        mode: "0700"
+      become: true
+
+    - name: Add keys to ansible users authorized_keys
+      ansible.builtin.copy:
+        src: "pub_keys/ansible_rsa.pub"
+        dest: "/home/ansible/.ssh/authorized_keys"
+        owner: "ansible"
+        mode: "0600"
+      become: true
+
+    - name: Add ansible user to passwordless sudoers
+      ansible.builtin.copy:
+        content: "ansible ALL=(ALL) NOPASSWD:ALL"
+        dest: "/etc/sudoers.d/ansible"
+        owner: "root"
+        group: "root"
+        mode: "0440"
+      become: true

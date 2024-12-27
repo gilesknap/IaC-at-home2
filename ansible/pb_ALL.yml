@@ -2,7 +2,7 @@
   import_playbook: pb_flash_os.yml
 
 - name: Setup K3s servers
-  import_playbook: pb_k8s.yml
+  import_playbook: pb_k3s.yml
 
 - name: Setup the cluster
   import_playbook: pb_cluster.yml

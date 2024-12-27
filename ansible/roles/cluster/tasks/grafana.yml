@@ -20,7 +20,8 @@
           hosts:
             - "{{ k3s_cluster_domain }}"
           path: /grafana
-        #adminPassword: "prom-operator"
+        # adminPassword: "prom-operator"
+        #
         # # To make Grafana persistent (Using Statefulset)
         # TODO - need a decent storage class to use this
         # persistence:
