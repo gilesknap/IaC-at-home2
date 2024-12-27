@@ -30,7 +30,7 @@ lets_encrypt_email: giles.knap@gilesk.ddns.net
 # List of features to install into the cluster, comment out to remove.
 # Each entry must match the name of a tasks yaml file in the cluster role.
 install_list:
+  # - ingress
   - dashboard
   - grafana
-  - ingress
-  - lets_encrypt
+  # - lets_encrypt

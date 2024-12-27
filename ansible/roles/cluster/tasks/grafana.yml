@@ -1,13 +1,6 @@
-- name: Install Grafana on the cluster
-  kubernetes.core.helm:
-    chart_repo_url: https://prometheus-community.github.io/helm-charts
-    chart_ref: kube-prometheus-stack
-    release_name: grafana-prometheus
-    create_namespace: true
-    namespace: monitoring
-    state: present
-    # https://github.dev/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
-    values:
+- name: Prepare ingress settings
+  ansible.builtin.set_fact:
+    grafana_ingress_values:
       grafana:
         grafana.ini:
           server:
@@ -38,6 +31,19 @@
         #   size: 20Gi
         #   finalizers:
         #     - kubernetes.io/pvc-protection
+  when: "'ingress' in install_list"
+
+- name: Install Grafana on the cluster
+  kubernetes.core.helm:
+    chart_repo_url: https://prometheus-community.github.io/helm-charts
+    chart_ref: kube-prometheus-stack
+    release_name: grafana-prometheus
+    create_namespace: true
+    namespace: monitoring
+    state: present
+    # https://github.dev/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
+    values: "{{ ingress_values | default({}) }}"
+
 
 - name: Create port forward script for Grafana
   ansible.builtin.copy:

@@ -1,15 +1,6 @@
-# Install K8S Dashboard
-
-- name: Install K8S Dashboard using helm
-  kubernetes.core.helm:
-    chart_repo_url: https://kubernetes.github.io/dashboard/
-    chart_ref: kubernetes-dashboard
-    release_name: kubernetes-dashboard
-    create_namespace: true
-    namespace: kubernetes-dashboard
-    state: present
-    # https://github.dev/kubernetes/dashboard/blob/master/charts/kubernetes-dashboard/values.yaml
-    values:
+- name: Prepare ingress settings
+  ansible.builtin.set_fact:
+    dashboard_ingress_values:
       app:
         ingress:
           enabled: true
@@ -20,6 +11,18 @@
             - "{{ k3s_cluster_domain }}"
             - localhost
           path: /dashboard
+  when: "'ingress' in install_list"
+
+- name: Install K8S Dashboard using helm
+  kubernetes.core.helm:
+    chart_repo_url: https://kubernetes.github.io/dashboard/
+    chart_ref: kubernetes-dashboard
+    release_name: kubernetes-dashboard
+    create_namespace: true
+    namespace: kubernetes-dashboard
+    state: present
+    # https://github.dev/kubernetes/dashboard/blob/master/charts/kubernetes-dashboard/values.yaml
+    values: "{{ dashboard_ingress_values | default({}) }}"
 
 - name: Create a service account for the dashboard
   kubernetes.core.k8s:
