@@ -21,7 +21,7 @@
           type: LoadBalancer
           loadBalancerIP: "{{ k3s_control_plane_ip }}"
 
-- name: Install {{ item }} on the cluster
+- name: Cluster Install of {{ item }}
   ansible.builtin.include_tasks: "{{ item }}.yml"
   loop: "{{  install_list }}"
   when: install_list is defined

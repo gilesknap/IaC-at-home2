@@ -15,5 +15,4 @@
   hosts: all_nodes
   roles:
     - role: move_fs
-    - role: update
-
+    - role: update_packages
