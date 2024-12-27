@@ -21,6 +21,9 @@
           type: LoadBalancer
           loadBalancerIP: "{{ k3s_control_plane_ip }}"
 
+- name: Execute the cert-manager installation task
+  ansible.builtin.include_tasks: lets_encrypt.yml
+
 - name: Cluster Install of {{ item }}
   ansible.builtin.include_tasks: "{{ item }}.yml"
   loop: "{{  install_list }}"
