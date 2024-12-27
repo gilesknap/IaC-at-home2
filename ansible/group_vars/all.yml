@@ -16,6 +16,8 @@ zshrc: "{{ lookup('ansible.builtin.env', 'ZSHRC', default='${HOME}/.zshrc') }}"
 
 # tracks the node name of the control plane
 k3s_control_plane_ip: "{{ hostvars[k3s_control_plane]['ansible_default_ipv4']['address'] }}"
+# leave blank for latest stable version or https://github.com/k3s-io/k3s/releases
+k3s_version: v1.29.11+k3s1
 
 # EDIT BELOW THIS LINE #########################################################
 

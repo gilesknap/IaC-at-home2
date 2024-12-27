@@ -19,9 +19,9 @@
   ansible.builtin.include_tasks: control.yml
   when: is_control_plane
 
+- name: Configure kubectl for the execution environment
+  ansible.builtin.include_tasks: kubeconfig.yml
+
 - name: Execute worker node tasks
   ansible.builtin.include_tasks: worker.yml
   when: not is_control_plane
-
-- name: Execute kube config tasks
-  ansible.builtin.include_tasks: kubeconfig.yml
