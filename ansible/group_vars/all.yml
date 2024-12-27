@@ -2,7 +2,6 @@
 
 # The user to create on each node for access by ansible
 ansible_account: "ansible"
-ansible_user: "{{ ansible_account }}" # overridden in host.yml where needed
 # The user used to connect to the tpi BMCs
 tpi_user: root
 # A path to some storage on the tpi BMCs used for downloading os images

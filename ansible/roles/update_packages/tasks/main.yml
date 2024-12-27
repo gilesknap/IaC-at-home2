@@ -1,0 +1,9 @@
+# note that ansible does not recommend updating to latest. However, we choose
+# to do so because we install the OS from and image and wish to pick up
+# any security updates that may have been released since the image was created.
+# TODO - is there a preferred way to do this?
+- name: Update all packages (package manager agnostic)
+  ansible.builtin.package: # noqa package-latest
+    name: "*"
+    state: latest
+  become: true

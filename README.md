@@ -7,7 +7,7 @@ An infrastructure as code project to commission a k3s cluster.
 Supported hardware:
 - One or more Turing Pi v2.5.0 boards
 - With compute modules RK1 or CM4
-- ANY additional Debian based nodes not in a Turing Pi (OS pre-installed)
+- ANY additional Linux nodes not in a Turing Pi (OS pre-installed)
 
 NOTE: All of the ansible playbooks after the initial flashing of the compute modules can be applied to any k3s cluster. Only the initial flashing of the compute modules is specific to the Turing Pi.
 

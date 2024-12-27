@@ -1,7 +1,6 @@
 - name: Extract the group that lists this turing pi's nodes
   ansible.builtin.set_fact:
-    nodes: |-
-      {{ groups[inventory_hostname+"_nodes"] }}
+    nodes: "{{ groups[inventory_hostname + '_nodes'] }}"
 
 - name: List the nodes for '{{ inventory_hostname }}'
   ansible.builtin.debug:

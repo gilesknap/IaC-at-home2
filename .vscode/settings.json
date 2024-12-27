@@ -8,6 +8,7 @@
         "kubeconfig",
         "lineinfile",
         "noerror",
+        "noqa",
         "playbook",
         "turingpi",
         "uboot",
