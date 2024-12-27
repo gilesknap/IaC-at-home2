@@ -3,24 +3,11 @@
 # determine if this node is the control plane
 - name: Check if control plane
   ansible.builtin.set_fact:
-    is_control_plane: "{{ k3s_master == inventory_hostname }}"
+    is_control_plane: "{{ k3s_control_plane == inventory_hostname }}"
 
 - name: Output control plane status
   ansible.builtin.debug:
     var: is_control_plane
-
-- name: Ensure clean package manger
-  ansible.builtin.command: sudo dpkg --configure -a
-  become: true
-  changed_when: false # sort of
-
-- name: Update all packages
-  ansible.builtin.apt:
-    name: "*"
-    state: latest
-    update_cache: true
-    only_upgrade: true
-  become: true
 
 - name: Get k3s script
   ansible.builtin.get_url:

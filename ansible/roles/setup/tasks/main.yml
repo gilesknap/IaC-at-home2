@@ -1,6 +1,0 @@
-# setup anything needed in the execution environment
-
-- name: Debug
-  ansible.builtin.debug:
-    var: ansible_facts
-  when: do_debug

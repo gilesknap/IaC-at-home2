@@ -1,6 +1,2 @@
-# tracks the node name of the control plane
-k3s_master: "{{ hostvars[inventory_hostname].control_plane }}"
-k3s_master_ip: "{{ hostvars[k3s_master]['ansible_default_ipv4']['address'] }}"
-
 # force re-install of k3s when true
 k3s_force: false

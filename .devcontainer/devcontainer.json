@@ -7,9 +7,14 @@
 	},
 	// enable ping to test connectivity
 	"runArgs": [
-		"--cap-add=NET_ADMIN",
-		"--cap-add=NET_RAW",
+		"--network=host",
 		"--security-opt=label=disable"
+	],
+	// reserve some ports for port forwarding with kubectl - because when auto
+	// port forward goes wrong things get nasty
+	"appPort": [
+		8443, // dashboard
+		3000 // grafana
 	],
 	// make sure files are available for mounting
 	"initializeCommand": "touch ${localEnv:HOME}/.ansible_vault_password",
@@ -25,6 +30,12 @@
 				"mhutchie.git-graph",
 				"ms-kubernetes-tools.vscode-kubernetes-tools"
 			]
+		},
+		// port forwarding is getting into loops - disabling until I can diagnose
+		"settings": {
+			"remote.autoForwardPorts": false,
+			"remote.restoreForwardedPorts": false,
+			"remote.forwardOnOpen": false
 		}
 	},
 	// TODO - at present this only works for rootless - investigate how to do rootful
