@@ -8,7 +8,7 @@
   ansible.builtin.set_fact:
     cert_manager_version: "{{ cert_manager_version.json.tag_name }}"
 
-- name: Install cert-manager CRDs from the latest release manifest
+- name: Install cert-manager CRDs using the latest release manifest
   kubernetes.core.k8s:
     state: present
     src: "https://github.com/jetstack/cert-manager/releases/download/{{ cert_manager_version }}/cert-manager.crds.yaml"

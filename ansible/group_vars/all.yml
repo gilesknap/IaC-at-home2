@@ -31,9 +31,10 @@ lets_encrypt_email: giles.knap@gilesk.ddns.net
 # Each entry must match the name of a tasks yaml file in the cluster role.
 install_list:
   - ingress
-  # - dashboard
+  - dashboard
   - grafana
-  # - lets_encrypt
+  - lets_encrypt
+  - echo
 
 # control which phases of the ALL playbook are run
 do_flash: true
