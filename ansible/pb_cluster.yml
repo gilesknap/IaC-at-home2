@@ -1,5 +1,0 @@
-# Cluster Setup after K3s installation
-- name: Remaining cluster setup via client tools in the execution environment
-  hosts: localhost
-  roles:
-    - role: cluster

@@ -7,3 +7,4 @@
   hosts: localhost
   roles:
     - role: tools
+    - role: cluster
