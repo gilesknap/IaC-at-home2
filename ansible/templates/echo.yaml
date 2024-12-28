@@ -37,30 +37,19 @@ metadata:
   name: echo-ingress
   namespace: default
   # ADD TLS #1
-  # annotations:
-  #   kubernetes.io/tls-acme: "true"
+  annotations:
+    kubernetes.io/tls-acme: "true"
 spec:
   ingressClassName: nginx
   tls:
     # Replace the domain below with your domain accordingly.
     - hosts:
-        - gilesk.ddns.net
-        - node01.lan
+        - "{{ k3s_cluster_external_domain }}"
       # ADD TLS #2
-      # secretName: tls-echo-net
+      secretName: tls-echo-net
   rules:
     # Replace the domain below with your domain accordingly.
-    - host: gilesk.ddns.net
-      http:
-        paths:
-          - pathType: Prefix
-            path: /echo
-            backend:
-              service:
-                name: echo-service
-                port:
-                  number: 80
-    - host: node01.lan
+    - host: "{{ k3s_cluster_external_domain }}"
       http:
         paths:
           - pathType: Prefix

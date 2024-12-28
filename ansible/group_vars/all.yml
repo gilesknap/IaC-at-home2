@@ -33,7 +33,8 @@ install_list:
   - ingress
   - dashboard
   - grafana
-  # - lets_encrypt
+  - lets_encrypt
+  - echo
 
 # control which phases of the ALL playbook are run
 do_flash: true
