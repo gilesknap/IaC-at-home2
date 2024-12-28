@@ -1,4 +1,15 @@
 # Update each hosts ssh keys in known_hosts file.
+
+# Known hosts changes are unreliable for some reason - removing existing keys
+# first in an attempt to make the hosts file more deterministic.
+- name: Remove all old hosts keys prior to adding them
+  ansible.builtin.known_hosts:
+    name: "{{ item }}"
+    state: absent
+  loop: "{{ groups['all_nodes'] }}"
+  delegate_to: localhost
+  run_once: true
+
 - name: Get ssh public keys of new node {{ inventory_hostname }}
   delegate_to: localhost
   ansible.builtin.command:
