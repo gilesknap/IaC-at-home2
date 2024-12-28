@@ -1,11 +1,17 @@
-# Nodes will just have been created by the flash role, wait for them to be ready
-# and update our known_hosts file with their ssh public keys
+# Update each hosts ssh keys in known_hosts file.
 
-- name: Get ssh public key of new node {{ inventory_hostname }}
+- name: Remove all old hosts keys prior to adding them
+  ansible.builtin.known_hosts:
+    name: "{{ item }}"
+    state: absent
+  loop: "{{ groups['all_nodes'] }}"
+  delegate_to: localhost
+  run_once: true
+
+- name: Get ssh public keys of new node {{ inventory_hostname }}
   delegate_to: localhost
   ansible.builtin.command:
     cmd: "ssh-keyscan {{ inventory_hostname }}"
-    creates: "/tmp/{{ inventory_hostname }}_ssh_key"
   register: new_node_ssh_keys
   changed_when: false
 
@@ -15,8 +21,6 @@
     name: "{{ inventory_hostname }}"
     key: "{{ item }}"
     path: "{{ known_hosts_file }}"
+    state: present
   loop: "{{ new_node_ssh_keys.stdout_lines }}"
-
-- name: Debug message for node readiness
-  ansible.builtin.debug:
-    msg: "{{ inventory_hostname }} is ready"
+  register: known_hosts_update

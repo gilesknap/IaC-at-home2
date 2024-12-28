@@ -8,6 +8,7 @@
 - name: Process TP node
   # this when clause honours limits e.g.
   # ansible-playbook pb_flash_os.yml --limit turingpi,node02
+  # TODO is this check still working with the new format of hosts.yml?
   when: node_name in query('inventory_hostnames', ansible_limit | default('all'))
   block:
     - name: Fetch Node Variables for {{ node_name }}
@@ -22,6 +23,7 @@
         port: 22
         timeout: 2
       register: node_status
+      # TODO change this to failed_when: false BUT make sure the next check works
       ignore_errors: true
 
     - name: Flash images
