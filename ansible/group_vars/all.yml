@@ -35,3 +35,8 @@ install_list:
   - dashboard
   - grafana
   # - lets_encrypt
+
+# control which phases of the ALL playbook are run
+do_flash: true
+do_k3s: true
+do_cluster: true

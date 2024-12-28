@@ -36,6 +36,7 @@ kind: Ingress
 metadata:
   name: echo-ingress
   namespace: default
+  # ADD TLS #1
   # annotations:
   #   kubernetes.io/tls-acme: "true"
 spec:
@@ -45,6 +46,7 @@ spec:
     - hosts:
         - gilesk.ddns.net
         - node01.lan
+      # ADD TLS #2
       # secretName: tls-echo-net
   rules:
     # Replace the domain below with your domain accordingly.
