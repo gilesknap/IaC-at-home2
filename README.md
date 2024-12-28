@@ -74,3 +74,10 @@ The list of services are in the variable `install_list` found in group_vars/all.
 ```bash
 ansible-playbook pb_cluster.yml -e '{ "install_list" : [grafana,dashboard] }'
 ```
+
+### shut down all nodes
+
+```bash
+ansible all_nodes -a "/sbin/shutdown now" -f 10 --become
+```
+
