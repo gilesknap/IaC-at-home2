@@ -8,6 +8,7 @@
   hosts: all_nodes, turing_pis
   # only gather facts after the nodes are added to known_hosts
   gather_facts: false
+  serial: 1
   roles:
     - role: known_hosts
 

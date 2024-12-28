@@ -1,15 +1,19 @@
 # Update each hosts ssh keys in known_hosts file.
 
-# Known hosts changes are unreliable for some reason - removing existing keys
-# first in an attempt to make the hosts file more deterministic.
-- name: Remove all old hosts keys prior to adding them
-  ansible.builtin.known_hosts:
-    name: "{{ item }}"
+# Known hosts changes are unreliable when ip address entries are left in
+# because they don't get replaced. This is particularly a problem when
+# nodes are being rebuilt and we have not fixed an IP for each node name.
+- name: Remove all ip address entries from known_hosts
+  ansible.builtin.lineinfile:
+    path: "{{ known_hosts_file }}"
+    regexp: '^\|1\|.*'
     state: absent
-  loop: "{{ groups['all_nodes'] }}"
   delegate_to: localhost
+  changed_when: false # not always true, but it's benign
   run_once: true
 
+# IMPORTANT: the playbook that runs this must use serial: 1
+# to avoid race conditions with writing to the known_hosts file.
 - name: Get ssh public keys of new node {{ inventory_hostname }}
   delegate_to: localhost
   ansible.builtin.command:
