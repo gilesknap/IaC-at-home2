@@ -1,22 +1,23 @@
 # Install the control plane for k3s
 
-- name: Remove k3s control plane if force is true
+- name: Remove k3s control plane if k3s_force=true
   ansible.builtin.command:
     cmd: k3s-uninstall.sh
     removes: /usr/local/bin/k3s-uninstall.sh
   when: k3s_force
 
-- name: Install k3s control plane
-  ansible.builtin.command:
-    cmd: |-
-      /tmp/k3s.sh server
+- name: Install k3s control plane version = {{ k3s_version }}
+  ansible.builtin.shell:
+    cmd: >
+      INSTALL_K3S_VERSION="{{ k3s_version }}"
+      INSTALL_K3S_EXEC="server
       --disable=traefik
       --flannel-backend=host-gw
       --tls-san={{ k3s_control_plane_ip }}
       --bind-address={{ k3s_control_plane_ip }}
       --advertise-address={{ k3s_control_plane_ip }}
-      --node-ip={{ k3s_control_plane_ip }}
-      --cluster-init
+      --node-ip={{ k3s_control_plane_ip }}"
+      /tmp/k3s.sh
     creates: /var/lib/rancher/k3s/server/node-token
   when: is_control_plane
   become: true

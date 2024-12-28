@@ -1,13 +1,6 @@
-- name: Install Grafana on the cluster
-  kubernetes.core.helm:
-    chart_repo_url: https://prometheus-community.github.io/helm-charts
-    chart_ref: kube-prometheus-stack
-    release_name: grafana-prometheus
-    create_namespace: true
-    namespace: monitoring
-    state: present
-    # https://github.dev/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
-    values:
+- name: Prepare ingress settings
+  ansible.builtin.set_fact:
+    grafana_ingress_values:
       grafana:
         grafana.ini:
           server:
@@ -17,8 +10,13 @@
         ingress:
           enabled: true
           ingressClassName: nginx
+          annotations:
+            # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+            # nginx.ingress.kubernetes.io/rewrite-target: /
+            kubernetes.io/tls-acme: "true"
           hosts:
             - "{{ k3s_cluster_domain }}"
+          secretName: tls-grafana
           path: /grafana
         # adminPassword: "prom-operator"
         #
@@ -33,3 +31,30 @@
         #   size: 20Gi
         #   finalizers:
         #     - kubernetes.io/pvc-protection
+  when: "'ingress' in install_list"
+
+- name: Install Grafana on the cluster
+  kubernetes.core.helm:
+    chart_repo_url: https://prometheus-community.github.io/helm-charts
+    chart_ref: kube-prometheus-stack
+    release_name: grafana-prometheus
+    create_namespace: true
+    namespace: monitoring
+    state: present
+    # https://github.dev/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
+    values: "{{ grafana_ingress_values | default({}) }}"
+
+
+- name: Create port forward script for Grafana
+  ansible.builtin.copy:
+    dest: "{{ bin_dir }}/grafana.sh"
+    content: |
+      #!/bin/bash
+
+      # Start a port-forward to the Grafana and background it
+      nohup kubectl -n monitoring port-forward deployment/grafana-prometheus 3000 &> /tmp/grafana-proxy.out &
+
+      echo
+      echo Grafana will be available at:
+      echo   http://localhost:3000
+    mode: "0755"

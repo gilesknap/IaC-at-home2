@@ -14,15 +14,28 @@ vault_password_file: "~/.ansible_vault_password"
 bin_dir: "{{ lookup('ansible.builtin.env', 'BIN_DIR', default='${HOME}/bin') }}"
 zshrc: "{{ lookup('ansible.builtin.env', 'ZSHRC', default='${HOME}/.zshrc') }}"
 
-# Domain name can be an external domain which routes to your control plane node
-# or an internal name that only resolves within your network.
-k3s_control_plane: node01
-k3s_cluster_domain: node01.lan
 # tracks the node name of the control plane
 k3s_control_plane_ip: "{{ hostvars[k3s_control_plane]['ansible_default_ipv4']['address'] }}"
+# leave blank for latest stable version or https://github.com/k3s-io/k3s/releases
+# k3s_version: v1.29.11+k3s1
+k3s_version: ""
+
+# EDIT BELOW THIS LINE #########################################################
+
+k3s_control_plane: node01 # the node name of the control plane
+k3s_cluster_domain: node01.lan # the internal DNS name of the control plane node
+k3s_cluster_external_domain: gilesk.ddns.net
+lets_encrypt_email: giles.knap@gilesk.ddns.net
 
 # List of features to install into the cluster, comment out to remove.
 # Each entry must match the name of a tasks yaml file in the cluster role.
 install_list:
-  - dashboard
+  - ingress
+  # - dashboard
   - grafana
+  # - lets_encrypt
+
+# control which phases of the ALL playbook are run
+do_flash: true
+do_k3s: true
+do_cluster: true

@@ -29,12 +29,12 @@ Thanks to drunkcoding.net for some great tutorials that helped with putting this
 - Ubuntu 24.04 LTS
 - Latest K3S
 - Nginx ingress controller
+- Let's Encrypt Cert Manager
 - K8S Dashboard
 - Prometheus and Grafana
 
 ## Planned Software
 
-- Let's Encrypt Cert Manager
 - Longhorn
 - ArgoCD
 - KubeVirt
@@ -48,9 +48,14 @@ See the [setup](docs/setup.md) to create some keypairs and access the turingpi(s
 - install podman 4.3 or higher, git and vscode
   - configure vscode to use podman for devcontainers (docker support will be added later)
 - clone this repo, open in vscode and reopen in devcontainer
-- cd ansible
 - edit the hosts.yml file to match the turingpi's and nodes you have
-- ansible-playbook pb_ALL.yml
+- also edit group_vars/all.yml especially letsencrypt_email
+- kick off the ansible playbook:
+
+```bash
+cd ansible
+ansible-playbook pb_ALL.yml
+```
 
 ## Some How to's
 
@@ -62,4 +67,10 @@ limit hosts to the controlling turing pi and the nodes(s) to be re-flashed. Pass
 ansible-playbook pb_flash_os.yml --limit turingpi,node01 -e flash_force=true
 ```
 
+### install a subset of services
 
+The list of services are in the variable `install_list` found in group_vars/all.yml. To install a subset of services, edit this variable to include only the services you want to install.
+
+```bash
+ansible-playbook pb_cluster.yml -e '{ "install_list" : [grafana,dashboard] }'
+```

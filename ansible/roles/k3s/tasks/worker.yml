@@ -28,7 +28,7 @@
     in_cluster: |
       {{ k3s_nodes.stdout is search(inventory_hostname + " *Ready") }}
 
-- name: Remove k3s worker if force is true or the node is not in the cluster
+- name: Remove k3s worker if k3s_force=true or the node is not in the cluster
   ansible.builtin.command:
     cmd: k3s-agent-uninstall.sh
     removes: /usr/local/bin/k3s-agent-uninstall.sh
@@ -51,9 +51,13 @@
   register: node_token
   changed_when: false
 
-- name: Install k3s worker node # noqa command-instead-of-shell
-  ansible.builtin.shell:
-    cmd: K3S_URL="https://{{ k3s_control_plane_ip }}:6443" K3S_TOKEN="{{ node_token.stdout }}" /tmp/k3s.sh
+- name: Install k3s worker node version {{ k3s_version }}
+  ansible.builtin.shell: # noqa command-instead-of-shell
+    cmd: >
+      INSTALL_K3S_VERSION="{{ k3s_version }}"
+      K3S_URL="https://{{ k3s_control_plane_ip }}:6443"
+      K3S_TOKEN="{{ node_token.stdout }}"
+      /tmp/k3s.sh
   become: true
   changed_when: true
   when: not in_cluster
