@@ -51,8 +51,8 @@
   register: node_token
   changed_when: false
 
-- name: Install k3s worker node # noqa command-instead-of-shell
-  ansible.builtin.shell:
+- name: Install k3s worker node version {{ k3s_version }}
+  ansible.builtin.shell: # noqa command-instead-of-shell
     cmd: >
       INSTALL_K3S_VERSION="{{ k3s_version }}"
       K3S_URL="https://{{ k3s_control_plane_ip }}:6443"

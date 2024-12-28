@@ -1,17 +1,17 @@
-- name: Prepare ingress settings
-  ansible.builtin.set_fact:
-    dashboard_ingress_values:
-      app:
-        ingress:
-          enabled: true
-          ingressClassName: nginx
-          useDefaultIngressClass: true
-          pathType: Prefix
-          hosts:
-            - "{{ k3s_cluster_domain }}"
-            - localhost
-          path: /dashboard
-  when: "'ingress' in install_list"
+# - name: Prepare ingress settings
+#   ansible.builtin.set_fact:
+#     dashboard_ingress_values:
+#       app:
+#         ingress:
+#           enabled: true
+#           ingressClassName: nginx
+#           useDefaultIngressClass: true
+#           pathType: Prefix
+#           hosts:
+#             - "{{ k3s_cluster_domain }}"
+#             - localhost
+#           path: /dashboard
+#   when: "'ingress' in install_list"
 
 - name: Install K8S Dashboard using helm
   kubernetes.core.helm:

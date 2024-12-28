@@ -17,7 +17,8 @@ zshrc: "{{ lookup('ansible.builtin.env', 'ZSHRC', default='${HOME}/.zshrc') }}"
 # tracks the node name of the control plane
 k3s_control_plane_ip: "{{ hostvars[k3s_control_plane]['ansible_default_ipv4']['address'] }}"
 # leave blank for latest stable version or https://github.com/k3s-io/k3s/releases
-k3s_version: v1.29.11+k3s1
+# k3s_version: v1.29.11+k3s1
+k3s_version: ""
 
 # EDIT BELOW THIS LINE #########################################################
 
@@ -30,7 +31,7 @@ lets_encrypt_email: giles.knap@gilesk.ddns.net
 # List of features to install into the cluster, comment out to remove.
 # Each entry must match the name of a tasks yaml file in the cluster role.
 install_list:
-  # - ingress
+  - ingress
   - dashboard
   - grafana
   # - lets_encrypt
