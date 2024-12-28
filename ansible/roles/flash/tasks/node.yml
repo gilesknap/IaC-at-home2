@@ -11,6 +11,10 @@
   # TODO is this check still working with the new format of hosts.yml?
   when: node_name in query('inventory_hostnames', ansible_limit | default('all'))
   block:
+    - name: Increment the retry count
+      ansible.builtin.set_fact:
+        retry_count: "{{ (retry_count | default(-1)) | int + 1 }}"
+
     - name: Fetch Node Variables for {{ node_name }}
       ansible.builtin.set_fact:
         node: "{{ hostvars[node_name] }}"
@@ -21,7 +25,7 @@
       ansible.builtin.wait_for:
         host: "{{ node_name }}"
         port: 22
-        timeout: 2
+        timeout: 4
       register: node_status
       # TODO change this to failed_when: false BUT make sure the next check works
       ignore_errors: true
@@ -34,3 +38,10 @@
       ansible.builtin.include_tasks: bootstrap.yml
       # if the node is already contactable then no need to do initial boot cloud init
       when: node_status is failed or flash_force
+
+  rescue:
+    - ansible.builtin.fail: # noqa name
+        msg: Maximum retries of grouped tasks reached
+      when: retry_count | int == 2 | int
+
+    - ansible.builtin.include_tasks: node.yml # noqa name
