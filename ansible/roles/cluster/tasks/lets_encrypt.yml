@@ -6,7 +6,7 @@
 
 - name: Set the cert-manager version
   ansible.builtin.set_fact:
-    cert_manager_version: "{{ cert_manager_version.json.tag_name }}"
+    cert_manager_version: "{{ cert_manager_version.json.tag_name | default('v1.16.2') }}"
 
 - name: Install cert-manager CRDs using the latest release manifest
   kubernetes.core.k8s:
@@ -26,6 +26,8 @@
       ingressShim:
         defaultIssuerName: "letsencrypt-prod"
         defaultIssuerKind: "ClusterIssuer"
+  retries: 5 # retries in case ingress is not ready
+  delay: 10
 
 - name: Create a ClusterIssuer for Let's Encrypt
   kubernetes.core.k8s:

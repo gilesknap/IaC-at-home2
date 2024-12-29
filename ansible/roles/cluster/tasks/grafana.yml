@@ -43,7 +43,8 @@
     state: present
     # https://github.dev/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
     values: "{{ grafana_ingress_values | default({}) }}"
-
+  retries: 5 # retries in case ingress is not ready
+  delay: 10
 
 - name: Create port forward script for Grafana
   ansible.builtin.copy:

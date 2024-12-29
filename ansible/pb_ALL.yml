@@ -5,7 +5,3 @@
 - name: Setup K3s servers
   import_playbook: pb_k3s.yml
   when: do_k3s is true
-
-- name: Setup the cluster
-  import_playbook: pb_cluster.yml
-  when: do_cluster is true

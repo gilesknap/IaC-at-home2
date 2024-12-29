@@ -5,9 +5,10 @@
     - role: flash
 
 - name: Prepare the nodes for further provisioning
-  hosts: all_nodes
+  hosts: all_nodes, turing_pis
   # only gather facts after the nodes are added to known_hosts
   gather_facts: false
+  serial: 1
   roles:
     - role: known_hosts
 

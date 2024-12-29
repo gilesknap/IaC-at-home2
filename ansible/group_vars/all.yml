@@ -16,12 +16,17 @@ zshrc: "{{ lookup('ansible.builtin.env', 'ZSHRC', default='${HOME}/.zshrc') }}"
 
 # tracks the node name of the control plane
 k3s_control_plane_ip: "{{ hostvars[k3s_control_plane]['ansible_default_ipv4']['address'] }}"
-# leave blank for latest stable version or https://github.com/k3s-io/k3s/releases
-# k3s_version: v1.29.11+k3s1
-k3s_version: ""
+# k3s_version is blank for latest stable release or use a specific version fr
+# https://github.com/k3s-io/k3s/releases e.g. v1.29.11+k3s1
+k3s_version:
+
+# control which phases of the ALL playbook are run
+do_flash: true
+do_k3s: true
 
 # EDIT BELOW THIS LINE #########################################################
 
+local_domain: .lan # how to address local nodes with dig
 k3s_control_plane: node01 # the node name of the control plane
 k3s_cluster_domain: node01.lan # the internal DNS name of the control plane node
 k3s_cluster_external_domain: gilesk.ddns.net
@@ -35,8 +40,3 @@ install_list:
   - grafana
   - lets_encrypt
   - echo
-
-# control which phases of the ALL playbook are run
-do_flash: true
-do_k3s: true
-do_cluster: true

@@ -4,6 +4,7 @@
 - name: Setup known_hosts
   hosts: all_nodes, turing_pis
   gather_facts: false
+  serial: 1
   roles:
     - role: known_hosts
 
