@@ -1,0 +1,21 @@
+- name: Test for existence of nginx ingress controller
+  ansible.builtin.command: kubectl get -n nginx-ingress ingressclass nginx
+  register: nginx_ingress_controller
+  failed_when: false
+  changed_when: false
+
+- name: set ingress controller existence variable
+  ansible.builtin.set_fact:
+    ingress_controller_exists: "{{ nginx_ingress_controller.rc == 0 }}"
+  when: nginx_ingress_controller.rc == 0
+
+- name: Test for existence of cert manager
+  ansible.builtin.command: kubectl get -n cert-manager deployments cert-manager
+  register: cert_manager
+  failed_when: false
+  changed_when: false
+
+- name: set cert manager existence variable
+  ansible.builtin.set_fact:
+    cert_manager_exists: "{{ cert_manager.rc == 0 }}"
+  when: cert_manager.rc == 0

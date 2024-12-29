@@ -83,12 +83,10 @@ ansible all_nodes -a "/sbin/shutdown now" -f 10 --become
 
 ### run a single role standalone
 
-e.g. to test the know hosts role
-
 ```bash
 # test the known_hosts role against all nodes
 ansible all_nodes -m include_role -a name=known_hosts
-# run the cluster installs only
-ansible localhost -m include_role -a name=cluster
+# run the cluster installs only and choose a list of services to install
+ansible localhost -m include_role -a name=cluster -e '{ install_list: [ingress,dashboard] }'
 ```
 
