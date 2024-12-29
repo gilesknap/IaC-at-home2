@@ -1,0 +1,4 @@
+- name: Install cluster services
+  hosts: localhost
+  roles:
+    - role: cluster

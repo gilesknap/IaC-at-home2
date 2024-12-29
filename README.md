@@ -78,7 +78,7 @@ ansible all_nodes -a "/sbin/shutdown now" -f 10 --become
 
 ```bash
 # run the cluster installs only and choose a list of services to (re-)install
-ansible localhost -m include_role -a name=cluster -e '{ install_list: [ingress,dashboard] }'
+ansible localhost -m include_role -a name=cluster -e '{ cluster_install_list: [ingress,dashboard] }'
 # test the known_hosts role against all nodes
 ansible all_nodes -m include_role -a name=known_hosts
 ```

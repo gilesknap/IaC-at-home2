@@ -1,0 +1,48 @@
+# This task file is a generic way to install a manifest, wait for some
+# pods to log a message, and then remove the manifest.
+#
+# Variables:
+# ar_namespace: the namespace to install the manifest
+# ar_manifest: the manifest to install
+# ar_filter: a substring filter to apply to the list of pods
+# ar_log_options: the options to pass to kubectl logs
+# ar_log_message: the message to wait for in the logs
+# ar_do_remove: set to false to not delete the manifest (for debugging)
+
+- name: Install manifest {{ ar_manifest }}
+  kubernetes.core.k8s:
+    src: "{{ ar_manifest }}"
+    namespace: "{{ ar_namespace }}"
+
+- name: Get all pod names in the namespace {{ ar_namespace }}
+  kubernetes.core.k8s_info:
+    kind: Pod
+    namespace: "{{ ar_namespace }}"
+  register: ns_pods
+
+- name: List pods waiting for '{{ ar_log_message }}'
+  ansible.builtin.debug:
+    msg: Waiting for pod {{ item.metadata.name }}...
+  loop: "{{ ns_pods.resources }}"
+  loop_control:
+    label: "{{ item.metadata.name }}"
+  when: item.metadata.name is search(ar_filter)
+
+- name: Wait for pods to log '{{ ar_log_message }}'
+  ansible.builtin.command:
+    cmd: kubectl logs -n {{ ar_namespace }} {{ item.metadata.name }} {{ ar_log_options }}
+  register: pod_logs
+  until: pod_logs.stdout.find(ar_log_message) != -1
+  changed_when: true
+  timeout: 300
+  loop: "{{ ns_pods.resources }}"
+  when: item.metadata.name is search(ar_filter)
+  loop_control:
+    label: "{{ item.metadata.name }}"
+
+- name: Remove manifest {{ ar_manifest }}
+  when: ar_do_remove | default(true)
+  kubernetes.core.k8s:
+    src: "{{ ar_manifest }}"
+    state: absent
+    namespace: "{{ ar_namespace }}"

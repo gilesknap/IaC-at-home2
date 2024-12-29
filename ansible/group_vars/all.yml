@@ -30,13 +30,14 @@ local_domain: .lan # how to address local nodes with dig
 k3s_control_plane: node01 # the node name of the control plane
 k3s_cluster_domain: node01.lan # the internal DNS name of the control plane node
 k3s_cluster_external_domain: gilesk.ddns.net
-lets_encrypt_email: giles.knap@gilesk.ddns.net
+domain_email: giles.knap@gilesk.ddns.net
 
 # List of features to install into the cluster, comment out to remove.
 # Each entry must match the name of a tasks yaml file in the cluster role.
-install_list:
+cluster_install_list:
   - ingress
+  - lets_encrypt
   - dashboard
   - grafana
-  - lets_encrypt
   - echo
+  - longhorn

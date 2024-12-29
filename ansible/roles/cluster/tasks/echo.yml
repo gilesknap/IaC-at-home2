@@ -1,3 +1,6 @@
+- name: Check dependencies
+  ansible.builtin.include_tasks: dependencies.yml
+
 - name: Render the echo service definition
   ansible.builtin.template:
     src: echo.yaml
@@ -8,4 +11,4 @@
   kubernetes.core.k8s:
     src: /tmp/echo.yaml
   # echo requires ingress and certs to work
-  when: "'ingress' in install_list and 'lets_encrypt' in install_list"
+  when: ingress_controller_exists and cert_manager_exists
