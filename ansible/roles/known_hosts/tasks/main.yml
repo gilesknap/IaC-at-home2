@@ -1,32 +1,37 @@
 # Update each hosts ssh keys in known_hosts file.
 
-# Known hosts changes are unreliable when ip address entries are left in
-# because they don't get replaced. This is particularly a problem when
-# nodes are being rebuilt and we have not fixed an IP for each node name.
-- name: Remove all ip address entries from known_hosts
-  ansible.builtin.lineinfile:
-    path: "{{ known_hosts_file }}"
-    regexp: '^\|1\|.*'
-    state: absent
-  delegate_to: localhost
-  changed_when: false # not always true, but it's benign
-  run_once: true
-
 # IMPORTANT: the playbook that runs this must use serial: 1
-# to avoid race conditions with writing to the known_hosts file.
-- name: Get ssh public keys of new node {{ inventory_hostname }}
+# to avoid race conditions with writing to the local known_hosts file.
+
+# First, remove any ip address known_hosts entries for the node. Discover its ip
+# with dig because we can't gather facts until ssh keys are updated.
+- name: Get node ip address with dig
+  delegate_to: localhost
+  ansible.builtin.command: dig +short {{ inventory_hostname }}{{ local_domain }}
+  register: node_ip
+  changed_when: false
+
+- name: Remove old known_host entries {{ node_ip.stdout }}
+  delegate_to: localhost
+  ansible.builtin.known_hosts:
+    name: "{{ item }}"
+    state: absent
+  loop: "{{ node_ip.stdout_lines }}"
+  changed_when: false # because this is clean-up on localhost only
+
+# Second, remove any hostname known_hosts entries for the node
+- name: Get ssh public keys of node {{ inventory_hostname }}
   delegate_to: localhost
   ansible.builtin.command:
     cmd: "ssh-keyscan {{ inventory_hostname }}"
   register: new_node_ssh_keys
   changed_when: false
 
-- name: Add/update the host public key in {{ known_hosts_file }}
+- name: Add/update the host's public keys in known_hosts file
   delegate_to: localhost
   ansible.builtin.known_hosts:
     name: "{{ inventory_hostname }}"
     key: "{{ item }}"
-    path: "{{ known_hosts_file }}"
     state: present
   loop: "{{ new_node_ssh_keys.stdout_lines }}"
   when: not item.startswith('#')
