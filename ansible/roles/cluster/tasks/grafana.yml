@@ -1,8 +1,15 @@
+- name: Check dependencies
+  ansible.builtin.include_tasks: dependencies.yml
+
+# TODO - this would be better as a template
 - name: Prepare ingress settings
   ansible.builtin.set_fact:
+    # https://github.dev/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
     grafana_ingress_values:
       grafana:
         grafana.ini:
+          # TODO not sure why this is needed since we have nginx.ingress.kubernetes.io/app-root
+          # TODO in fact the annotations are not being applied - need to look in the templates
           server:
             domain: "{{ k3s_cluster_domain }}"
             root_url: https://{{ k3s_cluster_domain }}/grafana/
@@ -11,14 +18,19 @@
           enabled: true
           ingressClassName: nginx
           annotations:
-            # nginx.ingress.kubernetes.io/ssl-redirect: "true"
-            # nginx.ingress.kubernetes.io/rewrite-target: /
-            kubernetes.io/tls-acme: "true"
+            kubernetes.io/ingress.class: nginx
+            nginx.ingress.kubernetes.io/ssl-redirect: "true"
+            nginx.ingress.kubernetes.io/rewrite-target: /$2
+            nginx.ingress.kubernetes.io/app-root: /grafana
+          #  kubernetes.io/tls-acme: "true"
           hosts:
             - "{{ k3s_cluster_domain }}"
-          secretName: tls-grafana
+          # tls:
+          #   - secretName: grafana-general-tls
+          #     hosts:
+          #       - gilesk.ddns.net
           path: /grafana
-        # adminPassword: "prom-operator"
+        adminPassword: "prom-operator"
         #
         # # To make Grafana persistent (Using Statefulset)
         # TODO - need a decent storage class to use this
@@ -31,7 +43,7 @@
         #   size: 20Gi
         #   finalizers:
         #     - kubernetes.io/pvc-protection
-  when: "'ingress' in install_list"
+  when: ingress_controller_exists
 
 - name: Install Grafana on the cluster
   kubernetes.core.helm:
@@ -41,7 +53,6 @@
     create_namespace: true
     namespace: monitoring
     state: present
-    # https://github.dev/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
     values: "{{ grafana_ingress_values | default({}) }}"
   retries: 5 # retries in case ingress is not ready
   delay: 10
