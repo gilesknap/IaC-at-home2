@@ -68,14 +68,6 @@ limit hosts to the controlling turing pi and the nodes(s) to be re-flashed. Pass
 ansible-playbook pb_flash_os.yml --limit turingpi,node01 -e flash_force=true
 ```
 
-### install a subset of services
-
-The list of services are in the variable `install_list` found in group_vars/all.yml. To install a subset of services, edit this variable to include only the services you want to install.
-
-```bash
-ansible-playbook pb_cluster.yml -e '{ "install_list" : [grafana,dashboard] }'
-```
-
 ### shut down all nodes
 
 ```bash
@@ -85,9 +77,9 @@ ansible all_nodes -a "/sbin/shutdown now" -f 10 --become
 ### run a single role standalone
 
 ```bash
+# run the cluster installs only and choose a list of services to (re-)install
+ansible localhost -m include_role -a name=cluster -e '{ install_list: [ingress,dashboard] }'
 # test the known_hosts role against all nodes
 ansible all_nodes -m include_role -a name=known_hosts
-# run the cluster installs only and choose a list of services to install
-ansible localhost -m include_role -a name=cluster -e '{ install_list: [ingress,dashboard] }'
 ```
 
