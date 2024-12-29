@@ -1,13 +1,5 @@
 # version of longhorn to install
 cluster_longhorn_version: v1.7.2
-cluster_longhorn_iscsi_manifest: "\
-  https://raw.githubusercontent.com/longhorn/longhorn/\
-  {{ cluster_longhorn_version }}\
-  /deploy/prerequisite/longhorn-iscsi-installation.yaml"
-cluster_longhorn_nfs_manifest: "\
-  https://raw.githubusercontent.com/longhorn/longhorn/\
-  {{ cluster_longhorn_version }}\
-  /deploy/prerequisite/longhorn-nfs-installation.yaml"
 cluster_longhorn_cli_tool: "\
   https://github.com/longhorn/cli/releases/download/\
   {{ cluster_longhorn_version }}\
