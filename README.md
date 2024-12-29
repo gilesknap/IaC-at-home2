@@ -15,6 +15,8 @@ Supported hardware:
 - Move OS to NVME or other storage device
 - Install of a multi-node k3s cluster
 - Install services into the cluster
+- Ansible execution environment automatically setup in a devcontainer
+- Minimal pre-requisites
 
 ## Current Software
 
@@ -24,6 +26,7 @@ Supported hardware:
 - Let's Encrypt Cert Manager
 - K8S Dashboard
 - Prometheus and Grafana
+- Longhorn
 
 ## Planned Software
 
