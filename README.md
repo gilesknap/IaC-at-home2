@@ -44,7 +44,7 @@ See the [setup](docs/setup.md) to create some keypairs and access the turingpi(s
   - configure vscode to use podman for devcontainers (docker support will be added later)
 - clone this repo, open in vscode and reopen in devcontainer
 - edit the hosts.yml file to match the turingpi's and nodes you have
-- also edit group_vars/all.yml especially letsencrypt_email
+- also edit group_vars/all.yml especially letsencrypt_email and admin_password
 - kick off the ansible playbook:
 
 ```bash

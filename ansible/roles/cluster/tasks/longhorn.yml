@@ -43,10 +43,28 @@
     namespace: longhorn-system
     state: present
 
-# TODO
-# create a credential secret
-# USER=<USERNAME_HERE>; PASSWORD=<PASSWORD_HERE>; echo "${USER}:$(openssl passwd -stdin -apr1 <<< ${PASSWORD})" >> auth
-# kubectl create secret generic -n longhorn-system basic-auth --from-file=auth
+- name: Check for secret
+  kubernetes.core.k8s_info:
+    kind: Secret
+    name: basic-auth
+    namespace: longhorn-system
+  register: longhorn_secret
+
+- name: Create a password secret for longhorn
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: |
+      set -e -o pipefail
+      echo -n "admin:$(echo -n {{ admin_password }}  | openssl passwd -stdin -apr1)" > /tmp/auth
+  when: longhorn_secret.resources | length == 0
+  changed_when: true
+
+# TODO I need to get some CAS sorted
+- name: Create a secret for longhorn
+  ansible.builtin.command: |
+    kubectl create secret generic basic-auth --from-file /tmp/auth -n longhorn-system
+  when: longhorn_secret.resources | length == 0
+  changed_when: true
 
 - name: Create a longhorn ingress
   kubernetes.core.k8s:

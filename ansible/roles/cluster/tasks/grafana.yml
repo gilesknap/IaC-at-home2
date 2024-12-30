@@ -29,7 +29,7 @@
           #     hosts:
           #       - gilesk.ddns.net
           path: /grafana
-        adminPassword: "prom-operator"
+        adminPassword: "{{ admin_password }}"
         #
         # # To make Grafana persistent (Using Statefulset)
         # TODO - need a decent storage class to use this
