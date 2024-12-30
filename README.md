@@ -63,6 +63,8 @@ Thanks to drunkcoding.net for some great tutorials that helped with putting this
 
 ## Some How to's
 
+All these commands are run from the ansible directory to pick up the default hosts.yml file.
+
 ### re-flash a single node
 
 limit hosts to the controlling turing pi and the nodes(s) to be re-flashed. Pass in the flash_force variable to force a re-flash.
@@ -74,7 +76,10 @@ ansible-playbook pb_flash_os.yml --limit turingpi,node01 -e flash_force=true
 ### shut down all nodes
 
 ```bash
+# shutdown all nodes
 ansible all_nodes -a "/sbin/shutdown now" -f 10 --become
+# or reboot all nodes
+ansible all_nodes -m reboot -f 10 --become
 ```
 
 ### run a single role standalone

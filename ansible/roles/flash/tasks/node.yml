@@ -5,6 +5,10 @@
     msg: |
       Processing node {{ node_name }}
 
+- name: Set the retry count
+  ansible.builtin.set_fact:
+    retry_count: 0
+
 - name: Process TP node
   # this when clause honours limits e.g.
   # ansible-playbook pb_flash_os.yml --limit turingpi,node02
@@ -13,7 +17,7 @@
   block:
     - name: Increment the retry count
       ansible.builtin.set_fact:
-        retry_count: "{{ (retry_count | default(-1)) | int + 1 }}"
+        retry_count: "{{ (retry_count | int + 1 }}"
 
     - name: Fetch Node Variables for {{ node_name }}
       ansible.builtin.set_fact:

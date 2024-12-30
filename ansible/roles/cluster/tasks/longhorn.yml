@@ -82,5 +82,4 @@
                       port:
                         number: 80
                   path: /longhorn($|/)(.*)
-                  pathType: Prefix
-      when: longhorn_check.stderr is search("error:")
+                  pathType: ImplementationSpecific
