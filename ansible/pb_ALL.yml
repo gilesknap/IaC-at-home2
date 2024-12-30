@@ -1,7 +1,11 @@
-- name: Flash Ubuntu on to all nodes
+- name: Flash Ubuntu on to All Nodes
   import_playbook: pb_flash_os.yml
   when: do_flash is true
 
-- name: Setup K3s servers
+- name: Setup K3s Servers
   import_playbook: pb_k3s.yml
   when: do_k3s is true
+
+- name: Setup Cluster Services
+  import_playbook: pb_k3s.yml
+  when: do_cluster is true

@@ -49,7 +49,7 @@ See the [setup](docs/setup.md) to create some keypairs and access the turingpi(s
 
 ```bash
 cd ansible
-ansible-playbook pb_ALL.yml
+ansible-playbook pb_ALL.yml -e do_flash=true
 ```
 ## Notes
 
@@ -70,7 +70,7 @@ All these commands are run from the ansible directory to pick up the default hos
 limit hosts to the controlling turing pi and the nodes(s) to be re-flashed. Pass in the flash_force variable to force a re-flash.
 
 ```bash
-ansible-playbook pb_flash_os.yml --limit turingpi,node01 -e flash_force=true
+ansible-playbook pb_flash_os.yml --limit turingpi,node01 -e do_flash=true -e flash_force=true
 ```
 
 ### shut down all nodes

@@ -20,11 +20,15 @@ k3s_control_plane_ip: "{{ hostvars[k3s_control_plane]['ansible_default_ipv4']['a
 # https://github.com/k3s-io/k3s/releases e.g. v1.29.11+k3s1
 k3s_version:
 
-# control which phases of the ALL playbook are run
-do_flash: true
+# control which phases of the ALL playbook are run. Override on the command line
+do_flash: false
 do_k3s: true
+do_cluster: true
 
-# EDIT BELOW THIS LINE #########################################################
+################################################################################
+# EDIT BELOW ###################################################################
+# The remaining variables are for personalization of the cluster ###############
+################################################################################
 
 local_domain: .lan # how to address local nodes with dig
 k3s_control_plane: node01 # the node name of the control plane
