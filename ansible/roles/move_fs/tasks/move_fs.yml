@@ -59,10 +59,14 @@
         src: "{{ root_dev }}"
         fstype: ext4
         state: unmounted
+      # in some failure modes a previous mount is still present
+      retries: 2
+      until: not ansible.posix.mounts | selectattr('path', 'equalto', '/mnt/new') | list
 
     - name: Run fsck in preparation for tune2fs
       ansible.builtin.command: fsck -fy {{ root_dev }}
       changed_when: true
+      retries: 2 # fsck will return non-zero if it fixes errors
 
     - name: Set the new UUID for the new root partition
       ansible.builtin.command: tune2fs {{ root_dev }} -U {{ new_uuid.stdout }}
