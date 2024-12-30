@@ -21,7 +21,7 @@ k3s_control_plane_ip: "{{ hostvars[k3s_control_plane]['ansible_default_ipv4']['a
 k3s_version:
 
 # control which phases of the ALL playbook are run. Override on the command line
-do_flash: false | (flash_force | default(false))
+do_flash: true
 do_k3s: true
 do_cluster: true
 
