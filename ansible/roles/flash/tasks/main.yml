@@ -6,14 +6,25 @@
   ansible.builtin.debug:
     var: nodes
 
+- name: Check if the control plane node is contactable
+  ansible.builtin.include_tasks: node_status.yml
+  vars:
+    node_name: "{{ k3s_control_plane }}"
+
 - name: Query user to verify control plane re-flash
   ansible.builtin.pause:
     prompt: |
       WARNING *************************************************************************
-      Re-flashing the control plane will fully rebuild the cluster. Are you sure? (y/n)
+      The control plane node '{{ k3s_control_plane }}' is not contactable.
+      This means that this command will attempt a re-flash the control plane.
+
+      Re-flashing the control plane will fully rebuild the cluster.
+      And may result in data loss.
+
+      Are you sure? (y/n)
   register: do_abort
   delegate_to: localhost
-  when: do_flash and k3s_control_plane in nodes and not flash_force
+  when: (do_flash and k3s_control_plane in nodes) and (not node_status or flash_force)
   run_once: true
 
 - name: Abort if user does not want to re-flash the control plane

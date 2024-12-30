@@ -59,9 +59,6 @@
         src: "{{ root_dev }}"
         fstype: ext4
         state: unmounted
-      # in some failure modes a previous mount is still present
-      retries: 2
-      until: not ansible.posix.mounts | selectattr('path', 'equalto', '/mnt/new') | list
 
     - name: Run fsck in preparation for tune2fs
       ansible.builtin.command: fsck -fy {{ root_dev }}
@@ -80,3 +77,11 @@
     - name: Reboot the node with the new root partition
       ansible.builtin.reboot:
         reboot_timeout: 200
+
+    # occasionally we still see a /mnt/new mount
+    - name: Unmount the new root partition
+      ansible.posix.mount:
+        path: /mnt/new
+        src: "{{ root_dev }}"
+        fstype: ext4
+        state: unmounted

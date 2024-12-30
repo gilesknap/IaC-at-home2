@@ -18,18 +18,16 @@
         - --token-ttl=86400
   when: ingress_controller_exists
 
-- name: Install K8S Dashboard using helm
-  kubernetes.core.helm:
-    chart_repo_url: https://kubernetes.github.io/dashboard/
-    chart_ref: kubernetes-dashboard
-    release_name: kubernetes-dashboard
-    create_namespace: true
-    namespace: kubernetes-dashboard
-    state: present
+- name: Install the helm chart for dashboard
+  ansible.builtin.include_tasks:
+    file: check_helm.yml
+  vars:
+    ch_release_name: kubernetes-dashboard
+    ch_namespace: kubernetes-dashboard
+    ch_chart_repo_url: https://kubernetes.github.io/dashboard/
+    ch_chart_ref: kubernetes-dashboard
     # https://github.dev/kubernetes/dashboard/blob/master/charts/kubernetes-dashboard/values.yaml
     values: "{{ dashboard_ingress_values | default({}) }}"
-  retries: 5 # retries in case ingress is not ready
-  delay: 10
 
 - name: Create a service account for the dashboard
   kubernetes.core.k8s:

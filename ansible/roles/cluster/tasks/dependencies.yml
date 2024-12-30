@@ -1,5 +1,5 @@
 - name: Test for existence of nginx ingress controller
-  ansible.builtin.command: kubectl get -n nginx-ingress ingressclass nginx
+  ansible.builtin.command: kubectl get -n ingress-nginx ingressclass nginx
   register: nginx_ingress_controller
   failed_when: false
   changed_when: false

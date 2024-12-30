@@ -23,25 +23,17 @@
       ansible.builtin.set_fact:
         node: "{{ hostvars[node_name] }}"
 
-    # determine if the node already can accept ssh
-    - name: Wait for {{ node_name }}
-      delegate_to: localhost
-      ansible.builtin.wait_for:
-        host: "{{ node_name }}"
-        port: 22
-        timeout: 4
-      register: node_status
-      # TODO change this to failed_when: false BUT make sure the next check works
-      ignore_errors: true
+    - name: Check if the node is contactable
+      ansible.builtin.include_tasks: node_status.yml
 
     - name: Flash images
       ansible.builtin.include_tasks: flash.yml
-      when: node_status is failed or flash_force
+      when: not node_status or flash_force
 
     - name: Bootstrap node to enable further ansible provisioning
       ansible.builtin.include_tasks: bootstrap.yml
       # if the node is already contactable then no need to do initial boot cloud init
-      when: node_status is failed or flash_force
+      when: not node_status or flash_force
 
   rescue:
     - ansible.builtin.fail: # noqa name

@@ -15,7 +15,6 @@ RUN pip install \
     ansible \
     argcomplete \
     ansible-lint \
-    helm-diff \
     jmespath \
     kubernetes
 

@@ -1,0 +1,40 @@
+# reusable task to see if a failed helm chart already exists and remove it
+# if so. Then go ahead and install the chart.
+#
+# Variables:
+#  ch_release_name: The name of the helm release
+#  ch_namespace: The namespace of the helm release
+#  ch_chart_repo_url: The URL of the helm chart repository
+#  ch_chart_ref: The reference to the helm chart
+#  ch_values: The values to pass to the helm chart
+#  ch_force: Whether to force the installation of the helm chart
+
+- name: Check for status of existing helm release for "{{ ch_release_name }}"
+  kubernetes.core.helm_info:
+    release_name: ch_release_name
+    namespace: ch_namespace
+  register: chart_state
+  failed_when: false
+
+- name: Report the pre-install status of the chart "{{ ch_release_name }}"
+  ansible.builtin.debug:
+    var: chart_state.status.status | default('None')
+
+- name: Delete any failed chart "{{ ch_release_name }}"
+  kubernetes.core.helm:
+    release_name: "{{ ch_release_name }}"
+    namespace: "{{ ch_namespace }}"
+    state: absent
+  when: chart_state.status.status | default('') == 'failed'
+
+- name: Install the chart "{{ ch_release_name }}"
+  kubernetes.core.helm:
+    chart_repo_url: "{{ ch_chart_repo_url }}"
+    chart_ref: "{{ ch_chart_ref }}"
+    release_name: "{{ ch_release_name }}"
+    create_namespace: true
+    namespace: "{{ ch_namespace }}"
+    force: "{{ ch_force | default(false) }}"
+    values: "{{ ch_values | default({}) }}"
+  retries: 1
+  delay: 20

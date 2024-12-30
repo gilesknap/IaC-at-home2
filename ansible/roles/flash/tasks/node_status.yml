@@ -1,0 +1,17 @@
+# determine if the node already can accept ssh connections in
+- name: Wait for {{ node_name }}
+  delegate_to: localhost
+  ansible.builtin.wait_for:
+    host: "{{ node_name }}"
+    port: 22
+    timeout: 4
+  register: node_connect
+  failed_when: false
+
+- name: Report Node Status for {{ node_name }}
+  ansible.builtin.debug:
+    var: node_connect
+
+- name: Set Node Status
+  ansible.builtin.set_fact:
+    node_status: "{{ not node_connect is search('Timeout') | bool }}"

@@ -44,17 +44,15 @@
         #     - kubernetes.io/pvc-protection
   when: ingress_controller_exists
 
-- name: Install Grafana on the cluster
-  kubernetes.core.helm:
-    chart_repo_url: https://prometheus-community.github.io/helm-charts
-    chart_ref: kube-prometheus-stack
-    release_name: grafana-prometheus
-    create_namespace: true
-    namespace: monitoring
-    state: present
+- name: Install the helm chart for Grafana and Prometheus
+  ansible.builtin.include_tasks:
+    file: check_helm.yml
+  vars:
+    ch_release_name: grafana-prometheus
+    ch_namespace: monitoring
+    ch_chart_repo_url: https://prometheus-community.github.io/helm-charts/
+    ch_chart_ref: kube-prometheus-stack
     values: "{{ grafana_ingress_values | default({}) }}"
-  retries: 5 # retries in case ingress is not ready
-  delay: 10
 
 - name: Create port forward script for Grafana
   ansible.builtin.copy:
