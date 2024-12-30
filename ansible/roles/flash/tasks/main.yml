@@ -6,6 +6,21 @@
   ansible.builtin.debug:
     var: nodes
 
+- name: Query user to verify control plane re-flash
+  ansible.builtin.pause:
+    prompt: |
+      WARNING *************************************************************************
+      Re-flashing the control plane will fully rebuild the cluster. Are you sure? (y/n)
+  register: do_abort
+  delegate_to: localhost
+  when: do_flash and k3s_control_plane in nodes and not flash_force
+  run_once: true
+
+- name: Abort if user does not want to re-flash the control plane
+  ansible.builtin.fail:
+    msg: "User aborted the re-flash of the control plane"
+  when: hostvars['localhost'].do_abort | default('y') != 'y'
+
 - name: Process the nodes for '{{ inventory_hostname }}'
   ansible.builtin.include_tasks: node.yml
   loop: "{{ nodes }}"
