@@ -8,8 +8,7 @@
     grafana_ingress_values:
       grafana:
         grafana.ini:
-          # TODO not sure why this is needed since we have nginx.ingress.kubernetes.io/app-root
-          # TODO in fact the annotations are not being applied - need to look in the templates
+          # TODO why is this needed instead of nginx.ingress.kubernetes.io/rewrite-target
           server:
             domain: "{{ k3s_cluster_domain }}"
             root_url: https://{{ k3s_cluster_domain }}/grafana/
@@ -20,8 +19,8 @@
           annotations:
             kubernetes.io/ingress.class: nginx
             nginx.ingress.kubernetes.io/ssl-redirect: "true"
-            nginx.ingress.kubernetes.io/rewrite-target: /$2
-            nginx.ingress.kubernetes.io/app-root: /grafana
+            # nginx.ingress.kubernetes.io/rewrite-target: /$2
+            # nginx.ingress.kubernetes.io/app-root: /grafana
           #  kubernetes.io/tls-acme: "true"
           hosts:
             - "{{ k3s_cluster_domain }}"
@@ -30,7 +29,7 @@
           #     hosts:
           #       - gilesk.ddns.net
           path: /grafana
-        adminPassword: "prom-operator"
+        adminPassword: "{{ admin_password }}"
         #
         # # To make Grafana persistent (Using Statefulset)
         # TODO - need a decent storage class to use this

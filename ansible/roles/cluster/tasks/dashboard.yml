@@ -14,6 +14,8 @@
             - "{{ k3s_cluster_domain }}"
             - localhost
           path: /dashboard
+      extraArgs:
+        - --token-ttl=86400
   when: ingress_controller_exists
 
 - name: Install K8S Dashboard using helm

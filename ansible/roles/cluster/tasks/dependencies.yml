@@ -4,7 +4,7 @@
   failed_when: false
   changed_when: false
 
-- name: set ingress controller existence variable
+- name: Set ingress controller existence variable
   ansible.builtin.set_fact:
     ingress_controller_exists: "{{ nginx_ingress_controller.rc == 0 }}"
   when: nginx_ingress_controller.rc == 0
@@ -15,7 +15,7 @@
   failed_when: false
   changed_when: false
 
-- name: set cert manager existence variable
+- name: Set cert manager existence variable
   ansible.builtin.set_fact:
     cert_manager_exists: "{{ cert_manager.rc == 0 }}"
   when: cert_manager.rc == 0

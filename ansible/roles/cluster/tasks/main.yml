@@ -7,8 +7,10 @@
   delegate_to: "{{ k3s_control_plane }}"
   delegate_facts: true
 
-# Install optional services from install_list
-- name: Cluster Install of {{ item }}
-  ansible.builtin.include_tasks: "{{ item }}.yml"
-  loop: "{{  install_list }}"
-  when: install_list is defined
+# Install optional services from cluster_install_list
+- name: Cluster Install of services
+  ansible.builtin.include_tasks: "{{ cluster_service }}.yml"
+  loop: "{{  cluster_install_list }}"
+  when: cluster_install_list is defined
+  loop_control:
+    loop_var: cluster_service

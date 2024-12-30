@@ -1,12 +1,70 @@
-- name: Install nginx-ingress on the cluster with IP {{ k3s_control_plane_ip }}
-  kubernetes.core.helm:
-    chart_repo_url: https://kubernetes.github.io/ingress-nginx
-    chart_ref: ingress-nginx
-    release_name: nginx
-    create_namespace: true
-    namespace: nginx-ingress
-    state: present
-    values:
-      controller:
-        service:
-          loadBalancerIP: "{{ k3s_control_plane_ip }}"
+# the nginx helm chart appears to succeed if there is already a partially
+# installed namespace. Here we provide some checks and set the force flag
+# if it looks wrong.
+#
+# Occasionally nginx-ingress-nginx-admission-patch hangs and once this happens
+# a reboot of all nodes is the only fix.
+
+- name: Set the retry count
+  ansible.builtin.set_fact:
+    retry_count: 0
+
+# use a retry block to reboot the nodes if the install fails
+- name: Install Ingress with Retry Logic
+  block:
+    - name: Increment the retry count
+      ansible.builtin.set_fact:
+        retry_count: "{{ retry_count | int + 1 }}"
+
+    - name: Check if nginx-ingress service exists
+      kubernetes.core.k8s_info:
+        kind: Service
+        name: nginx-ingress-nginx-controller
+        namespace: nginx-ingress
+      register: nginx_service
+      failed_when: false
+
+    - name: Check if nginx-ingress-nginx-admission-patch has failed
+      # this job still hanging around is a symptom of a failed install
+      kubernetes.core.k8s_info:
+        kind: Job
+        name: nginx-ingress-nginx-controller
+        namespace: nginx-job
+      register: nginx_job
+      failed_when: false
+
+    - name: Set state of ingress
+      ansible.builtin.set_fact:
+        ingress_bad_state: "{{ nginx_service.resources | length == 0 or nginx_job.resources | length > 0 }}"
+
+    - name: Install nginx-ingress on the cluster with IP {{ k3s_control_plane_ip }}
+      kubernetes.core.helm:
+        chart_repo_url: https://kubernetes.github.io/ingress-nginx
+        chart_ref: ingress-nginx
+        release_name: nginx
+        create_namespace: true
+        namespace: nginx-ingress
+        state: present
+        force: "{{ ingress_bad_state }}"
+        values:
+          controller:
+            service:
+              loadBalancerIP: "{{ k3s_control_plane_ip }}"
+
+  rescue:
+    - name: Check for maximum retries
+      ansible.builtin.fail:
+        msg: Maximum retries of grouped tasks reached
+      when: retry_count | int == 2 | int
+
+    # TODO this runs in series - how to parallelise?
+    - name: Reboot all nodes
+      ansible.builtin.reboot:
+      delegate_to: "{{ node }}"
+      changed_when: true
+      loop: "{{ groups['all_nodes'] }}"
+      loop_control:
+        loop_var: node
+
+    - name: Recurse into self for a retry
+      ansible.builtin.include_tasks: ingress.yml

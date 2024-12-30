@@ -39,7 +39,7 @@
         name: letsencrypt-prod
       spec:
         acme:
-          email: "{{ lets_encrypt_email }}"
+          email: "{{ domain_email }}"
           server: https://acme-v02.api.letsencrypt.org/directory
           privateKeySecretRef:
             name: letsencrypt-prod

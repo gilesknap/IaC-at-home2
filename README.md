@@ -15,6 +15,8 @@ Supported hardware:
 - Move OS to NVME or other storage device
 - Install of a multi-node k3s cluster
 - Install services into the cluster
+- Ansible execution environment automatically setup in a devcontainer
+- Minimal pre-requisites
 
 ## Current Software
 
@@ -24,6 +26,7 @@ Supported hardware:
 - Let's Encrypt Cert Manager
 - K8S Dashboard
 - Prometheus and Grafana
+- Longhorn
 
 ## Planned Software
 
@@ -41,12 +44,12 @@ See the [setup](docs/setup.md) to create some keypairs and access the turingpi(s
   - configure vscode to use podman for devcontainers (docker support will be added later)
 - clone this repo, open in vscode and reopen in devcontainer
 - edit the hosts.yml file to match the turingpi's and nodes you have
-- also edit group_vars/all.yml especially letsencrypt_email
+- also edit group_vars/all.yml especially letsencrypt_email and admin_password
 - kick off the ansible playbook:
 
 ```bash
 cd ansible
-ansible-playbook pb_ALL.yml
+ansible-playbook pb_ALL.yml -e do_flash=true
 ```
 ## Notes
 
@@ -60,25 +63,30 @@ Thanks to drunkcoding.net for some great tutorials that helped with putting this
 
 ## Some How to's
 
+All these commands are run from the ansible directory to pick up the default hosts.yml file.
+
 ### re-flash a single node
 
 limit hosts to the controlling turing pi and the nodes(s) to be re-flashed. Pass in the flash_force variable to force a re-flash.
 
 ```bash
-ansible-playbook pb_flash_os.yml --limit turingpi,node01 -e flash_force=true
+ansible-playbook pb_flash_os.yml --limit turingpi,node01 -e do_flash=true -e flash_force=true
 ```
 
 ### shut down all nodes
 
 ```bash
+# shutdown all nodes
 ansible all_nodes -a "/sbin/shutdown now" -f 10 --become
+# or reboot all nodes
+ansible all_nodes -m reboot -f 10 --become
 ```
 
 ### run a single role standalone
 
 ```bash
 # run the cluster installs only and choose a list of services to (re-)install
-ansible localhost -m include_role -a name=cluster -e '{ install_list: [ingress,dashboard] }'
+ansible localhost -m include_role -a name=cluster -e '{ cluster_install_list: [ingress,dashboard] }'
 # test the known_hosts role against all nodes
 ansible all_nodes -m include_role -a name=known_hosts
 ```
