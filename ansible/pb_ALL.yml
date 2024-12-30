@@ -7,5 +7,5 @@
   when: do_k3s is true
 
 - name: Setup Cluster Services
-  import_playbook: pb_k3s.yml
+  import_playbook: pb_cluster.yml
   when: do_cluster is true

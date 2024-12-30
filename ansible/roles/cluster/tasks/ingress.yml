@@ -58,21 +58,13 @@
       when: retry_count | int == 2 | int
 
     # TODO this runs in series - how to parallelise?
-    # TODO this is a dummy right now replace with reboot
     - name: Reboot all nodes
-      ansible.builtin.debug: reboot {{ node }}
+      ansible.builtin.reboot:
       delegate_to: "{{ node }}"
       changed_when: true
       loop: "{{ groups['all_nodes'] }}"
       loop_control:
         loop_var: node
-
-    - name: Failure report
-      ansible.builtin.fail:
-        msg: |
-          Ingress failed - try a reboot and re-run the cluster playbook.
-          If this succeeds then remove this message and fix above command
-          to automate the reboot.
 
     - name: Recurse into self for a retry
       ansible.builtin.include_tasks: ingress.yml
