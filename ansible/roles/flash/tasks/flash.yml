@@ -34,14 +34,14 @@
     dest: "{{ image.os_file }}"
     mode: "0644"
   register: os_file
-  when: os_file_stat.rc != 0
+  when: os_file_stat.rc | default(0) != 0
 
 - name: Scp image to BMC # noqa no-changed-when
   delegate_to: localhost
   ansible.builtin.command: |-
     scp {{ image.os_file }}
     {{ tpi_user }}@{{ inventory_hostname }}:{{ image.osf_remote }}
-  when: os_file_stat.rc != 0
+  when: os_file_stat.rc | default(0) != 0
 
 # this guarantees the state of the node and tpi flash will automatically turn in on
 - name: Turn off {{ node_name }} # noqa no-changed-when
@@ -51,6 +51,8 @@
   ansible.builtin.raw: |-
     tpi flash -n {{ node.slot_num }} --image-path {{ image.osf_remote }} --sha256 {{ image.sha }} > /tmp/flash.log 2>&1
   register: flash_results
+  # use pre_flashed to skip this step when testing bootstrapping
+  when: not flash_pre_flashed
 
 - name: Show flash results
   ansible.builtin.debug:

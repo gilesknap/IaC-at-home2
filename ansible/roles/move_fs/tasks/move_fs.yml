@@ -6,6 +6,10 @@
   when: root_dev != curr_root_dev
   become: true
   block:
+    - name: Record activation of a partition move
+      ansible.builtin.set_fact:
+        move_fs_triggered: true
+
     - name: Ensure target device is unmounted
       ansible.posix.mount:
         path: /mnt/new
@@ -63,6 +67,7 @@
     - name: Run fsck in preparation for tune2fs
       ansible.builtin.command: fsck -fy {{ root_dev }}
       changed_when: true
+      retries: 2 # fsck will return non-zero if it fixes errors
 
     - name: Set the new UUID for the new root partition
       ansible.builtin.command: tune2fs {{ root_dev }} -U {{ new_uuid.stdout }}
@@ -73,6 +78,14 @@
         cmd: U_BOOT_ROOT=root=UUID={{ new_uuid.stdout }} u-boot-update
       changed_when: true
 
-    - name: Reboot the node with the new root partition
-      ansible.builtin.reboot:
-        reboot_timeout: 200
+    - name: Reboot the node
+      ansible.builtin.include_tasks:
+        file: ../../roles/known_hosts/tasks/reboot.yml
+
+    # occasionally we still see a /mnt/new mount
+    - name: Unmount the new root partition
+      ansible.posix.mount:
+        path: /mnt/new
+        src: "{{ root_dev }}"
+        fstype: ext4
+        state: unmounted
