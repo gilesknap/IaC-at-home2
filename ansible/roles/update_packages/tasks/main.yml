@@ -1,13 +1,36 @@
-# note that ansible-lint does not recommend updating to latest. However,
-# we do so because we install the OS from and image and wish to pick up
-# any security updates that may have been released since the image was created.
-# TODO - is there a preferred way to do this?
+# Gathering facts like this allows the role to be run standalone
+- name: Gather facts for package manager
+  ansible.builtin.setup:
+    filter: ansible_pkg_mgr
 
-- name: Update all packages (package manager agnostic)
-  ansible.builtin.package: # noqa package-latest
+# I can't use the generic package manager module because it does not
+# have update_cache.
+- name: Update all packages with apt
+  ansible.builtin.apt:
     name: "*"
     state: latest
+    update_cache: true
+    only_upgrade: true
   become: true
   register: update_result
-  changed_when: update_result.changed
   notify: Reboot the node
+  when: ansible_pkg_mgr == 'apt'
+
+- name: Update all packages with dnf
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+    update_cache: true
+    update_only: true
+  become: true
+  register: update_result
+  notify: Reboot the node
+  when: ansible_pkg_mgr == 'dnf'
+
+- name: Update all packages with pacman
+  community.general.pacman:
+    upgrade: true
+  become: true
+  register: update_result
+  notify: Reboot the node
+  when: ansible_pkg_mgr == 'pacman'
