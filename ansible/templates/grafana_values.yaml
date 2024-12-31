@@ -1,40 +1,36 @@
-{% if (ingress_controller_exists | bool) %}
+# https://github.dev/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
 grafana:
-grafana.ini:
+  adminPassword: "{{ admin_password }}"
+{% if (ingress_controller_exists | bool) %}
+  grafana.ini:
     # TODO why is this needed instead of nginx.ingress.kubernetes.io/rewrite-target
     server:
-    domain: "{{ k3s_cluster_domain }}"
-    root_url: https://{{ k3s_cluster_domain }}/grafana/
-    serve_from_sub_path: true
-ingress:
+      domain: "{{ k3s_cluster_domain }}"
+      root_url: https://{{ k3s_cluster_domain }}/grafana/
+      serve_from_sub_path: true
+  ingress:
     enabled: true
     ingressClassName: nginx
     annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    # nginx.ingress.kubernetes.io/rewrite-target: /$2
-    # nginx.ingress.kubernetes.io/app-root: /grafana
+      kubernetes.io/ingress.class: nginx
+      # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      # nginx.ingress.kubernetes.io/rewrite-target: /$2
     #  kubernetes.io/tls-acme: "true"
     hosts:
-    - "{{ k3s_cluster_domain }}"
-    # tls:
-    #   - secretName: grafana-general-tls
-    #     hosts:
-    #       - gilesk.ddns.net
+      - "{{ k3s_cluster_domain }}"
+      # tls:
+      #   - secretName: grafana-general-tls
+      #     hosts:
+      #       - gilesk.ddns.net
     path: /grafana
-adminPassword: "{{ admin_password }}"
-#
-# # To make Grafana persistent (Using Statefulset)
-# TODO - need a decent storage class to use this
-# persistence:
-#   enabled: true
-#   type: sts
-#   storageClassName: "storageClassName"
-#   accessModes:
-#     - ReadWriteOnce
-#   size: 20Gi
-#   finalizers:
-#     - kubernetes.io/pvc-protection
-{% else %}
-{}
+{% endif %}
+{% if (longhorn_installed | bool) %}
+  # persistence:
+  #   enabled: true
+  #   type: sts
+  #   accessModes:
+  #     - ReadWriteOnce
+  #   size: 20Gi
+  #   finalizers:
+  #     - kubernetes.io/pvc-protection
 {% endif %}

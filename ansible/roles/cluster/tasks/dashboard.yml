@@ -3,7 +3,7 @@
 
 - name: Report dashboard values
   ansible.builtin.debug:
-    msg: "{{ lookup('ansible.builtin.template', 'dashboard_values.yaml') }}"
+    msg: "{{ lookup('ansible.builtin.template', 'dashboard_values.yaml') | from_yaml }}"
 
 - name: Install the helm chart for dashboard
   ansible.builtin.include_tasks:

@@ -1,12 +1,10 @@
 # Install a k3s worker node
 
-# without the facts from the control plane we don't know it's IP address
-- name: Check for control ].control_plane
-  ansible.builtin.assert:
-    that:
-      - k3s_control_plane in play_hosts
-    msg: The control plane '{{ k3s_control_plane }}' must be in play_hosts
-      when running the k3s role.
+- name: Get the control plane facts
+  ansible.builtin.setup:
+    filter: ansible_default_ipv4
+  delegate_to: "{{ k3s_control_plane }}"
+  delegate_facts: true
 
 - name: Wait for /var/lib/rancher/k3s/server/node-token
   ansible.builtin.wait_for:

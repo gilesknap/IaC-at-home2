@@ -3,7 +3,7 @@
 
 - name: Report grafana values
   ansible.builtin.debug:
-    msg: "{{ lookup('ansible.builtin.template', 'grafana_values.yaml') }}"
+    msg: "{{ lookup('ansible.builtin.template', 'grafana_values.yaml') | from_yaml }}"
 
 - name: Install the helm chart for Grafana and Prometheus
   ansible.builtin.include_tasks:

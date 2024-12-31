@@ -3,6 +3,7 @@
         "conv",
         "createhome",
         "extlinux",
+        "finalizers",
         "fstype",
         "hostvars",
         "ingressclass",

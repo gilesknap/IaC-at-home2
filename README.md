@@ -70,7 +70,12 @@ All these commands are run from the ansible directory to pick up the default hos
 limit hosts to the controlling turing pi and the nodes(s) to be re-flashed. Pass in the flash_force variable to force a re-flash.
 
 ```bash
+# re-flash a single node
 ansible-playbook pb_flash_os.yml --limit turingpi,node03 -e flash_force=true
+# re-install k3s on one worker node
+ansible-playbook pb_k3s.yml --limit node03 -e k3s_force=true
+# after a re-flash, your node will be missing longhorn drivers so:
+ansible-playbook pb_cluster.yml -e '{ cluster_install_list: [grafana] }'
 ```
 
 ### shut down all nodes

@@ -1,3 +1,4 @@
+# https://artifacthub.io/packages/helm/k8s-dashboard/kubernetes-dashboard?modal=values
 {% if (ingress_controller_exists | bool) %}
 app:
   ingress:
