@@ -49,7 +49,7 @@
   register: node_token
   changed_when: false
 
-- name: Install k3s worker node version {{ k3s_version }}
+- name: Install k3s worker node version {{ k3s_version | default('latest') }}
   ansible.builtin.shell: # noqa command-instead-of-shell
     cmd: >
       INSTALL_K3S_VERSION="{{ k3s_version }}"
