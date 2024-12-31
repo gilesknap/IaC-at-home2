@@ -1,6 +1,13 @@
 - name: Check dependencies
   ansible.builtin.include_tasks: dependencies.yml
 
+- name: Remove echo service
+  kubernetes.core.k8s:
+    src: /tmp/echo.yaml
+    state: absent
+  when: cluster_force
+  failed_when: false
+
 - name: Render the echo service definition
   ansible.builtin.template:
     src: echo.yaml

@@ -27,7 +27,7 @@
     ch_force: "{{ cluster_force }}"
     ch_timeout: 120
     # https://github.dev/cert-manager/cert-manager/blob/master/deploy/charts/cert-manager/values.yaml
-    values:
+    ch_values:
       ingressShim:
         defaultIssuerName: "letsencrypt-prod"
         defaultIssuerKind: "ClusterIssuer"
