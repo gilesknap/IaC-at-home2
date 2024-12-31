@@ -9,9 +9,5 @@
     state: latest
   become: true
   register: update_result
-
-- name: Reboot the node
-  ansible.builtin.reboot: # noqa no-handler
-    reboot_timeout: 200
-  when: update_result.changed
-  become: true
+  changed_when: update_result.changed
+  notify: Reboot the node

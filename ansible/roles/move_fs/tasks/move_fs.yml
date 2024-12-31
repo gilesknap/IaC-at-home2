@@ -6,6 +6,10 @@
   when: root_dev != curr_root_dev
   become: true
   block:
+    - name: Record activation of a partition move
+      ansible.builtin.set_fact:
+        move_fs_triggered: true
+
     - name: Ensure target device is unmounted
       ansible.posix.mount:
         path: /mnt/new

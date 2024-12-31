@@ -1,0 +1,12 @@
+- name: Reboot the node
+  ansible.builtin.reboot:
+    reboot_timeout: 200
+  when: update_result.changed
+  become: true
+
+  rescue:
+    - name: Refresh the known hosts in case the node has a new ip address
+      # NOTE: this introduces a dependency between roles. Consider combining
+      # these two quite small roles?
+      ansible.builtin.include_tasks:
+        file: ../../known_hosts/tasks/main.yml

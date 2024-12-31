@@ -1,16 +1,12 @@
 # Occasionally ingress-nginx-nginx-admission-patch hangs and once this happens
 # a reboot of all nodes is the only fix.
 
-- name: Set the retry count
-  ansible.builtin.set_fact:
-    retry_count: 0
-
 # use a retry block to reboot the nodes if the install fails
 - name: Install Ingress with Retry Logic
   block:
     - name: Increment the retry count
       ansible.builtin.set_fact:
-        retry_count: "{{ retry_count | int + 1 }}"
+        retry_count: "{{ retry_count | default(0) | int + 1 }}"
 
     - name: Install the helm chart for cert-manager
       ansible.builtin.include_tasks:

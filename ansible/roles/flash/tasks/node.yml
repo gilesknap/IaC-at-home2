@@ -1,36 +1,26 @@
 # Tasks run against a single node in a turingpi
 
-- name: Report the node name
-  ansible.builtin.debug:
-    msg: |
-      Processing node {{ node_name }}
-
-- name: Set the retry count
-  ansible.builtin.set_fact:
-    retry_count: 0
-
-- name: Process TP node
+- name: Process TP node {{ node_name }}
   # this when clause honours limits e.g.
   # ansible-playbook pb_flash_os.yml --limit turingpi,node02
-  # TODO is this check still working with the new format of hosts.yml?
   when: node_name in query('inventory_hostnames', ansible_limit | default('all'))
   block:
     - name: Increment the retry count
       ansible.builtin.set_fact:
-        retry_count: "{{ retry_count | int + 1 }}"
+        retry_count: "{{ retry_count | default(0) | int + 1 }}"
 
     - name: Fetch Node Variables for {{ node_name }}
       ansible.builtin.set_fact:
         node: "{{ hostvars[node_name] }}"
 
-    - name: Check if the node is contactable
+    - name: Check if the node is contactable {{ node_name }}
       ansible.builtin.include_tasks: node_status.yml
 
-    - name: Flash images
+    - name: Flash images {{ node_name }}
       ansible.builtin.include_tasks: flash.yml
       when: not node_status or flash_force
 
-    - name: Bootstrap node to enable further ansible provisioning
+    - name: Bootstrap node to enable further ansible provisioning {{ node_name }}
       ansible.builtin.include_tasks: bootstrap.yml
       # if the node is already contactable then no need to do initial boot cloud init
       when: not node_status or flash_force
@@ -38,6 +28,6 @@
   rescue:
     - ansible.builtin.fail: # noqa name
         msg: Maximum retries of grouped tasks reached
-      when: retry_count | int == 2 | int
+      when: retry_count | int == 3
 
     - ansible.builtin.include_tasks: node.yml # noqa name
