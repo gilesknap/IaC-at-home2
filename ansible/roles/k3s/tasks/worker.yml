@@ -52,7 +52,7 @@
 - name: Install k3s worker node version {{ k3s_version | default('latest') }}
   ansible.builtin.shell: # noqa command-instead-of-shell
     cmd: >
-      INSTALL_K3S_VERSION="{{ k3s_version }}"
+      INSTALL_K3S_VERSION="{{ k3s_version  | default('') }}"
       K3S_URL="https://{{ k3s_control_plane_ip }}:6443"
       K3S_TOKEN="{{ node_token.stdout }}"
       /tmp/k3s.sh

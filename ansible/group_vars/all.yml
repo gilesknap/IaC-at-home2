@@ -16,9 +16,8 @@ zshrc: "{{ lookup('ansible.builtin.env', 'ZSHRC', default='${HOME}/.zshrc') }}"
 
 # tracks the node name of the control plane
 k3s_control_plane_ip: "{{ hostvars[k3s_control_plane]['ansible_default_ipv4']['address'] }}"
-# k3s_version is blank for latest stable release or use a specific version fr
-# https://github.com/k3s-io/k3s/releases e.g. v1.29.11+k3s1
-k3s_version:
+# uncomment for a specific version of k3s (see https://github.com/k3s-io/k3s/releases)
+# k3s_version:. v1.29.11+k3s1
 
 # control which phases of the ALL playbook are run. Override on the command line
 do_flash: true

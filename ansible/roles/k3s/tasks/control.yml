@@ -9,7 +9,7 @@
 - name: Install k3s control plane version {{ k3s_version | default('latest') }}
   ansible.builtin.shell:
     cmd: >
-      INSTALL_K3S_VERSION="{{ k3s_version }}"
+      INSTALL_K3S_VERSION="{{ k3s_version | default('') }}"
       INSTALL_K3S_EXEC="server
       --disable=traefik
       --flannel-backend=host-gw

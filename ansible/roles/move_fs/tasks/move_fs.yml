@@ -78,9 +78,9 @@
         cmd: U_BOOT_ROOT=root=UUID={{ new_uuid.stdout }} u-boot-update
       changed_when: true
 
-    - name: Reboot the node with the new root partition
-      ansible.builtin.reboot:
-        reboot_timeout: 200
+    - name: Reboot the node
+      ansible.builtin.include_tasks:
+        file: ../../roles/known_hosts/tasks/reboot.yml
 
     # occasionally we still see a /mnt/new mount
     - name: Unmount the new root partition

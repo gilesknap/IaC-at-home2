@@ -12,7 +12,6 @@
     update_cache: true
     only_upgrade: true
   become: true
-  changed_when: true # TODO TESTING - remove this
   register: apt_result
   when: ansible_pkg_mgr == 'apt'
 
@@ -37,22 +36,7 @@
   ansible.builtin.set_fact:
     updated: "{{ apt_result.changed or dnf_result.changed or pacman_result.changed }}"
 
-# not using a handler because I don't see how to call known_hosts with it
-- name: Reboot {{ inventory_hostname }}
-  ansible.builtin.reboot: # noqa no-handler
-    reboot_timeout: 200
-  become: true
-  failed_when: false # fails to reconnect if the ip has changed
-  register: reboot_result
+- name: Reboot the node if packages were updated
+  ansible.builtin.include_tasks:
+    file: ../../roles/known_hosts/tasks/reboot.yml
   when: updated
-
-- name: Refresh the known hosts in case the node has a new ip address
-  # NOTE: this introduces a dependency. Perhaps known_hosts and update_packages
-  # should be in a single role?
-  ansible.builtin.include_tasks: # noqa no-handler
-    file: ../../roles/known_hosts/tasks/main.yml
-  when: updated
-
-- name: Verify we can still contact the node {{ inventory_hostname }}
-  ansible.builtin.setup:
-    filter: ansible_fqdn

@@ -1,7 +1,7 @@
-# Occasionally ingress-nginx-nginx-admission-patch hangs and once this happens
-# a reboot of all nodes is the only fix.
+# Occasionally ingress-nginx-nginx-admission-patch fails and once this happens
+# a reboot of the control plane node is the only fix.
 
-# use a retry block to reboot the nodes if the install fails
+# use a retry block to reboot the control plan if the install fails
 - name: Install Ingress with Retry Logic
   block:
     - name: Increment the retry count
@@ -16,12 +16,20 @@
         ch_namespace: ingress-nginx
         ch_chart_repo_url: https://kubernetes.github.io/ingress-nginx
         ch_chart_ref: ingress-nginx
-        ch_force: "{{ cluster_force }}"
+        ch_force: "{{ cluster_force or retry_count | int > 1 }}"
         ch_values:
           controller:
             service:
               loadBalancerIP: "{{ k3s_control_plane_ip }}"
         ch_timeout: 40
+
+    - name: Get status of job.batch/nginx-ingress-nginx-admission-patch
+      kubernetes.core.k8s_info:
+        kind: Job
+        name: nginx-ingress-nginx-admission-patch
+        namespace: ingress-nginx
+      register: ingress_nginx_admission_patch
+      failed_when: ingress_nginx_admission_patch.resources[0].status.failed | default(false)
 
   rescue:
     - name: Check for maximum retries
@@ -29,15 +37,12 @@
         msg: Maximum retries of grouped tasks reached
       when: retry_count | int == 2
 
-    # TODO this runs in series - how to parallelise?
-    - name: Reboot all nodes
-      ansible.builtin.reboot:
-      become: true
-      delegate_to: "{{ node }}"
-      changed_when: true
-      loop: "{{ groups['all_nodes'] }}"
-      loop_control:
-        loop_var: node
+    - name: Reboot the control plane node
+      ansible.builtin.include_tasks:
+        file: ../../roles/known_hosts/tasks/reboot.yml
+      when: updated
+      vars:
+        inventory_hostname: "{{ k3s_control_plane }}"
 
     - name: Recurse into self for a retry
       ansible.builtin.include_tasks: ingress.yml
