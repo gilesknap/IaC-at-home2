@@ -27,7 +27,9 @@
 
   rescue:
     - ansible.builtin.fail: # noqa name
-        msg: Maximum retries of grouped tasks reached
-      when: retry_count | int == 3
+        msg: Maximum retries of Process TP node reached for {{ node_name }}
+      # turing off retries for now - not helpful for debugging
+      # and this sequence very reliable anyway
+      when: retry_count | int >= 0
 
     - ansible.builtin.include_tasks: node.yml # noqa name

@@ -19,3 +19,5 @@ flash_force: false
 
 # a local temporary directory for flash images
 flash_local_tmp: /tmp/iac2
+# a debugging flag to skip the actual flash step
+flash_pre_flashed: false
