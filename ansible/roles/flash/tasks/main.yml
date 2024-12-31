@@ -11,6 +11,15 @@
   vars:
     node_name: "{{ k3s_control_plane }}"
 
+- name: Check if the control plane node is in the host list
+  ansible.builtin.set_fact:
+    control_plane_in_host_list: |
+      {{
+      k3s_control_plane in nodes and
+      k3s_control_plane in query('inventory_hostnames', ansible_limit | default('all'))
+      }}
+  run_once: true
+
 - name: Query user to verify control plane re-flash
   ansible.builtin.pause:
     prompt: |
@@ -24,7 +33,7 @@
       Are you sure? (y/n)
   register: do_abort
   delegate_to: localhost
-  when: (do_flash and k3s_control_plane in nodes) and (not node_status or flash_force)
+  when: (do_flash and control_plane_in_host_list) and (not node_status or flash_force)
   run_once: true
 
 - name: Abort if user does not want to re-flash the control plane

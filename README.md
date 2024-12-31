@@ -70,7 +70,7 @@ All these commands are run from the ansible directory to pick up the default hos
 limit hosts to the controlling turing pi and the nodes(s) to be re-flashed. Pass in the flash_force variable to force a re-flash.
 
 ```bash
-ansible-playbook pb_flash_os.yml --limit turingpi,node03 -e do_flash=true -e flash_force=true
+ansible-playbook pb_flash_os.yml --limit turingpi,node03 -e flash_force=true
 ```
 
 ### shut down all nodes

@@ -25,7 +25,7 @@
     - name: Check for maximum retries
       ansible.builtin.fail:
         msg: Maximum retries of grouped tasks reached
-      when: retry_count | int == 2 | int
+      when: retry_count | int == 2
 
     # TODO this runs in series - how to parallelise?
     - name: Reboot all nodes
