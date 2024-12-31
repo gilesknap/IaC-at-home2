@@ -35,6 +35,6 @@
     create_namespace: true
     namespace: "{{ ch_namespace }}"
     force: "{{ ch_force | default(false) }}"
-    values: "{{ ch_values | default({}) }}"
+    values: "{{ ch_values | default('{}') | from_yaml }}"
   retries: 1
   delay: 20

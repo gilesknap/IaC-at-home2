@@ -1,20 +1,9 @@
 - name: Check dependencies
   ansible.builtin.include_tasks: dependencies.yml
 
-- name: Prepare values for ingress settings
-  ansible.builtin.template:
-    src: grafana_values.yaml
-    dest: /tmp/grafana_values.yaml
-    mode: "0644"
-    vars:
-      do_ingress: "{{ ingress_controller_exists }}"
-  when: ingress_controller_exists
-
-- name: Prepare ingress settings
-  ansible.builtin.set_fact:
-    # https://github.dev/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
-    grafana_ingress_values:
-when: ingress_controller_exists
+- name: Report grafana values
+  ansible.builtin.debug:
+    msg: "{{ lookup('ansible.builtin.template', 'grafana_values.yaml') }}"
 
 - name: Install the helm chart for Grafana and Prometheus
   ansible.builtin.include_tasks:
@@ -24,7 +13,7 @@ when: ingress_controller_exists
     ch_namespace: monitoring
     ch_chart_repo_url: https://prometheus-community.github.io/helm-charts/
     ch_chart_ref: kube-prometheus-stack
-    ch_values: "{{ grafana_ingress_values | default({}) }}"
+    ch_values: "{{ lookup('ansible.builtin.template', 'grafana_values.yaml') }}"
 
 - name: Create port forward script for Grafana
   ansible.builtin.copy:

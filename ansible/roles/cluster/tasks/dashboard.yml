@@ -1,22 +1,9 @@
 - name: Check dependencies
   ansible.builtin.include_tasks: dependencies.yml
 
-# TODO - this would be better as a template
-- name: Prepare ingress settings
-  ansible.builtin.set_fact:
-    dashboard_ingress_values:
-      app:
-        ingress:
-          enabled: true
-          ingressClassName: nginx
-          pathType: Prefix
-          hosts:
-            - "{{ k3s_cluster_domain }}"
-            - localhost
-          path: /dashboard
-      extraArgs:
-        - --token-ttl=86400
-  when: ingress_controller_exists
+- name: Report dashboard values
+  ansible.builtin.debug:
+    msg: "{{ lookup('ansible.builtin.template', 'dashboard_values.yaml') }}"
 
 - name: Install the helm chart for dashboard
   ansible.builtin.include_tasks:
@@ -26,8 +13,7 @@
     ch_namespace: kubernetes-dashboard
     ch_chart_repo_url: https://kubernetes.github.io/dashboard/
     ch_chart_ref: kubernetes-dashboard
-    # https://github.dev/kubernetes/dashboard/blob/master/charts/kubernetes-dashboard/values.yaml
-    ch_values: "{{ dashboard_ingress_values | default({}) }}"
+    ch_values: "{{ lookup('ansible.builtin.template', 'dashboard_values.yaml') }}"
 
 - name: Create a service account for the dashboard
   kubernetes.core.k8s:
