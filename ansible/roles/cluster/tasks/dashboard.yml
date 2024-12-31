@@ -14,6 +14,7 @@
     ch_chart_repo_url: https://kubernetes.github.io/dashboard/
     ch_chart_ref: kubernetes-dashboard
     ch_values: "{{ lookup('ansible.builtin.template', 'dashboard_values.yaml') }}"
+    ch_force: "{{ cluster_force }}"
 
 - name: Create a service account for the dashboard
   kubernetes.core.k8s:

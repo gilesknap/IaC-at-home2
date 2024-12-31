@@ -6,7 +6,7 @@
     removes: /usr/local/bin/k3s-uninstall.sh
   when: k3s_force
 
-- name: Install k3s control plane version = {{ k3s_version | default('latest') }}
+- name: Install k3s control plane version {{ k3s_version | default('latest') }}
   ansible.builtin.shell:
     cmd: >
       INSTALL_K3S_VERSION="{{ k3s_version }}"

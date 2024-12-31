@@ -7,7 +7,7 @@
 #  ch_chart_repo_url: The URL of the helm chart repository
 #  ch_chart_ref: The reference to the helm chart
 #  ch_values: The values to pass to the helm chart
-#  ch_force: Whether to force the installation of the helm chart
+#  ch_force: Whether to force the re-installation of the helm chart
 
 - name: Check for status of existing helm release for "{{ ch_release_name }}"
   kubernetes.core.helm_info:
@@ -25,7 +25,7 @@
     release_name: "{{ ch_release_name }}"
     namespace: "{{ ch_namespace }}"
     state: absent
-  when: chart_state.status.status | default('') == 'failed'
+  when: chart_state.status.status | default('') == 'failed' or ch_force | default(false)
 
 - name: Install the chart "{{ ch_release_name }}"
   kubernetes.core.helm:
@@ -38,3 +38,4 @@
     values: "{{ ch_values | default('{}') | from_yaml }}"
   retries: 1
   delay: 20
+  timeout: "{{ ch_timeout | default(300) }}"

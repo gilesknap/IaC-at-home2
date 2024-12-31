@@ -42,7 +42,7 @@ domain_email: giles.knap@gilesk.ddns.net
 cluster_install_list:
   - ingress
   - lets_encrypt
+  - longhorn
   - dashboard
   - grafana
   - echo
-  - longhorn

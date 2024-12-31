@@ -16,10 +16,12 @@
         ch_namespace: ingress-nginx
         ch_chart_repo_url: https://kubernetes.github.io/ingress-nginx
         ch_chart_ref: ingress-nginx
-        values:
+        ch_force: "{{ cluster_force }}"
+        ch_values:
           controller:
             service:
               loadBalancerIP: "{{ k3s_control_plane_ip }}"
+        ch_timeout: 40
 
   rescue:
     - name: Check for maximum retries

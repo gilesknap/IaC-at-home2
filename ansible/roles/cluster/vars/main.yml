@@ -5,14 +5,5 @@ cluster_longhorn_cli_tool: "\
   {{ cluster_longhorn_version }}\
   /longhornctl-linux-amd64"
 
-
-# List of features to install into the cluster, comment out to remove.
-# Each entry must match the name of a tasks yaml file in the cluster role.
-# (usually overridden in group_vars/all.yml)
-cluster_install_list:
-  - ingress
-  - lets_encrypt
-  - dashboard
-  - grafana
-  - echo
-  - longhorn
+# uninstall and reinstall the cluster services if true
+cluster_force: false
