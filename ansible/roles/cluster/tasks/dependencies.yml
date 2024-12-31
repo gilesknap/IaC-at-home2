@@ -27,3 +27,10 @@
 - name: Set cert manager existence variable
   ansible.builtin.set_fact:
     longhorn_installed: "{{ longhorn.rc == 0 }}"
+
+- name: Report on the existence of the ingress controller, cert manager and longhorn
+  ansible.builtin.debug:
+    msg: |
+      Ingress Controller: {{ ingress_controller_exists }}
+      Cert Manager: {{ cert_manager_exists }}
+      Longhorn: {{ longhorn_installed }}

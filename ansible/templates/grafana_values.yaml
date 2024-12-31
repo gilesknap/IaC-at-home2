@@ -25,12 +25,12 @@ grafana:
     path: /grafana
 {% endif %}
 {% if (longhorn_installed | bool) %}
-  # persistence:
-  #   enabled: true
-  #   type: sts
-  #   accessModes:
-  #     - ReadWriteOnce
-  #   size: 20Gi
-  #   finalizers:
-  #     - kubernetes.io/pvc-protection
+  persistence:
+    enabled: true
+    type: sts
+    accessModes:
+      - ReadWriteOnce
+    size: 20Gi
+    finalizers:
+      - kubernetes.io/pvc-protection
 {% endif %}
