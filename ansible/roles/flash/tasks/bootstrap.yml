@@ -14,7 +14,7 @@
   ansible.builtin.raw: tpi advanced msd -n {{ node.slot_num }}
   changed_when: true
 
-- name: wait for block device to appear {{ node_name }}
+- name: Wait for block device to appear {{ node_name }}
   ansible.builtin.raw: ls /dev/sd*2
   changed_when: false
   register: block_device

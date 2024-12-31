@@ -1,48 +1,20 @@
 - name: Check dependencies
   ansible.builtin.include_tasks: dependencies.yml
 
-# TODO - this would be better as a template
+- name: Prepare values for ingress settings
+  ansible.builtin.template:
+    src: grafana_values.yaml
+    dest: /tmp/grafana_values.yaml
+    mode: "0644"
+    vars:
+      do_ingress: "{{ ingress_controller_exists }}"
+  when: ingress_controller_exists
+
 - name: Prepare ingress settings
   ansible.builtin.set_fact:
     # https://github.dev/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
     grafana_ingress_values:
-      grafana:
-        grafana.ini:
-          # TODO why is this needed instead of nginx.ingress.kubernetes.io/rewrite-target
-          server:
-            domain: "{{ k3s_cluster_domain }}"
-            root_url: https://{{ k3s_cluster_domain }}/grafana/
-            serve_from_sub_path: true
-        ingress:
-          enabled: true
-          ingressClassName: nginx
-          annotations:
-            kubernetes.io/ingress.class: nginx
-            nginx.ingress.kubernetes.io/ssl-redirect: "true"
-            # nginx.ingress.kubernetes.io/rewrite-target: /$2
-            # nginx.ingress.kubernetes.io/app-root: /grafana
-          #  kubernetes.io/tls-acme: "true"
-          hosts:
-            - "{{ k3s_cluster_domain }}"
-          # tls:
-          #   - secretName: grafana-general-tls
-          #     hosts:
-          #       - gilesk.ddns.net
-          path: /grafana
-        adminPassword: "{{ admin_password }}"
-        #
-        # # To make Grafana persistent (Using Statefulset)
-        # TODO - need a decent storage class to use this
-        # persistence:
-        #   enabled: true
-        #   type: sts
-        #   storageClassName: "storageClassName"
-        #   accessModes:
-        #     - ReadWriteOnce
-        #   size: 20Gi
-        #   finalizers:
-        #     - kubernetes.io/pvc-protection
-  when: ingress_controller_exists
+when: ingress_controller_exists
 
 - name: Install the helm chart for Grafana and Prometheus
   ansible.builtin.include_tasks:
@@ -52,7 +24,7 @@
     ch_namespace: monitoring
     ch_chart_repo_url: https://prometheus-community.github.io/helm-charts/
     ch_chart_ref: kube-prometheus-stack
-    values: "{{ grafana_ingress_values | default({}) }}"
+    ch_values: "{{ grafana_ingress_values | default({}) }}"
 
 - name: Create port forward script for Grafana
   ansible.builtin.copy:

@@ -12,8 +12,8 @@
     update_cache: true
     only_upgrade: true
   become: true
-  register: update_result
-  notify: Reboot the node
+  changed_when: true # TODO TESTING - remove this
+  register: apt_result
   when: ansible_pkg_mgr == 'apt'
 
 - name: Update all packages with dnf
@@ -23,14 +23,36 @@
     update_cache: true
     update_only: true
   become: true
-  register: update_result
-  notify: Reboot the node
+  register: dnf_result
   when: ansible_pkg_mgr == 'dnf'
 
 - name: Update all packages with pacman
   community.general.pacman:
     upgrade: true
   become: true
-  register: update_result
-  notify: Reboot the node
+  register: pacman_result
   when: ansible_pkg_mgr == 'pacman'
+
+- name: Report update result
+  ansible.builtin.set_fact:
+    updated: "{{ apt_result.changed or dnf_result.changed or pacman_result.changed }}"
+
+# not using a handler because I don't see how to call known_hosts with it
+- name: Reboot {{ inventory_hostname }}
+  ansible.builtin.reboot: # noqa no-handler
+    reboot_timeout: 200
+  become: true
+  failed_when: false # fails to reconnect if the ip has changed
+  register: reboot_result
+  when: updated
+
+- name: Refresh the known hosts in case the node has a new ip address
+  # NOTE: this introduces a dependency. Perhaps known_hosts and update_packages
+  # should be in a single role?
+  ansible.builtin.include_tasks: # noqa no-handler
+    file: ../../roles/known_hosts/tasks/main.yml
+  when: updated
+
+- name: Verify we can still contact the node {{ inventory_hostname }}
+  ansible.builtin.setup:
+    filter: ansible_fqdn
