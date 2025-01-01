@@ -36,11 +36,6 @@
   ansible.builtin.set_fact:
     updated: "{{ apt_result.changed or dnf_result.changed or pacman_result.changed }}"
 
-- name: Clear IP key from known_hosts before reboot
-  ansible.builtin.include_tasks:
-    file: ../../roles/known_hosts/tasks/remove_ip.yml
-  when: updated
-
 - name: Reboot the node
   ansible.builtin.reboot:
   become: true

@@ -78,10 +78,6 @@
         cmd: U_BOOT_ROOT=root=UUID={{ new_uuid.stdout }} u-boot-update
       changed_when: true
 
-    - name: Clear IP key from known_hosts before reboot
-      ansible.builtin.include_tasks:
-        file: ../../roles/known_hosts/tasks/remove_ip.yml
-
     - name: Reboot the node
       ansible.builtin.reboot:
       become: true
