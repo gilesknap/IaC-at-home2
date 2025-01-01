@@ -15,6 +15,7 @@
     cmd: helm status "{{ ch_release_name }}" --namespace "{{ ch_namespace }}"
   register: chart_state
   changed_when: false
+  failed_when: false # Its OK if the chart does not yet exist
 
 - name: Delete any failed chart "{{ ch_release_name }}"
   kubernetes.core.helm:

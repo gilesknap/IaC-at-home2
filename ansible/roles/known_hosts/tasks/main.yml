@@ -19,12 +19,6 @@
   loop: "{{ node_ip.stdout_lines }}"
   changed_when: false # because this is clean-up on localhost only
 
-# First, remove any ip address known_hosts entries for the node.
-- name: Remove old known_host IP entries for {{ inventory_hostname }}
-  ansible.builtin.include_tasks:
-    file: remove_ip.yml
-
-# Second, remove any hostname known_hosts entries for the node
 - name: Get ssh public keys of node {{ inventory_hostname }}
   delegate_to: localhost
   ansible.builtin.command:
