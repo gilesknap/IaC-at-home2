@@ -16,7 +16,7 @@
         ch_namespace: ingress-nginx
         ch_chart_repo_url: https://kubernetes.github.io/ingress-nginx
         ch_chart_ref: ingress-nginx
-        ch_force: "{{ cluster_force or retry_count | int > 1 }}"
+        ch_force: "{{ cluster_force }}"
         ch_values:
           controller:
             service:
@@ -31,23 +31,23 @@
       register: ingress_nginx_admission_patch
       failed_when: ingress_nginx_admission_patch.resources[0].status.failed | default(false)
 
-  rescue:
-    - name: Check for maximum retries
-      ansible.builtin.fail:
-        msg: Maximum retries of grouped tasks reached
-      when: retry_count | int == 2
+  # rescue:
+  #   - name: Check for maximum retries
+  #     ansible.builtin.fail:
+  #       msg: Maximum retries of grouped tasks reached
+  #     when: retry_count | int == 2
 
-    - name: Clear IP key from known_hosts before reboot
-      ansible.builtin.include_tasks:
-        file: ../../roles/known_hosts/tasks/remove_ip.yml
-      vars:
-        inventory_hostname: "{{ k3s_control_plane }}"
+  #   - name: Clear IP key from known_hosts before reboot
+  #     ansible.builtin.include_tasks:
+  #       file: ../../roles/known_hosts/tasks/remove_ip.yml
 
-    - name: Reboot the node
-      ansible.builtin.reboot:
-        delegate_to: { { k3s_control_plane } }
-      become: true
-    - name: Reboot the control plane node
+  #   - name: Reboot the node
+  #     ansible.builtin.reboot:
+  #     become: true
+  #     delegate_to: "{{ k3s_control_plane }}"
 
-    - name: Recurse into self for a retry
-      ansible.builtin.include_tasks: ingress.yml
+  #   - name: Retry the ingress task
+  #     ansible.builtin.include_tasks:
+  #       file: ingress.yml
+  #     vars:
+  #       cluster_force: true

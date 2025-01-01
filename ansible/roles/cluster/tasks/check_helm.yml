@@ -10,22 +10,18 @@
 #  ch_force: Whether to force the re-installation of the helm chart
 
 - name: Check for status of existing helm release for "{{ ch_release_name }}"
-  kubernetes.core.helm_info:
-    release_name: ch_release_name
-    namespace: ch_namespace
+  # kubernetes.core.helm_info: does not return anything ?? using command instead
+  ansible.builtin.command:
+    cmd: helm status "{{ ch_release_name }}" --namespace "{{ ch_namespace }}"
   register: chart_state
-  failed_when: false
-
-- name: Report the pre-install status of the chart "{{ ch_release_name }}"
-  ansible.builtin.debug:
-    var: chart_state.status.status | default('None')
+  changed_when: false
 
 - name: Delete any failed chart "{{ ch_release_name }}"
   kubernetes.core.helm:
     release_name: "{{ ch_release_name }}"
     namespace: "{{ ch_namespace }}"
     state: absent
-  when: chart_state.status.status | default('') == 'failed' or ch_force | default(false)
+  when: '"STATUS: failed" in chart_state.stdout'
 
 - name: Install the chart "{{ ch_release_name }}"
   kubernetes.core.helm:
