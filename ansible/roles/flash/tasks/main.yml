@@ -22,13 +22,11 @@
 
 - name: Query user to verify control plane re-flash
   ansible.builtin.pause:
-    prompt: |
-      WARNING *************************************************************************
-      The control plane node '{{ k3s_control_plane }}' is not contactable.
-      This means that this command will attempt a re-flash the control plane.
-
+    prompt: |-
+      WARNING *****************************************************************
       Re-flashing the control plane will fully rebuild the cluster.
       And may result in data loss.
+      *************************************************************************
 
       Are you sure? (y/n)
   register: do_abort

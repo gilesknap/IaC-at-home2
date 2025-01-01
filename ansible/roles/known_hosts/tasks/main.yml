@@ -4,7 +4,7 @@
 # to avoid race conditions with writing to the local known_hosts file.
 
 # First, remove any ip address known_hosts entries for the node.
-- name: Remove old known_host entries for
+- name: Remove old known_host IP entries for {{ inventory_hostname }}
   ansible.builtin.include_tasks:
     file: remove_ip.yml
 

@@ -40,7 +40,6 @@
     - name: Reboot the control plane node
       ansible.builtin.include_tasks:
         file: ../../roles/known_hosts/tasks/reboot.yml
-      when: updated
       vars:
         inventory_hostname: "{{ k3s_control_plane }}"
 
