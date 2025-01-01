@@ -37,11 +37,17 @@
         msg: Maximum retries of grouped tasks reached
       when: retry_count | int == 2
 
-    - name: Reboot the control plane node
+    - name: Clear IP key from known_hosts before reboot
       ansible.builtin.include_tasks:
-        file: ../../roles/known_hosts/tasks/reboot.yml
+        file: ../../roles/known_hosts/tasks/remove_ip.yml
       vars:
         inventory_hostname: "{{ k3s_control_plane }}"
+
+    - name: Reboot the node
+      ansible.builtin.reboot:
+        delegate_to: { { k3s_control_plane } }
+      become: true
+    - name: Reboot the control plane node
 
     - name: Recurse into self for a retry
       ansible.builtin.include_tasks: ingress.yml
