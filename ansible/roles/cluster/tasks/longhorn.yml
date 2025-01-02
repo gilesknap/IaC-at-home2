@@ -92,7 +92,8 @@
       spec:
         ingressClassName: nginx
         rules:
-          - host: node01.lan
+          # TODO THIS NEED TEMPLATING
+          - host: node01.broadband
             http:
               paths:
                 - backend:

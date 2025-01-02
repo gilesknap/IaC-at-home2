@@ -30,9 +30,9 @@ do_cluster: true
 ################################################################################
 
 admin_password: nothatgood
-local_domain: .lan # how to address local nodes with dig
+local_domain: .broadband # how to address local nodes with dig
 k3s_control_plane: node01 # the node name of the control plane
-k3s_cluster_domain: node01.lan # the internal DNS name of the control plane node
+k3s_cluster_domain: node01.broadband # the internal DNS name of the control plane node
 k3s_cluster_external_domain: gilesk.ddns.net
 domain_email: giles.knap@gilesk.ddns.net
 

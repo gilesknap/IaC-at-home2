@@ -25,3 +25,26 @@
 - name: Execute worker node tasks
   ansible.builtin.include_tasks: worker.yml
   when: not is_control_plane
+
+- name: Wait for all kube-system pods become created
+  ansible.builtin.command:
+    kubectl get pod -n kube-system --output jsonpath='{.items[*].metadata.name}'
+  delegate_to: localhost
+  run_once: true
+  register: control_plane_pods_created
+  until: item in control_plane_pods_created.stdout
+  retries: 6
+  delay: 10
+  loop:
+    - coredns
+    - local-path-provisioner
+    - metrics-server
+  changed_when: false
+
+- name: Wait for all pods become ready
+  ansible.builtin.command:
+    kubectl wait -n kube-system pods --all --for condition=Ready --timeout=100s
+  delegate_to: localhost
+  run_once: true
+  register: control_plane_pods_ready
+  changed_when: false
