@@ -3,12 +3,22 @@
 # IMPORTANT: the playbook that runs this must use serial: 1
 # to avoid race conditions with writing to the local known_hosts file.
 
-# First, remove any ip address known_hosts entries for the node.
-- name: Remove old known_host entries for
-  ansible.builtin.include_tasks:
-    file: remove_ip.yml
+# Remove a hosts ip address from known_hosts file. Discover the ip address
+# with dig because we can't gather facts until ssh keys are updated.
+- name: Get node ip address with dig
+  delegate_to: localhost
+  ansible.builtin.command: dig +short {{ inventory_hostname }}{{ local_domain }}
+  register: node_ip
+  changed_when: false
 
-# Second, remove any hostname known_hosts entries for the node
+- name: Remove old known_host entries {{ node_ip.stdout }}
+  delegate_to: localhost
+  ansible.builtin.known_hosts:
+    name: "{{ item }}"
+    state: absent
+  loop: "{{ node_ip.stdout_lines }}"
+  changed_when: false # because this is clean-up on localhost only
+
 - name: Get ssh public keys of node {{ inventory_hostname }}
   delegate_to: localhost
   ansible.builtin.command:

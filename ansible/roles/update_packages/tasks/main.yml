@@ -36,7 +36,7 @@
   ansible.builtin.set_fact:
     updated: "{{ apt_result.changed or dnf_result.changed or pacman_result.changed }}"
 
-- name: Reboot the node if packages were updated
-  ansible.builtin.include_tasks:
-    file: ../../roles/known_hosts/tasks/reboot.yml
+- name: Reboot the node
+  ansible.builtin.reboot:
+  become: true
   when: updated

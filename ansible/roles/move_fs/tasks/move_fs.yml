@@ -79,8 +79,8 @@
       changed_when: true
 
     - name: Reboot the node
-      ansible.builtin.include_tasks:
-        file: ../../roles/known_hosts/tasks/reboot.yml
+      ansible.builtin.reboot:
+      become: true
 
     # occasionally we still see a /mnt/new mount
     - name: Unmount the new root partition

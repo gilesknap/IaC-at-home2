@@ -1,5 +1,5 @@
 # Occasionally ingress-nginx-nginx-admission-patch fails and once this happens
-# a reboot of the control plane node is the only fix.
+# a reboot of all nodes is the only fix.
 
 # use a retry block to reboot the control plan if the install fails
 - name: Install Ingress with Retry Logic
@@ -16,7 +16,7 @@
         ch_namespace: ingress-nginx
         ch_chart_repo_url: https://kubernetes.github.io/ingress-nginx
         ch_chart_ref: ingress-nginx
-        ch_force: "{{ cluster_force or retry_count | int > 1 }}"
+        ch_force: "{{ cluster_force }}"
         ch_values:
           controller:
             service:
@@ -32,17 +32,21 @@
       failed_when: ingress_nginx_admission_patch.resources[0].status.failed | default(false)
 
   rescue:
-    - name: Check for maximum retries
+    - name: Attempting Recovery - Check for maximum retries
       ansible.builtin.fail:
         msg: Maximum retries of grouped tasks reached
       when: retry_count | int == 2
 
-    - name: Reboot the control plane node
-      ansible.builtin.include_tasks:
-        file: ../../roles/known_hosts/tasks/reboot.yml
-      when: updated
-      vars:
-        inventory_hostname: "{{ k3s_control_plane }}"
+    # This happens in series, I'm not sure how to make a parallel task
+    # across hosts[all_nodes] from a localhost role?
+    - name: Reboot all cluster nodes
+      ansible.builtin.reboot:
+      become: true
+      delegate_to: "{{ item }}"
+      loop: "{{ groups['all_nodes'] }}"
 
-    - name: Recurse into self for a retry
-      ansible.builtin.include_tasks: ingress.yml
+    - name: Retry the ingress task
+      ansible.builtin.include_tasks:
+        file: ingress.yml
+      vars:
+        cluster_force: true
