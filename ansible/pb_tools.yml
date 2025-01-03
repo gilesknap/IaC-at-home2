@@ -1,0 +1,4 @@
+- name: Install client tools in execution environment
+  hosts: localhost
+  roles:
+    - role: tools

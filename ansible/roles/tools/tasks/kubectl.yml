@@ -4,6 +4,7 @@
     dest: /tmp/kubectl_version
     mode: "0644"
 
+# the bin folder persists through container rebuilds because it is a volume
 - name: Get kubectl
   ansible.builtin.get_url:
     url: https://dl.k8s.io/release/{{ lookup('file', '/tmp/kubectl_version') }}/bin/linux/amd64/kubectl
@@ -20,15 +21,16 @@
     state: link
   become: true
 
-- name: Zsh Command line completion for kubectl
+- name: Command line completion for kubectl
   ansible.builtin.shell:
-    cmd: kubectl completion zsh > /usr/share/zsh/vendor-completions/_kubectl
-    creates: /usr/share/zsh/vendor-completions/_kubectl
-  become: true
+    cmd: kubectl completion {{ item.name }} > {{ item.completion_dir }}/_kubectl
+    creates: "{{ item.completion_dir }}/_kubectl"
+  loop: "{{ tools_shell }}"
 
 - name: Create k alias for kubectl
   ansible.builtin.lineinfile:
-    path: "{{ zshrc }}"
+    path: "{{ item.rc_file }}"
     line: "alias k=kubectl"
     mode: "0644"
     create: true
+  loop: "{{ tools_shell }}"

@@ -1,0 +1,21 @@
+- name: Ensure the bin folder exists
+  ansible.builtin.file:
+    state: directory
+    dest: "{{ bin_dir }}"
+    mode: "0755"
+
+- name: Add bin folder to path
+  ansible.builtin.lineinfile:
+    path: "{{ item.rc_file }}"
+    line: 'export PATH="{{ bin_dir }}:$PATH"'
+    mode: "0644"
+    create: true
+  loop: "{{ tools_shell }}"
+
+- name: Opinionated settings for zsh
+  ansible.builtin.lineinfile:
+    path: "{{ tools_zshrc }}"
+    regexp: "^ZSH_THEME=.*$"
+    line: 'export ZSH_THEME="dst"'
+    mode: "0644"
+    create: true

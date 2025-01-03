@@ -1,3 +1,7 @@
+- name: Setup Tools in Execution Environment
+  import_playbook: pb_tools.yml
+  when: do_tools is true
+
 - name: Flash Ubuntu on to All Nodes
   import_playbook: pb_flash_os.yml
   when: do_flash is true

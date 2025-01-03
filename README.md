@@ -30,6 +30,7 @@ Supported hardware:
 
 ## Planned Software
 
+- Keycloak for centralized authentication
 - ArgoCD
 - KubeVirt
 - NFS PVC auto-provisioner
