@@ -63,6 +63,8 @@ Turing Pi is a great platform for a project like this as it provides a BMC inter
 
 K3S is a lightweight Kubernetes distribution that is easy to install and manage. It is a CNCF certified Kubernetes distribution that I use for all my Kubernetes projects. See the [K3S](https://k3s.io/) website for more information.
 
+Thanks to drunkcoding.net for some great tutorials that helped with putting this together. See the [A Complete Series of Articles on Kubernetes Environment Locally](https://drunkcoding.net/posts/ks-00-series-k8s-setup-local-env-pi-cluster/)
+
 ## Some How to's
 
 All these commands are run from the ansible directory to pick up the default hosts.yml file.

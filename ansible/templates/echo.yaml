@@ -41,19 +41,19 @@ metadata:
     kubernetes.io/tls-acme: "true"
 spec:
   ingressClassName: nginx
+  # ADD TLS #2
   tls:
     # Replace the domain below with your domain accordingly.
     - hosts:
-        - "{{ k3s_cluster_external_domain }}"
-      # ADD TLS #2
-      secretName: tls-echo-net
+        - echo.{{ k3s_cluster_external_domain }}
+      secretName: tls-echo-cloudflare
   rules:
     # Replace the domain below with your domain accordingly.
-    - host: "{{ k3s_cluster_external_domain }}"
+    - host: echo.{{ k3s_cluster_external_domain }}
       http:
         paths:
           - pathType: Prefix
-            path: /echo
+            path: /
             backend:
               service:
                 name: echo-service

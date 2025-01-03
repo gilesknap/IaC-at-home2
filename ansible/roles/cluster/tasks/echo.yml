@@ -17,5 +17,6 @@
 - name: Create a simple echo service with tls ingress
   kubernetes.core.k8s:
     src: /tmp/echo.yaml
+    namespace: default
   # echo requires ingress and certs to work
-  when: ingress_controller_exists and cert_manager_exists
+  when: ingress_controller_exists
