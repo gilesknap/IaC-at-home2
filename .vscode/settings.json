@@ -2,11 +2,13 @@
     "cSpell.words": [
         "conv",
         "createhome",
+        "dnsutils",
         "extlinux",
         "finalizers",
         "fstype",
         "hostvars",
         "ingressclass",
+        "iputils",
         "iscsi",
         "kubeconfig",
         "lineinfile",
@@ -14,6 +16,9 @@
         "noerror",
         "noqa",
         "playbook",
+        "proc",
+        "readlink",
+        "sshpass",
         "turingpi",
         "uboot",
         "uuidgen"

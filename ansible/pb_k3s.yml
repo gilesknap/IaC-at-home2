@@ -2,8 +2,3 @@
   hosts: all_nodes # all nodes in all turing pi groups and outside
   roles:
     - role: k3s
-
-- name: Install client tools in execution environment
-  hosts: localhost
-  roles:
-    - role: tools

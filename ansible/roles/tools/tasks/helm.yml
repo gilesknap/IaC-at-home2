@@ -14,6 +14,7 @@
     mode: "0755"
     creates: /tmp/linux-amd64/helm
 
+# the bin folder persists through container rebuilds because it is a volume
 - name: Move helm binary to the path
   ansible.builtin.copy:
     src: /tmp/linux-amd64/helm
@@ -35,8 +36,8 @@
     cmd: helm plugin install https://github.com/databus23/helm-diff
     creates: ${HOME}/.local/share/helm/plugins/helm-diff
 
-- name: Zsh Command line completion for helm
+- name: Command line completion for helm
   ansible.builtin.shell:
-    cmd: helm completion zsh > /usr/share/zsh/vendor-completions/_helm
-    creates: /usr/share/zsh/vendor-completions/_helm
-  become: true
+    cmd: helm completion {{ item.name }} > {{ item.completion_dir }}/_helm
+    creates: "{{ item.completion_dir }}/_helm"
+  loop: "{{ tools_shell }}"

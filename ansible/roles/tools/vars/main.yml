@@ -1,0 +1,19 @@
+# location of the zshrc file
+tools_zshrc: "{{ lookup('ansible.builtin.env', 'ZSHRC', default='${HOME}/.zshrc') }}"
+# location of the bashrc file
+tools_bashrc: "{{ lookup('ansible.builtin.env', 'BASHRC', default='${HOME}/.bashrc') }}"
+
+tools_shell:
+  - name: bash
+    rc_file: "{{ tools_bashrc }}"
+    completion_dir: /usr/share/zsh/vendor-completions
+  - name: zsh
+    rc_file: "{{ tools_zshrc }}"
+    completion_dir: /usr/share/zsh/vendor-completions
+
+tools_additional_packages:
+  - iputils-ping
+  - net-tools
+  - dnsutils
+  - vim
+  - sshpass

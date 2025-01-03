@@ -10,9 +10,7 @@ tpi_images_path: /mnt/sdcard/images
 vault_password_file: "~/.ansible_vault_password"
 
 # location of binaries we install in the execution environment
-# the devcontainer sets 2 environment variables for these
 bin_dir: "{{ lookup('ansible.builtin.env', 'BIN_DIR', default='${HOME}/bin') }}"
-zshrc: "{{ lookup('ansible.builtin.env', 'ZSHRC', default='${HOME}/.zshrc') }}"
 
 # tracks the node name of the control plane
 k3s_control_plane_ip: "{{ hostvars[k3s_control_plane]['ansible_default_ipv4']['address'] }}"
@@ -20,6 +18,7 @@ k3s_control_plane_ip: "{{ hostvars[k3s_control_plane]['ansible_default_ipv4']['a
 # k3s_version:. v1.29.11+k3s1
 
 # control which phases of the ALL playbook are run. Override on the command line
+do_tools: true
 do_flash: true
 do_k3s: true
 do_cluster: true
@@ -29,7 +28,7 @@ do_cluster: true
 # The remaining variables are for personalization of the cluster ###############
 ################################################################################
 
-admin_password: nothatgood
+admin_password: notgood # change this!
 local_domain: .broadband # how to address local nodes with dig
 k3s_control_plane: node01 # the node name of the control plane
 k3s_cluster_domain: node01.broadband # the internal DNS name of the control plane node
@@ -40,7 +39,7 @@ domain_email: giles.knap@gilesk.ddns.net
 # Each entry must match the name of a tasks yaml file in the cluster role.
 cluster_install_list:
   - ingress
-  - lets_encrypt
+  # - lets_encrypt
   - longhorn
   - dashboard
   - grafana
