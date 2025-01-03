@@ -28,11 +28,11 @@ do_cluster: true
 # The remaining variables are for personalization of the cluster ###############
 ################################################################################
 
-admin_password: notgood # change this!
+admin_password: notgood # change this! (TODO: get keycloak working and ansible vault an initial password)
 local_domain: .broadband # how to address local nodes with dig
 k3s_control_plane: node01 # the node name of the control plane
 k3s_cluster_domain: node01.broadband # the internal DNS name of the control plane node
-k3s_cluster_external_domain: gilesk.ddns.net
+k3s_cluster_external_domain: gilesk.ddns.net # the external DNS name of the control plane node
 domain_email: giles.knap@gilesk.ddns.net
 
 # List of features to install into the cluster, comment out to remove.

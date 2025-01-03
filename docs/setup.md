@@ -31,9 +31,3 @@ sed -E -i 's|^#?(PasswordAuthentication)\s.*|\1 no|' /etc/ssh/sshd_config
 exit
 ```
 
-## Edit the hosts.yml file
-
-This should reflect your turingpi DNS names, the names you would like to call
-the nodes in each of these turingpis and the type of board each of your nodes
-has.
-
