@@ -52,10 +52,17 @@
 - name: Install k3s worker node version {{ k3s_version | default('latest') }}
   ansible.builtin.shell: # noqa command-instead-of-shell
     cmd: >
-      INSTALL_K3S_VERSION="{{ k3s_version  | default('') }}"
+      INSTALL_K3S_VERSION="{{ k3s_version | default('') }}"
       K3S_URL="https://{{ k3s_control_plane_ip }}:6443"
       K3S_TOKEN="{{ node_token.stdout }}"
       /tmp/k3s.sh
   become: true
+  register: k3s_installed
   changed_when: true
-  when: not in_cluster
+  when: k3s_force or not in_cluster
+
+- name: Set the k3s_install_occurred fact
+  ansible.builtin.set_fact: # noqa no-handler
+    k3s_install_occurred: true
+  when: k3s_installed.changed
+  changed_when: false

@@ -20,4 +20,11 @@
       /tmp/k3s.sh
     creates: /var/lib/rancher/k3s/server/node-token
   when: is_control_plane
+  register: k3s_installed
   become: true
+
+- name: Set the k3s_install_occurred fact
+  ansible.builtin.set_fact: # noqa no-handler
+    k3s_install_occurred: true
+  when: k3s_installed.changed
+  changed_when: false

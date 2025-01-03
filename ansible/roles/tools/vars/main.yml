@@ -6,10 +6,10 @@ tools_bashrc: "{{ lookup('ansible.builtin.env', 'BASHRC', default='${HOME}/.bash
 tools_shell:
   - name: bash
     rc_file: "{{ tools_bashrc }}"
-    completion_dir: /usr/share/zsh/vendor-completions
+    completion_dir: ~/.local/share/bash-completion
   - name: zsh
     rc_file: "{{ tools_zshrc }}"
-    completion_dir: /usr/share/zsh/vendor-completions
+    completion_dir: ~/.oh-my-zsh/completions
 
 tools_additional_packages:
   - iputils-ping

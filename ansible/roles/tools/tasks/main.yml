@@ -1,4 +1,10 @@
 # install tools into the execution environment
+- name: Ensure completion folders exist
+  ansible.builtin.file:
+    name: "{{ item.completion_dir }}"
+    state: directory
+    mode: '0755'
+  loop: "{{ tools_shell }}"
 
 - name: Execute the tool task files
   ansible.builtin.include_tasks: |-
