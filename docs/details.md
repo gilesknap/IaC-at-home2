@@ -86,6 +86,7 @@ If you are interested in serving to the internet then you will need your router 
 
 - The security implications mean that we should configure a firewall first - I need to do some research on the best way to do that.
 - Our networking approach means that you will not know the IP addresses of your cluster nodes until the first deploy. So port forwarding to IP addresses will have to be done after the first deploy. Also fixing the IP addresses in DHCP will be necessary to make this work.
+- It requires a public DNS that routes to your network. Not everyone has this.
 
 ## Hardware Setup
 
@@ -109,7 +110,7 @@ Make sure that each turing_pi has its sdcard mounted at `/mnt/sdcard` and format
 
 Before the first run of the Playbook you must adjust the configuration to match your environment.
 
-Now is a good time to launch vscode and start up the developer container. Then you can easily browse and edit the files in the project.
+Now is a good time to launch vscode and start up the developer container. Then you can easily browse and edit the files in the project. Plus this is where you will open a terminal to run the playbook in a later step.
 
 ```bash
 cd tpi-k3s-ansible
