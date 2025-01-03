@@ -1,2 +1,5 @@
 # force re-install of k3s when true
 k3s_force: false
+
+# set to true if any node has k3s installed during this playbook run
+k3s_install_occurred: false
