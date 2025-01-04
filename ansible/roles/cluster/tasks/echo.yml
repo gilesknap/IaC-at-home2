@@ -3,12 +3,13 @@
 
 - name: Render the echo service and ingress manifests
   ansible.builtin.set_fact:
-    echo_manifest: "{{ lookup('template', 'echo.yaml') }}"
-    echo_ingress: "{{ lookup('template', 'ingress.yaml') }}"
+    echo_manifest: |
+      {{ lookup('template', 'echo.yaml') }}
+      ---
+      {{ lookup('template', 'ingress.yaml') }}
   vars:
-    namespace: default
     service_name: echo-service
-    subdomain: echo
+    host_url: echo.{{ k3s_cluster_external_domain }}
 
 - name: Debug
   ansible.builtin.debug:
@@ -16,20 +17,15 @@
 
 - name: Remove echo service
   kubernetes.core.k8s:
-    definition: |
-      {{ echo_manifest }}
-      ---
-      {{ echo_ingress }}
+    definition: "{{ echo_manifest }}"
     state: absent
+    namespace: default
   when: cluster_force
   failed_when: false
 
 - name: Create a simple echo service
   kubernetes.core.k8s:
-    definition: |
-      {{ echo_manifest }}
-      ---
-      {{ echo_ingress }}
+    definition: "{{ echo_manifest }}"
     namespace: default
   # echo requires ingress and certs to work
   when: ingress_controller_exists

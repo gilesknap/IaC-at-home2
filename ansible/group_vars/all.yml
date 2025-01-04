@@ -31,7 +31,6 @@ do_cluster: true
 admin_password: notgood # change this! (TODO: get keycloak working and ansible vault an initial password)
 local_domain: .broadband # how to address local nodes with dig
 k3s_control_plane: node01 # the node name of the control plane
-# IMPORTANT: also make this directly route-able internally, e.g. by adding to /etc/hosts
 k3s_cluster_domain: gkcluster.org # the external DNS A record for the cluster
 domain_email: giles.knap@gilesk.ddns.net
 
@@ -39,7 +38,7 @@ domain_email: giles.knap@gilesk.ddns.net
 # Each entry must match the name of a tasks yaml file in the cluster role.
 cluster_install_list:
   - ingress
-  # - lets_encrypt
+  - lets_encrypt
   - longhorn
   - dashboard
   - grafana
