@@ -1,10 +1,6 @@
 - name: Check dependencies
   ansible.builtin.include_tasks: dependencies.yml
 
-- name: Report grafana values
-  ansible.builtin.debug:
-    msg: "{{ lookup('ansible.builtin.template', 'grafana_values.yaml') | from_yaml }}"
-
 - name: Install the helm chart for Grafana and Prometheus
   ansible.builtin.include_tasks:
     file: check_helm.yml
@@ -13,7 +9,7 @@
     ch_namespace: monitoring
     ch_chart_repo_url: https://prometheus-community.github.io/helm-charts/
     ch_chart_ref: kube-prometheus-stack
-    ch_values: "{{ lookup('ansible.builtin.template', 'grafana_values.yaml') }}"
+    ch_values: "{{ lookup('template', 'grafana_values.yaml') }}"
     ch_force: "{{ cluster_force }}"
 
 - name: Create port forward script for Grafana

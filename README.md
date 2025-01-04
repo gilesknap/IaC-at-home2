@@ -100,3 +100,10 @@ ansible localhost -m include_role -a name=cluster -e '{ cluster_install_list: [i
 ansible all_nodes -m include_role -a name=known_hosts
 ```
 
+### Test  one of the templates
+
+```bash
+ansible localhost -m template -a "src=roles/cluster/templates/grafana_values.yaml dest=/tmp/c.yaml" -e ingress_controller_exists=true -e lo
+nghorn_installed=true
+```
+
