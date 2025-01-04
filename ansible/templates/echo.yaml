@@ -23,39 +23,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: echo-service
-  namespace: default
+  name: "{{ service_name }}"
+namespace: default
 spec:
   ports:
     - port: 80
   selector:
     app: echo
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: echo-ingress
-  namespace: default
-  # ADD TLS #1
-  annotations:
-    kubernetes.io/tls-acme: "true"
-spec:
-  ingressClassName: nginx
-  # ADD TLS #2
-  tls:
-    # Replace the domain below with your domain accordingly.
-    - hosts:
-        - echo.{{ k3s_cluster_external_domain }}
-      secretName: tls-echo-cloudflare
-  rules:
-    # Replace the domain below with your domain accordingly.
-    - host: echo.{{ k3s_cluster_external_domain }}
-      http:
-        paths:
-          - pathType: Prefix
-            path: /
-            backend:
-              service:
-                name: echo-service
-                port:
-                  number: 80
