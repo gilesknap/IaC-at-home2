@@ -11,6 +11,8 @@ Supported hardware:
 
 For more see [Details](docs/details.md).
 
+WARNING: I have switched to using subdomains and Let's Encrypt certificates for all services Web UIs. This means that you will need to have a domain name and be able to create subdomains for each service. In particular it means you need to expose the letsencrypt challenge URLs to the internet. I will write some detailed docs on how to achieve this securely but for now you will need to be able to do this to use this project. To be clear this does not mean exposing your dashboard or other services to the internet, just the challenge URLs so we can get certificates.
+
 ## Features
 
 - Automated Flashing of the compute modules with latest Ubuntu 24.04 LTS
@@ -52,7 +54,7 @@ See [setup](docs/setup.md) to create some keypairs and access the turingpi(s).
 - kick off the ansible playbook:
 
 ```bash
-cd ansible
+cd tpi-k3s-ansible
 ansible-playbook pb_ALL.yml -e do_flash=true
 ```
 ## Notes
@@ -62,6 +64,8 @@ NOTE: All of the ansible playbooks after the initial flashing of the compute mod
 Turing Pi is a great platform for a project like this as it provides a BMC interface that allows you to remotely flash and reboot it's compute modules. See the [Turing Pi](https://turingpi.com/) website for more information.
 
 K3S is a lightweight Kubernetes distribution that is easy to install and manage. It is a CNCF certified Kubernetes distribution that I use for all my Kubernetes projects. See the [K3S](https://k3s.io/) website for more information.
+
+Thanks to drunkcoding.net for some great tutorials that helped with putting this together. See the [A Complete Series of Articles on Kubernetes Environment Locally](https://drunkcoding.net/posts/ks-00-series-k8s-setup-local-env-pi-cluster/)
 
 ## Some How to's
 
@@ -96,5 +100,12 @@ ansible all_nodes -m reboot -f 10 --become
 ansible localhost -m include_role -a name=cluster -e '{ cluster_install_list: [ingress,dashboard] }'
 # test the known_hosts role against all nodes
 ansible all_nodes -m include_role -a name=known_hosts
+```
+
+### Test  one of the templates
+
+```bash
+ansible localhost -m template -a "src=roles/cluster/templates/grafana_values.yaml dest=/tmp/c.yaml" -e ingress_controller_exists=true -e lo
+nghorn_installed=true
 ```
 

@@ -1,0 +1,8 @@
+# install services in the cluster
+
+- name: Cluster Install of services
+  ansible.builtin.include_tasks: "{{ cluster_service }}.yml"
+  loop: "{{  cluster_install_list }}"
+  when: cluster_install_list is defined
+  loop_control:
+    loop_var: cluster_service

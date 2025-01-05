@@ -54,6 +54,8 @@ So as not to contaminate your workstation with the dependencies required to run 
 
 Once vscode is installed you will need to configure it to use podman as the container runtime. This is done by installing the [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension. Then change `dev.containers.dockerPath` to `podman` in the vscode settings.
 
+I also recommend using zsh. Set `terminal.integrated.defaultProfile.linux` to `zsh` in the vscode settings. This will work because the developer container already has zsh installed. The completion available in zsh helps when learning kubectl and helm commands. Completion for bash is currently broken but I will fix it in a future release.
+
 podman and vscode are an opinionated choice:
 
 - vscode: If you do not want to use vscode you can use the devcontainer with command line only using [The Devcontainer CLI](https://code.visualstudio.com/docs/devcontainers/devcontainer-cli).
@@ -153,7 +155,6 @@ Once you have set up your environment and configured the playbook you can run it
 ```bash
 # Launch a terminal in vscode (inside the devcontainer)
 # Menu->Terminal->New Terminal
-cd ansible
 ansible-playbook pb_ALL.yml
 ```
 
