@@ -4,7 +4,7 @@ metadata:
   name: "{{ service_name }}-ingress"
   annotations:
     kubernetes.io/tls-acme: "true"
-{% if service_port == 443 %}
+{% if service_port | default(80) == 443 %}
     nginx.ingress.kubernetes.io/backend-protocol: HTTPS
 {% endif %}
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"

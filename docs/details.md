@@ -155,7 +155,6 @@ Once you have set up your environment and configured the playbook you can run it
 ```bash
 # Launch a terminal in vscode (inside the devcontainer)
 # Menu->Terminal->New Terminal
-cd ansible
 ansible-playbook pb_ALL.yml
 ```
 

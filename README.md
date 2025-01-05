@@ -52,7 +52,7 @@ See [setup](docs/setup.md) to create some keypairs and access the turingpi(s).
 - kick off the ansible playbook:
 
 ```bash
-cd ansible
+cd tpi-k3s-ansible
 ansible-playbook pb_ALL.yml -e do_flash=true
 ```
 ## Notes
