@@ -19,7 +19,7 @@ control_plane_ip: "{{ hostvars[control_plane]['ansible_default_ipv4']['address']
 
 # control which phases of the ALL playbook are run. Override on the command line
 do_tools: true
-do_flash: true
+do_flash: false # Gary has no turing pi
 do_k3s: true
 do_cluster: true
 
@@ -29,18 +29,19 @@ do_cluster: true
 ################################################################################
 
 admin_password: notgood # change this! (TODO: get keycloak working and ansible vault an initial password)
-local_domain: .broadband # how to address local nodes with dig
-control_plane: node01 # the node name of the control plane
-cluster_domain: gkcluster.org # the DNS name for the cluster control plane node
-domain_email: giles.knap@gilesk.ddns.net
+local_domain: .local # how to address local nodes with mDNS
+control_plane: raspberrypi.local # the node name of the control plane
+cluster_domain: raspberrypi.local # the DNS name for the cluster control plane node
+domain_email: gary@raspberrypi.local # (for lets_encrypt only)
 
 # List of features to install into the cluster, comment out to remove.
 # Each entry must match the name of a tasks yaml file in the cluster role.
 cluster_install_list:
   - ingress
-  - lets_encrypt
-  - longhorn
+  # - lets_encrypt
+  # - longhorn
   - dashboard
-  - grafana
+  # - grafana
   - echo
-  - keycloak
+  # - keycloak
+  - pihole
