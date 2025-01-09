@@ -36,13 +36,11 @@ Add the following to your /etc/hosts file, all pointing at the IP address of you
 
 The reason for this is so that we have a nice name for the root ingress into each of the apps we are installing. I prefer this to using raspberrypi.local/dashboard etc. Because the ingress is tidier and compatible with letsencrypt wildcard certs which I am using for my own setup.
 
-```bash
-
 ### In the dev container
 
 Fire up this project in branch `gary` and open the developer container.
 
-Now add the ansible account with trust of the keys you just made (and no password) to all of your hosts (in this case just the pi).
+Now add the ansible account with trust of the key just made (and no password) to all of your non-turing pi hosts (i.e. in this case just the one standalone pi).
 
 ```bash
 ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook pb_add_nodes.yml
@@ -53,7 +51,7 @@ Now you can install k3s and pihole with:
 ```bash
 ansible-playbook pb_ALL.yml -e k3s_force=true
 ```
-You want the k3s_force=true this first time you run the playbook as it will remove any existing k3s installation if there is one. The great thing about this is that you can run this playbook again and again and it will only install the missing parts (e.g. you might choose to uncomment grafana and re-run the playbook to install it).
+You want the k3s_force=true this first time you run the playbook as it will remove any existing k3s installation if there is one. The great thing about this is that you can run this playbook again and again and it will only install the missing parts (e.g. you might choose to uncomment grafana from cluster_install_list and re-run the playbook to install it).
 
 ## Try it out
 
@@ -86,6 +84,15 @@ I think there may be issues with the helm chart so it might be wisest to run:
 helm delete -n pihole pihole
 ```
 Before running the playbook to ensure your changes are picked up correctly.
+
+## Rebuild from Scratch
+
+You can tear down everything and build it up again with:
+
+```bash
+ansible-playbook pb_ALL.yml -e k3s_force=true
+```
+
 
 ## Enjoy
 
