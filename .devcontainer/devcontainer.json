@@ -17,7 +17,7 @@
 		3000 // grafana
 	],
 	// make sure files are available for mounting
-	"initializeCommand": "touch ${localEnv:HOME}/.ansible_vault_password",
+	"initializeCommand": "bash ${localWorkspaceFolder}/.devcontainer/initializeCommand",
 	"features": {
 		// add in eternal history and other bash features
 		"ghcr.io/diamondlightsource/devcontainer-features/bash-config:1.0.2": {}
@@ -45,14 +45,11 @@
 	// mount in useful files and configuration folders - those updated by ansible
 	// are stored in volumes so they persist between container runs
 	"mounts": [
-		// Note - password file is not currently used
-		"source=${localEnv:HOME}/.ansible_vault_password,target=/etc/ansible/.vault_password.txt,type=bind,ro",
 		"source=iac2-bin,target=/root/bin,type=volume",
 		"source=iac2-ssh,target=/root/.ssh,type=volume",
 		"source=iac2-kube,target=/root/.kube,type=volume"
 	],
 	"remoteEnv": {
-		"ANSIBLE_VAULT_PASSWORD_FILE": "/etc/ansible/.vault_password.txt",
 		"ZSHRC": "/bash-config/zshrc",
 		"BIN_DIR": "/root/bin"
 	},

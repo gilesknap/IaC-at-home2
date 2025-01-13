@@ -6,8 +6,6 @@ ansible_account: "ansible"
 tpi_user: root
 # A path to some storage on the tpi BMCs used for downloading os images
 tpi_images_path: /mnt/sdcard/images
-# default vault password file
-vault_password_file: "~/.ansible_vault_password"
 
 # location of binaries we install in the execution environment
 bin_dir: "{{ lookup('ansible.builtin.env', 'BIN_DIR', default='${HOME}/bin') }}"
